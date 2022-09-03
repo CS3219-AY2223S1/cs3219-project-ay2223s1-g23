@@ -1,15 +1,18 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes } from "sequelize";
 
 import sequelize from "./database.js";
 
-class MatchModel extends Model { }
+class MatchModel extends Model {}
 
-MatchModel.init({
+MatchModel.init(
+  {
     userId: DataTypes.UUID,
-    difficulty: DataTypes.STRING
-}, {
+    difficulty: DataTypes.STRING,
+  },
+  {
     sequelize,
-    modelName: 'matchModel'
-});
+    modelName: "matchModel",
+  }
+);
 
 export default MatchModel;
