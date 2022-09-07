@@ -1,2 +1,9 @@
-node_modules
+# dotenv environment variable files
 .env
+
+# Dependency directories
+node_modules
+
+# Sqlite dev instance
+dev.sqlite
+
