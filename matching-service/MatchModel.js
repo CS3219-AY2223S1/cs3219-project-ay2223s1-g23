@@ -11,6 +11,7 @@ MatchModel.init(
       allowNull: false,
     },
     difficulty: DataTypes.STRING,
+    matchedUser: DataTypes.UUID
   },
   {
     sequelize,
