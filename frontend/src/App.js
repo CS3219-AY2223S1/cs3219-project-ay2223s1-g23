@@ -29,7 +29,7 @@ function App() {
               path="/diff"
               element={<DifficultySelection socket={socket} />}
             />
-            <Route path="/room/:id" element={<Room />} />
+            <Route path="/room/:id" element={<Room socket={socket} />} />
           </Routes>
         </Router>
       </Box>

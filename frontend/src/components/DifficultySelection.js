@@ -29,50 +29,14 @@ function DifficultySelection({ socket }) {
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   console.log("inside useEffect");
-  //   socket.on("finding_match", (data) => {
-  //     console.log(
-  //       `User ID ${data.userId} with difficulty ${data.difficulty} is trying to find a match. Socket ID ${data.socketId}`,
-  //     );
-  //     // if find match
-  //     // then create room id, socket.join(roomId), socket.emit(match success)
-  //     console.log(`selectedDiff ${selectedDifficulty}`);
-  //     console.log(`data.diff ${data.difficulty}`);
-  //     if (selectedDifficulty === data.difficulty) {
-  //       console.log("difficulty match found!");
-  //       socket.emit("match_found", {
-  //         userId: userId,
-  //         otherUserId: data.userId,
-  //         socketUserId: socket.id,
-  //         otherSocketUserId: data.socketId,
-  //       });
-  //     }
-  //     setMatchStatus(MatchStatus.MATCH_SUCCESS);
-  //   });
-  // }, [socket, selectedDifficulty]);
-
   useEffect(() => {
     console.log("listening in useeffect");
-    socket.on("match_success", (roomId) => {
-      console.log("match success on client");
+    socket.on("match_success", (data) => {
+      const roomId = data.roomId;
       socket.emit("join_room", roomId);
+      socket.emit("prep_room", data);
       navigate(`/room/${roomId}`);
     });
-    // socket.on("match_success", (data) => {
-    //   if (data.userId != userId && data.otherUserId != userId) {
-    //     return;
-    //   }
-    //   console.log("match success on client");
-    //   const roomId = `${data.userId}_${data.otherUserId}`;
-    //   // update db
-    //   navigate(`/room/${roomId}`);
-    //   socket.emit("join_room", {
-    //     roomId: roomId,
-    //     socketUserId: data.socketUserId,
-    //     otherSocketUserId: data.otherSocketUserId,
-    //   });
-    // });
   }, [socket, navigate]);
 
   const handleOptionChange = (event) => {
@@ -88,7 +52,7 @@ function DifficultySelection({ socket }) {
     console.log("Your userId: ", userId);
     console.log("You have selected: ", selectedDifficulty);
 
-    // Post difficult level chosen
+    // Post difficult level chosen.
     const res = await axios
       .post(URL_INSERT_DIFFICULTY, {
         userId: userId,
@@ -100,11 +64,10 @@ function DifficultySelection({ socket }) {
     if (res && res.status === STATUS_CODE_CREATED) {
       console.log("Difficulty successfully inserted");
     }
-    console.log(`selectedDiff 2 ${selectedDifficulty}`);
 
     setMatchStatus(MatchStatus.MATCHING);
 
-    // Start matching using socket
+    // Start finding match for the user.
     socket.emit("find_match", {
       userId: userId,
       difficulty: selectedDifficulty,

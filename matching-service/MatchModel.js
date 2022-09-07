@@ -2,7 +2,7 @@ import { Model, DataTypes } from "sequelize";
 
 import sequelize from "./database.js";
 
-class MatchModel extends Model { }
+class MatchModel extends Model {}
 
 MatchModel.init(
   {
@@ -11,12 +11,12 @@ MatchModel.init(
       allowNull: false,
     },
     difficulty: DataTypes.STRING,
-    matchedUser: DataTypes.UUID
+    matchedUser: DataTypes.UUID,
   },
   {
     sequelize,
     modelName: "matchModel",
-  }
+  },
 );
 
 export default MatchModel;
