@@ -26,7 +26,6 @@ const deleteMatchModel = async (userId) => {
 
 export const initSocketEventHandlers = (socket, io) => {
   socket.on("find_match", (data) => {
-    console.log("[find_match]");
     const { userId, difficulty } = data;
     const socketId = socket.id;
 
