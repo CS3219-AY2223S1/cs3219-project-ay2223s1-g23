@@ -17,11 +17,16 @@ const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
   await userDifficulty.save();
 
   // Delete the newer user's match model
-  await MatchModel.destroy({ where: { id: matchedUserId } });
+  deleteMatchModel(matchedUserId);
+};
+
+const deleteMatchModel = async (userId) => {
+  await MatchModel.destroy({ where: { userId: userId } });
 };
 
 export const initSocketEventHandlers = (socket, io) => {
   socket.on("find_match", (data) => {
+    console.log("[find_match]");
     const { userId, difficulty } = data;
     const socketId = socket.id;
 
@@ -36,6 +41,7 @@ export const initSocketEventHandlers = (socket, io) => {
         socketId1: socketId,
         socketId2: socketIdFromQueue,
         roomId: roomId,
+        difficulty: difficulty,
       };
 
       // Emit successful match to both users.
@@ -58,6 +64,18 @@ export const initSocketEventHandlers = (socket, io) => {
 
   socket.on("prep_room", (data) => {
     io.to(data.roomId).emit("welcome_room", data);
+  });
+
+  socket.on("stop_find_match", (data) => {
+    const { userId, difficulty } = data;
+    findingMatchQueue[difficulty] = findingMatchQueue[difficulty].filter(
+      (user) => user.userId != userId,
+    );
+    deleteMatchModel(userId);
+  });
+
+  socket.on("leave_room", (userId) => {
+    deleteMatchModel(userId);
   });
 
   socket.on("connect_error", function (err) {
