@@ -3,6 +3,8 @@ import cors from "cors";
 import { createServer } from "http";
 import sequelize from "./database.js";
 import MatchModel from "./MatchModel.js";
+import { Server } from "socket.io";
+import { initSocketEventHandlers } from "./src/controllers/socketController.js";
 
 // Initialise database
 
@@ -15,6 +17,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // middleware
 app.use(cors()); // config cors so that front-end can use
 app.options("*", cors());
+
+// Initialize new instance of socket
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log(`User connected with ID: ${socket.id}`);
+  initSocketEventHandlers(socket, io);
+});
 
 // Routes Section
 
@@ -62,6 +79,6 @@ app.delete("/difficulties/:id", async (req, res) => {
 
 // Configure the port
 
-const httpServer = createServer(app);
-
-httpServer.listen(8001);
+httpServer.listen(8001, () => {
+  console.log("server listening on port 8001");
+});
