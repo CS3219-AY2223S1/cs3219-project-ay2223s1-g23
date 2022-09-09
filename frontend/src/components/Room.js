@@ -19,8 +19,7 @@ function Room({ socket }) {
 
   useEffect(() => {
     socket.on("welcome_room", (data) => {
-      const { userId1, userId2, socketId1, socketId2, roomId, difficulty } =
-        data;
+      const { userId1, userId2, socketId1, socketId2, roomId, difficulty } = data;
       setIds({
         user1: {
           userId: userId1,
@@ -47,8 +46,8 @@ function Room({ socket }) {
     <div className="container">
       <div>
         {" "}
-        Welcome {ids.user1.userId} and {ids.user2.userId} to room {roomId}! Your
-        choice of difficulty is {difficultyLevel}
+        Welcome {ids.user1.userId} and {ids.user2.userId} to room {roomId}! Your choice of
+        difficulty is {difficultyLevel}
       </div>
       <Button variant="outlined" onClick={leaveRoomHandler}>
         Leave room

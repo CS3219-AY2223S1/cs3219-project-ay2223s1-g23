@@ -1,9 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import SignupPage from "./components/SignupPage";
 import DifficultySelection from "./components/DifficultySelection";
 import Room from "./components/Room";
@@ -19,16 +14,9 @@ function App() {
       <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
         <Router>
           <Routes>
-            <Route
-              exact
-              path="/"
-              element={<Navigate replace to="/signup" />}
-            ></Route>
+            <Route exact path="/" element={<Navigate replace to="/signup" />}></Route>
             <Route path="/signup" element={<SignupPage />} />
-            <Route
-              path="/diff"
-              element={<DifficultySelection socket={socket} />}
-            />
+            <Route path="/diff" element={<DifficultySelection socket={socket} />} />
             <Route path="/room/:id" element={<Room socket={socket} />} />
           </Routes>
         </Router>

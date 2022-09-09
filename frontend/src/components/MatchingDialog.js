@@ -2,13 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
 import { MatchStatus } from "./DifficultySelection";
 
-function MatchingDialog({
-  initSeconds,
-  isOpen,
-  handleClose,
-  matchStatus,
-  failedFindingMatch,
-}) {
+function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedFindingMatch }) {
   const [seconds, setSeconds] = useState(initSeconds);
   let title = "";
   let description = "";
@@ -75,8 +69,7 @@ function MatchingDialog({
       open={isOpen}
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+      aria-describedby="modal-modal-description">
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           {title}

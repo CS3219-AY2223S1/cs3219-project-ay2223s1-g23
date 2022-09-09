@@ -15,6 +15,7 @@ export const MatchStatus = {
 
 function DifficultySelection({ socket }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [userId, setUserId] = useState(uuidv4()); // random uuid
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
