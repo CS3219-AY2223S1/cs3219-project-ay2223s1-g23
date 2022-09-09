@@ -61,7 +61,7 @@ function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedF
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
-    p: 4
+    p: 4,
   };
 
   return (
@@ -69,8 +69,7 @@ function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedF
       open={isOpen}
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+      aria-describedby="modal-modal-description">
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           {title}

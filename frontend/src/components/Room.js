@@ -6,12 +6,12 @@ function Room({ socket }) {
   const [ids, setIds] = useState({
     user1: {
       userId: "",
-      socketId: ""
+      socketId: "",
     },
     user2: {
       userId: "",
-      socketId: ""
-    }
+      socketId: "",
+    },
   });
   const [roomId, setRoomId] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("");
@@ -23,13 +23,13 @@ function Room({ socket }) {
       setIds({
         user1: {
           userId: userId1,
-          socketId: socketId1
+          socketId: socketId1,
         },
         user2: {
           // user from the queue
           userId: userId2,
-          socketId: socketId2
-        }
+          socketId: socketId2,
+        },
       });
       setRoomId(roomId);
       setDifficultyLevel(difficulty);

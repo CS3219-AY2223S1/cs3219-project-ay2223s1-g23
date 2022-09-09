@@ -10,11 +10,12 @@ export const MatchStatus = {
   NOT_MATCHING: "NOT_MATCHING",
   MATCHING: "MATCHING",
   MATCH_SUCCESS: "MATCH_SUCCESS",
-  MATH_FAILED: "MATCH_FAILED"
+  MATH_FAILED: "MATCH_FAILED",
 };
 
 function DifficultySelection({ socket }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [userId, setUserId] = useState(uuidv4()); // random uuid
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
@@ -36,7 +37,7 @@ function DifficultySelection({ socket }) {
     setIsMatchingDialogOpen(true);
     socket.emit("find_match", {
       userId: userId,
-      difficulty: selectedDifficulty
+      difficulty: selectedDifficulty,
     });
   };
 
@@ -44,7 +45,7 @@ function DifficultySelection({ socket }) {
     setMatchStatus(MatchStatus.MATH_FAILED);
     socket.emit("stop_find_match", {
       userId: userId,
-      difficulty: selectedDifficulty
+      difficulty: selectedDifficulty,
     });
   };
 
@@ -54,7 +55,7 @@ function DifficultySelection({ socket }) {
       setMatchStatus(MatchStatus.NOT_MATCHING);
       socket.emit("stop_find_match", {
         userId: userId,
-        difficulty: selectedDifficulty
+        difficulty: selectedDifficulty,
       });
     }
   };
@@ -81,7 +82,7 @@ function DifficultySelection({ socket }) {
     const res = await axios
       .post(URL_INSERT_DIFFICULTY, {
         userId: userId,
-        difficulty: selectedDifficulty
+        difficulty: selectedDifficulty,
       })
       .catch(() => {
         console.log("Please try again later");
