@@ -6,25 +6,11 @@ import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./MatchingDialog";
 
-<<<<<<< HEAD
-class DifficultySelection extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedDifficulty: "easy",
-      userId: uuidv4() // random uuid
-    };
-  }
-
-  handleOptionChange = (event) => {
-    this.setState({
-      selectedDifficulty: event.target.value
-=======
 export const MatchStatus = {
   NOT_MATCHING: "NOT_MATCHING",
   MATCHING: "MATCHING",
   MATCH_SUCCESS: "MATCH_SUCCESS",
-  MATH_FAILED: "MATCH_FAILED",
+  MATH_FAILED: "MATCH_FAILED"
 };
 
 function DifficultySelection({ socket }) {
@@ -50,7 +36,7 @@ function DifficultySelection({ socket }) {
     setIsMatchingDialogOpen(true);
     socket.emit("find_match", {
       userId: userId,
-      difficulty: selectedDifficulty,
+      difficulty: selectedDifficulty
     });
   };
 
@@ -58,8 +44,7 @@ function DifficultySelection({ socket }) {
     setMatchStatus(MatchStatus.MATH_FAILED);
     socket.emit("stop_find_match", {
       userId: userId,
-      difficulty: selectedDifficulty,
->>>>>>> 6bd27b520bd5302070f8c59a7da064387568d940
+      difficulty: selectedDifficulty
     });
   };
 
@@ -69,7 +54,7 @@ function DifficultySelection({ socket }) {
       setMatchStatus(MatchStatus.NOT_MATCHING);
       socket.emit("stop_find_match", {
         userId: userId,
-        difficulty: selectedDifficulty,
+        difficulty: selectedDifficulty
       });
     }
   };
@@ -95,13 +80,8 @@ function DifficultySelection({ socket }) {
     // Post difficult level chosen.
     const res = await axios
       .post(URL_INSERT_DIFFICULTY, {
-<<<<<<< HEAD
-        userId: this.state.userId,
-        difficulty: this.state.selectedDifficulty
-=======
         userId: userId,
-        difficulty: selectedDifficulty,
->>>>>>> 6bd27b520bd5302070f8c59a7da064387568d940
+        difficulty: selectedDifficulty
       })
       .catch(() => {
         console.log("Please try again later");
