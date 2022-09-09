@@ -6,12 +6,12 @@ function Room({ socket }) {
   const [ids, setIds] = useState({
     user1: {
       userId: "",
-      socketId: "",
+      socketId: ""
     },
     user2: {
       userId: "",
-      socketId: "",
-    },
+      socketId: ""
+    }
   });
   const [roomId, setRoomId] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("");
@@ -19,18 +19,17 @@ function Room({ socket }) {
 
   useEffect(() => {
     socket.on("welcome_room", (data) => {
-      const { userId1, userId2, socketId1, socketId2, roomId, difficulty } =
-        data;
+      const { userId1, userId2, socketId1, socketId2, roomId, difficulty } = data;
       setIds({
         user1: {
           userId: userId1,
-          socketId: socketId1,
+          socketId: socketId1
         },
         user2: {
           // user from the queue
           userId: userId2,
-          socketId: socketId2,
-        },
+          socketId: socketId2
+        }
       });
       setRoomId(roomId);
       setDifficultyLevel(difficulty);
@@ -47,8 +46,8 @@ function Room({ socket }) {
     <div className="container">
       <div>
         {" "}
-        Welcome {ids.user1.userId} and {ids.user2.userId} to room {roomId}! Your
-        choice of difficulty is {difficultyLevel}
+        Welcome {ids.user1.userId} and {ids.user2.userId} to room {roomId}! Your choice of
+        difficulty is {difficultyLevel}
       </div>
       <Button variant="outlined" onClick={leaveRoomHandler}>
         Leave room

@@ -2,13 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
 import { MatchStatus } from "./DifficultySelection";
 
-function MatchingDialog({
-  initSeconds,
-  isOpen,
-  handleClose,
-  matchStatus,
-  failedFindingMatch,
-}) {
+function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedFindingMatch }) {
   const [seconds, setSeconds] = useState(initSeconds);
   let title = "";
   let description = "";
@@ -67,7 +61,7 @@ function MatchingDialog({
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
-    p: 4,
+    p: 4
   };
 
   return (
