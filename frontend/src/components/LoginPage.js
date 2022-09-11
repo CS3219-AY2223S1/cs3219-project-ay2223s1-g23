@@ -13,8 +13,10 @@ import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC_LOGIN, URL_USER_SVC_USER_INFO } from "../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../constants";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const nav = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -35,6 +37,14 @@ function LoginPage() {
       setCookie("token", token, 0.01);
       console.log(document.cookie);
     }
+  };
+
+  const handleLogout = async () => {
+    const token = "";
+    setSuccessDialog("Account successfully logout");
+    setCookie("token", token, 0);
+    console.log(document.cookie);
+    nav("/");
   };
 
   const handleGetInfo = async () => {
@@ -122,6 +132,12 @@ function LoginPage() {
       <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
         <Button variant={"outlined"} onClick={handleGetInfo}>
           Get Info
+        </Button>
+      </Box>
+
+      <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
+        <Button variant={"outlined"} onClick={handleLogout}>
+          Log out
         </Button>
       </Box>
 
