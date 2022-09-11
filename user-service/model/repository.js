@@ -11,7 +11,14 @@ mongoose.connect(mongoDB, { useNewUrlParser: true , useUnifiedTopology: true});
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-export async function createUser(params) { 
+export async function createUser(params) {
   return new UserModel(params)
 }
 
+export async function existsUser(params) {
+  return (await  UserModel.findOne({username: params}, 'username')) !== null
+}
+
+export async function getPassword(params) {
+  return (await UserModel.findOne({ username: params }, 'password')).password
+}
