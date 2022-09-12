@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { URL_INSERT_DIFFICULTY } from "../configs";
 import { STATUS_CODE_CREATED } from "../constants";
-import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./MatchingDialog";
+import { useSelector } from "react-redux";
 
 export const MatchStatus = {
   NOT_MATCHING: "NOT_MATCHING",
@@ -15,8 +15,9 @@ export const MatchStatus = {
 
 function DifficultySelection({ socket }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const username = useSelector((state) => state.user.username);
   // eslint-disable-next-line no-unused-vars
-  const [userId, setUserId] = useState(uuidv4()); // random uuid
+  const [userId, setUserId] = useState(username);
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
   const navigate = useNavigate();
