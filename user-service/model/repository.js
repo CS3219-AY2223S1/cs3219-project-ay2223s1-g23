@@ -22,3 +22,7 @@ export async function existsUser(params) {
 export async function getPassword(params) {
   return (await UserModel.findOne({ username: params }, 'password')).password
 }
+
+export async function updateUser(params, updateParams) {
+  return await UserModel.findOneAndUpdate({username: params}, updateParams)
+}
