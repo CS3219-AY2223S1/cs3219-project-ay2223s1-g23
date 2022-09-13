@@ -1,4 +1,7 @@
-import { ormCreateUser as _createUser, ormLoginUser as _loginUser } from '../model/user-orm.js'
+import { ormCreateUser as _createUser,
+        ormLoginUser as _loginUser,
+        ormDeleteUser as _deleteUser } from '../model/user-orm.js';
+import jwt from "jsonwebtoken";
 
 export async function createUser(req, res) {
     try {
@@ -20,6 +23,18 @@ export async function createUser(req, res) {
         } else {
             return res.status(400).json({message: 'Username and/or Password are missing!'});
         }
+    } catch (err) {
+        return res.status(500).json({message: 'Database failure when creating new user!'})
+    }
+}
+
+export async function deleteUser(req, res) {
+    try {
+        const { username } = req.params;
+        //const {token} = req.cookies.access_token;
+        //const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const resp = _deleteUser(username);
+        return res.status(200).json({message: `User successfully removed!`}); 
     } catch (err) {
         return res.status(500).json({message: 'Database failure when creating new user!'})
     }

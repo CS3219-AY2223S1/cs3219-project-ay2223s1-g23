@@ -1,4 +1,4 @@
-import { createUser, existsUser, getPassword } from './repository.js';
+import { createUser, deleteUser, existsUser, getPassword } from './repository.js';
 import jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
 import "dotenv/config";
@@ -19,6 +19,23 @@ export async function ormCreateUser(username, password) {
         }
     } catch (err) {
         console.log('ERROR: Could not create new user');
+        return { err };
+    }
+}
+
+export async function ormDeleteUser(username) {
+    console.log("hello9");
+    if (!await existsUser(username)) {
+        return false;
+    }
+    console.log("hello0");
+    try {
+        console.log("hello");
+        await deleteUser(username);
+        console.log("hello2");
+        return true;
+    } catch (err) {
+        console.log("ERROR: Could not delete user");
         return { err };
     }
 }
