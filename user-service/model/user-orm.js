@@ -94,13 +94,9 @@ export async function ormResetPassword(username, token, password, confirmPasswor
 
         // hash password
         const encryptedPassword = await bcrypt.hash(password, 10);
-        console.log("hello1");
-        const encryptedConfirmPassword = await bcrypt.hash(confirmPassword, 10);
         
         //validate password and confirm password match
-        console.log("hello");
-        if (!await bcrypt.compare(encryptedPassword, encryptedConfirmPassword)) {
-            console.log("hello2");
+        if (!await bcrypt.compare(confirmPassword, encryptedPassword)) {
             return false;
         }
 
