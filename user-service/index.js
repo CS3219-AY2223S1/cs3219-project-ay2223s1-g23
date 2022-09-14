@@ -15,7 +15,7 @@ const router = express.Router()
 router.get('/', (_, res) => res.send('Hello World from user-service'))
 router.post('/', createUser)
 router.post('/login', loginUser)
-router.delete('/:username', deleteUser)
+router.delete('/:username', verifyJWT, deleteUser)
 router.get('/userInfo', verifyJWT, (_, res) => res.send('User is authenticated'))
 
 app.use('/api/user', router).all((_, res) => {

@@ -31,7 +31,11 @@ export async function deleteUser(req, res) {
     try {
         const { username } = req.params;
         const resp = _deleteUser(username);
-        return res.status(200).json({message: `User successfully removed!`}); 
+        if (resp) {
+            return res.status(200).json({message: `User successfully removed!`}); 
+        } else {
+            return res.status(404).json({message: 'User not found!'});
+        }
     } catch (err) {
         return res.status(500).json({message: 'Database failure when creating new user!'})
     }

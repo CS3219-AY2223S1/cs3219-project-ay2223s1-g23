@@ -24,15 +24,11 @@ export async function ormCreateUser(username, password) {
 }
 
 export async function ormDeleteUser(username) {
-    console.log("hello9");
     if (!await existsUser(username)) {
         return false;
     }
-    console.log("hello0");
     try {
-        console.log("hello");
         await deleteUser(username);
-        console.log("hello2");
         return true;
     } catch (err) {
         console.log("ERROR: Could not delete user");
