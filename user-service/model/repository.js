@@ -19,6 +19,10 @@ export async function existsUser(params) {
   return (await  UserModel.findOne({username: params}, 'username')) !== null
 }
 
+export async function getEmail(params) {
+  return (await  UserModel.findOne({username: params}, 'email')).email
+}
+
 export async function getPassword(params) {
   return (await UserModel.findOne({ username: params }, 'password')).password
 }
