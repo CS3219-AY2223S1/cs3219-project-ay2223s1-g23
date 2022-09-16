@@ -37,7 +37,7 @@ export async function deleteUser(req, res) {
             return res.status(404).json({message: 'User not found!'});
         }
     } catch (err) {
-        return res.status(500).json({message: 'Database failure when creating new user!'})
+        return res.status(500).json({message: 'Database failure when deleting user!'})
     }
 }
 
