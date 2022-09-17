@@ -72,7 +72,7 @@ export async function ormResetPassword(username, token, password, confirmPasswor
     // check if user exist in data base
     if (!await existsUser(username)) {
         console.log('Invalid id...');
-        return false;
+        return { err: "User does not exist!" };
     }
 
     const oldPassword = await getPassword(username);
