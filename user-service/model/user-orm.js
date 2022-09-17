@@ -45,20 +45,18 @@ export async function ormLoginUser(username, password) {
 }
 
 export async function ormForgetPassword(username) {
-    // Make sure user exist
     if (!await existsUser(username)) {
         return { err: "User does not exist!"};
     }
 
     // create a One time link for 15 min 
-    const currPassword = await getPassword(username);
-    const secret = process.env.JWT_SECRET + currPassword;
+    const oldPassword = await getPassword(username);
+    const secret = process.env.JWT_SECRET + oldPassword;
     const payload = {
         username: username
     };
 
     const token = jwt.sign(payload, secret, {expiresIn: '15m'});
-    // TODO: change the link and send email instead of console
     try {
         const link = `http://localhost:8000/api/user/reset-password/${username}/${token}`;
         console.log(link);
@@ -95,12 +93,11 @@ export async function ormResetPassword(username, token, password, confirmPasswor
         return false;
     }
 
-    const currPassword = await getPassword(username);
-    const secret = process.env.JWT_SECRET + currPassword;
+    const oldPassword = await getPassword(username);
+    const secret = process.env.JWT_SECRET + oldPassword;
     try {
         const payload = jwt.verify(token, secret);
 
-        // hash password
         const encryptedPassword = await bcrypt.hash(password, 10);
         
         //validate password and confirm password match

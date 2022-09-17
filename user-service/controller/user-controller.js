@@ -53,7 +53,6 @@ export async function loginUser(req, res) {
 export async function forgetPassword(req, res) {
     try {
         const { username } = req.body;
-        // Check the existance of input
         if (!username) {
             return res.status(400).json({ message: 'Username is missing!' });
         }
@@ -76,10 +75,12 @@ export async function verifyResetPassword(req, res) {
         const { username, token } = req.params;
         const resp = await _verifyResetPassword(username, token);
         
-        if (resp.err || !resp) {
+        if (resp.err) {
             return res.status(400).json({ message: resp.err });
+        } else if (resp) {
+            res.status(200).json(true);
         } else {
-            return res.status(200).json(true)
+            return res.status(400).json({ message: "Invalid User..." });
         }
 
     } catch (err) {
@@ -91,6 +92,10 @@ export async function resetPassword(req, res) {
     try {
         const { username, token } = req.params;
         const { password, confirmPassword } = req.body;
+        if (!password || !confirmPassword) {
+            return res.status(400).json({ message: 'Password and/or Confirm Password is missing!' }); 
+        }
+
         const resp = await _resetPassword(username, token, password, confirmPassword);
 
         if (resp.err) {

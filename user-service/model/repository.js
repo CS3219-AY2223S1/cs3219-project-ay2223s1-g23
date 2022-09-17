@@ -24,9 +24,9 @@ export async function getEmail(params) {
 }
 
 export async function getPassword(params) {
-  return (await UserModel.findOne({ username: params }, 'password')).password
+  return (await  UserModel.findOne({ username: params }, 'password')).password
 }
 
 export async function updateUser(params, updateParams) {
-  return await UserModel.findOneAndUpdate({username: params}, updateParams)
+  return await  UserModel.findOneAndUpdate({username: params}, updateParams)
 }
