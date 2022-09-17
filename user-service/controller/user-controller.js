@@ -1,7 +1,6 @@
 import { ormCreateUser as _createUser,
         ormLoginUser as _loginUser,
         ormForgetPassword as _forgetPassword,
-        ormVerifyResetPassword as _verifyResetPassword,
         ormResetPassword as _resetPassword } from '../model/user-orm.js'
 
 export async function createUser(req, res) {
@@ -70,28 +69,10 @@ export async function forgetPassword(req, res) {
     }
 }
 
-export async function verifyResetPassword(req, res) {
-    try {
-        const { username, token } = req.params;
-        const resp = await _verifyResetPassword(username, token);
-        
-        if (resp.err) {
-            return res.status(400).json({ message: resp.err });
-        } else if (resp) {
-            res.status(200).json(true);
-        } else {
-            return res.status(400).json({ message: "Invalid User..." });
-        }
-
-    } catch (err) {
-        return res.status(500).json({ message: `Database failure while resetting password!` })
-    }
-}
-
 export async function resetPassword(req, res) {
     try {
-        const { username, token } = req.params;
-        const { password, confirmPassword } = req.body;
+        const { token } = req.params;
+        const { username, password, confirmPassword } = req.body;
         if (!password || !confirmPassword) {
             return res.status(400).json({ message: 'Password and/or Confirm Password is missing!' }); 
         }

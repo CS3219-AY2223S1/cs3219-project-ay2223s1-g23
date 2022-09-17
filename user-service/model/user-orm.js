@@ -58,32 +58,14 @@ export async function ormForgetPassword(username) {
 
     const token = jwt.sign(payload, secret, {expiresIn: '15m'});
     try {
-        const link = `http://localhost:8000/api/user/reset-password/${username}/${token}`;
+        const link = `http://localhost:8000/api/user/reset-password/${token}`;
         console.log(link);
         const userEmail = await getEmail(username);
-        sendLink(userEmail,link);
+        // sendLink(userEmail,link);
         return { message: 'Reset link has been sent to your email.'};
     } catch (err) {
         return { message: 'Fail to send the reset link. Please try again later.'};
     } 
-}
-
-export async function ormVerifyResetPassword(username, token) {
-    // check if user exist in data base
-    if (!await existsUser(username)) {
-        console.log('Invalid user...');
-        return false;
-    }
-
-    const currPassword = await getPassword(username);
-    const secret = process.env.JWT_SECRET + currPassword;
-    try {
-        const payload = jwt.verify(token, secret);
-        return true;
-    } catch (err) {
-        console.log(err.message);
-        return {err};
-    }
 }
 
 export async function ormResetPassword(username, token, password, confirmPassword) {
@@ -98,9 +80,7 @@ export async function ormResetPassword(username, token, password, confirmPasswor
     try {
         const payload = jwt.verify(token, secret);
 
-        const encryptedPassword = await bcrypt.hash(password, 10);
-        
-        //validate password and confirm password match
+        const encryptedPassword = await bcrypt.hash(password, 10);  
         if (!await bcrypt.compare(confirmPassword, encryptedPassword)) {
             return false;
         }

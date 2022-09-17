@@ -6,7 +6,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors()) // config cors so that front-end can use
 app.options('*', cors())
-import { createUser, loginUser, forgetPassword, verifyResetPassword, resetPassword } from './controller/user-controller.js';
+import { createUser, loginUser, forgetPassword, resetPassword } from './controller/user-controller.js';
 import { verifyJWT } from './middleware/verifyJWT.js';
 
 const router = express.Router()
@@ -17,8 +17,7 @@ router.post('/', createUser)
 router.post('/login', loginUser)
 router.get('/userInfo', verifyJWT, (_, res) => res.send('User is authenticated'))
 router.post('/forget-password', forgetPassword)
-router.get('/reset-password/:username/:token', verifyResetPassword)
-router.post('/reset-password/:username/:token', resetPassword)
+router.post('/reset-password/:token', resetPassword)
 
 app.use('/api/user', router).all((_, res) => {
     res.setHeader('content-type', 'application/json')
