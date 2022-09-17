@@ -31,7 +31,9 @@ export async function deleteUser(req, res) {
     try {
         const { username } = req.params;
         const resp = _deleteUser(username);
-        if (resp) {
+        if (resp.err) {
+            return res.status(400).json({message: 'Could not delete the user'});
+        } else if (resp) {
             return res.status(200).json({message: `User successfully removed!`}); 
         } else {
             return res.status(404).json({message: 'User not found!'});
