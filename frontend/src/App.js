@@ -3,6 +3,7 @@ import SignupPage from "./components/SignupPage";
 import LoginPage from "./components/LoginPage";
 import DifficultySelection from "./components/DifficultySelection";
 import Room from "./components/Room";
+import Navbar from "./components/Navbar";
 import { Box } from "@mui/material";
 import { URL_MATCH_SVC } from "./configs";
 import io from "socket.io-client";
@@ -12,6 +13,7 @@ const socket = io.connect(URL_MATCH_SVC);
 function App() {
   return (
     <div className="App">
+      <Navbar />
       <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
         <Router>
           <Routes>
