@@ -61,7 +61,7 @@ function SignupPage() {
       <Grid item xs={10}>
         <Paper elevation={3}>
           <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
-            <Typography variant={"h3"} marginBottom={"2rem"}>
+            <Typography variant={"h3"} ma={"2rem"}>
               Sign Up
             </Typography>
           </Box>
@@ -103,11 +103,9 @@ function SignupPage() {
             <Button variant={"contained"} onClick={handleSignup}>
               Sign up
             </Button>
-            <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
-              <Typography variant={"body1"} marginBottom={"2rem"}>
-                Already have an account?
-              </Typography>
-              <Typography component={Link} to="/login" variant={"body1"} marginBottom={"2rem"}>
+            <Box display={"flex"} alignItems={"center"} justifyContent={"center"} m={"1rem"}>
+              <Typography variant={"body1"}>Already have an account?</Typography>
+              <Typography component={Link} to="/login" variant={"body1"}>
                 Click here
               </Typography>
             </Box>
