@@ -4,7 +4,7 @@ import LoginPage from "./components/LoginPage";
 import DifficultySelection from "./components/DifficultySelection";
 import Room from "./components/Room";
 import Navbar from "./components/Navbar";
-import ForgetPassword from "./components/SignupPage";
+import ForgetPassword from "./components/ForgetPasswordPage";
 import ResetPassword from "./components/ResetPasswordPage";
 import { Box } from "@mui/material";
 import { URL_MATCH_SVC } from "./configs";
