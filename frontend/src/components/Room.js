@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
+import { VolumeUp } from "@mui/icons-material";
 
 function Room({ socket }) {
   const [ids, setIds] = useState({
@@ -13,6 +14,7 @@ function Room({ socket }) {
       socketId: "",
     },
   });
+  // eslint-disable-next-line no-unused-vars
   const [roomId, setRoomId] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const navigate = useNavigate();
@@ -43,16 +45,39 @@ function Room({ socket }) {
   };
 
   return (
-    <div className="container">
-      <div>
-        {" "}
-        Welcome {ids.user1.userId} and {ids.user2.userId} to room {roomId}! Your choice of
-        difficulty is {difficultyLevel}
-      </div>
-      <Button variant="outlined" onClick={leaveRoomHandler}>
-        Leave room
-      </Button>
-    </div>
+    <Grid container>
+      <Grid item xs={6}>
+        <Box mr={"1rem"}>
+          <Box display={"flex"} flexDirection={"row"} mb={"1rem"}>
+            <Typography variant={"h4"}>Topic</Typography>
+            <Paper>
+              <Typography variant={"h5"} m={"5px"}>
+                {difficultyLevel}
+              </Typography>
+            </Paper>
+          </Box>
+          <Paper variant="outlined" square>
+            <Typography>Question</Typography>
+          </Paper>
+        </Box>
+      </Grid>
+      <Grid item xs={6}>
+        <Box display={"flex"} flexDirection={"column"}>
+          <TextField multiline />
+          <Box display={"flex"} flexDirection={"row"}>
+            <IconButton>
+              <VolumeUp />
+            </IconButton>
+            <Button variant="outlined" onClick={leaveRoomHandler}>
+              Submit
+            </Button>
+            <Button variant="outlined" onClick={leaveRoomHandler} color="error">
+              Leave room
+            </Button>
+          </Box>
+        </Box>
+      </Grid>
+    </Grid>
   );
 }
 
