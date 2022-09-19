@@ -1,5 +1,6 @@
 import {
   Box,
+  Typography,
   Button,
   Dialog,
   DialogActions,
@@ -7,7 +8,8 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Typography,
+  Grid,
+  Paper,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
@@ -17,6 +19,7 @@ import { Link } from "react-router-dom";
 
 function SignupPage() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
@@ -25,7 +28,7 @@ function SignupPage() {
 
   const handleSignup = async () => {
     setIsSignupSuccess(false);
-    const res = await axios.post(URL_USER_SVC, { username, password }).catch((err) => {
+    const res = await axios.post(URL_USER_SVC, { username, email, password }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         setErrorDialog("ERROR: " + err.response.data.message);
       } else {
@@ -53,48 +56,81 @@ function SignupPage() {
   };
 
   return (
-    <Box display={"flex"} flexDirection={"column"} width={"30%"}>
-      <Typography variant={"h3"} marginBottom={"2rem"}>
-        Sign Up
-      </Typography>
-      <TextField
-        label="Username"
-        variant="standard"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        sx={{ marginBottom: "1rem" }}
-        autoFocus
-      />
-      <TextField
-        label="Password"
-        variant="standard"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        sx={{ marginBottom: "2rem" }}
-      />
-      <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
-        <Button variant={"outlined"} onClick={handleSignup}>
-          Sign up
-        </Button>
-      </Box>
-
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
-        <DialogTitle>{dialogTitle}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{dialogMsg}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          {isSignupSuccess ? (
-            <Button component={Link} to="/login">
-              Log in
+    <Grid container>
+      <Grid item xs={1} />
+      <Grid item xs={10}>
+        <Paper elevation={3}>
+          <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
+            <Typography variant={"h3"} marginBottom={"2rem"}>
+              Sign Up
+            </Typography>
+          </Box>
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            justifyContent={"center"}>
+            <TextField
+              label="Username"
+              variant="filled"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              sx={{ marginBottom: "1rem" }}
+              autoFocus
+            />
+            <TextField
+              label="Email"
+              variant="filled"
+              type="email"
+              value={password}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ marginBottom: "2rem" }}
+            />
+            <TextField
+              label="Password"
+              variant="filled"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ marginBottom: "2rem" }}
+            />
+          </Box>
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+            justifyContent={"center"}>
+            <Button variant={"contained"} onClick={handleSignup}>
+              Sign up
             </Button>
-          ) : (
-            <Button onClick={closeDialog}>Done</Button>
-          )}
-        </DialogActions>
-      </Dialog>
-    </Box>
+            <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
+              <Typography variant={"body1"} marginBottom={"2rem"}>
+                Already have an account?
+              </Typography>
+              <Typography component={Link} to="/login" variant={"body1"} marginBottom={"2rem"}>
+                Click here
+              </Typography>
+            </Box>
+          </Box>
+          <Dialog open={isDialogOpen} onClose={closeDialog}>
+            <DialogTitle>{dialogTitle}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>{dialogMsg}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              {isSignupSuccess ? (
+                <Button component={Link} to="/login">
+                  Log in
+                </Button>
+              ) : (
+                <Button onClick={closeDialog}>Done</Button>
+              )}
+            </DialogActions>
+          </Dialog>
+        </Paper>
+      </Grid>
+      <Grid item xs={1} />
+    </Grid>
   );
 }
 
