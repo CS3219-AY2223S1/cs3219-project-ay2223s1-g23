@@ -15,8 +15,12 @@ export async function createUser(params) {
   return new UserModel(params)
 }
 
+export async function deleteUser(params) {
+  return (await UserModel.deleteOne({username: params}))
+}
+
 export async function existsUser(params) {
-  return (await  UserModel.findOne({username: params}, 'username')) !== null
+  return (await UserModel.findOne({username: params}, 'username')) !== null
 }
 
 export async function getPassword(params) {
