@@ -1,14 +1,9 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
-import sequelize from "./database.js";
-import MatchModel from "./MatchModel.js";
 import { Server } from "socket.io";
 import { initSocketEventHandlers } from "./src/controllers/socketController.js";
-
-// Initialise database
-
-sequelize.sync({ force: true }).then(() => console.log("db is ready"));
+import { createUserDifficulty } from "./src/controllers/match-controller.js";
 
 // Initialize express
 
@@ -39,43 +34,9 @@ app.get("/", (req, res) => {
   res.send("Hello World from matching-service");
 });
 
-app.post("/difficulties", async (req, res) => {
-  await MatchModel.create(req.body);
-  res.status(201).send("user and difficulty are inserted");
-});
-
-app.get("/difficulties", async (req, res) => {
-  const difficulties = await MatchModel.findAll();
-  res.send(difficulties);
-});
-
-app.get("/difficulties/:id", async (req, res) => {
-  const requestedId = req.params.id;
-  const userDifficulty = await MatchModel.findOne({
-    where: { id: requestedId },
-  });
-  res.send(userDifficulty);
-});
-
-app.put("/difficulties/:id", async (req, res) => {
-  try {
-    const requestedId = req.params.id;
-    const userDifficulty = await MatchModel.findOne({
-      where: { id: requestedId },
-    });
-    userDifficulty.difficulty = req.body.difficulty;
-    await userDifficulty.save();
-    res.send("user's difficulty is updated");
-  } catch (e) {
-    console.log("Catch an error: ", e);
-  }
-});
-
-app.delete("/difficulties/:id", async (req, res) => {
-  const requestedId = req.params.id;
-  await MatchModel.destroy({ where: { id: requestedId } });
-  res.send("user's difficulty is removed");
-});
+// app.get("/difficulties", getUserDifficulties);
+app.post("/difficulties", createUserDifficulty);
+// app.get("/difficulties/:id", getUserDifficultyById);
 
 // Configure the port
 

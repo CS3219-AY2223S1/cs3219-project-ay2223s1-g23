@@ -1,4 +1,6 @@
 import MatchModel from "../../MatchModel.js";
+import { ormDeleteUserDifficulty } from "../model/match-orm.js";
+import { updateUserDifficulty } from "../model/repository.js";
 
 // Stores socket.id and user id of a user finding a match.
 // Use queue to handle the case when 2 users join and request at the same time to match with 1 existing user.
@@ -9,19 +11,30 @@ const findingMatchQueue = {
 };
 
 const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
-  // Update matchedUser value of the user in the queue
-  const userDifficulty = await MatchModel.findOne({
-    where: { userId: userIdFromQueue },
-  });
-  userDifficulty.matchedUser = matchedUserId;
-  await userDifficulty.save();
 
-  // Delete the newer user's match model
-  deleteMatchModel(matchedUserId);
+  // const userDifficulty = await MatchModel.findOne({
+  //   where: { userId: userIdFromQueue },
+  // });
+  // userDifficulty.matchedUser = matchedUserId;
+  // await userDifficulty.save();
+
+  try {
+    // Update matchedUser value of the user in the queue
+    await updateUserDifficulty(userIdFromQueue, { matchedUser: matchedUserId });
+
+    // Delete the newer user's match model
+    deleteMatchModel(matchedUserId);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const deleteMatchModel = async (userId) => {
-  await MatchModel.destroy({ where: { userId: userId } });
+  try {
+    await ormDeleteUserDifficulty(userId);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const initSocketEventHandlers = (socket, io) => {
