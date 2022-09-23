@@ -13,6 +13,9 @@ import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC_LOGIN, URL_USER_SVC_USER_INFO } from "../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../constants";
+import { useDispatch } from "react-redux";
+import { update } from "../modules/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [username, setUsername] = useState("");
@@ -20,6 +23,8 @@ function LoginPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogMsg, setDialogMsg] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     const res = await axios.post(URL_USER_SVC_LOGIN, { username, password }).catch((err) => {
@@ -34,6 +39,13 @@ function LoginPage() {
       setSuccessDialog("Account successfully login with JWT:" + token);
       setCookie("token", token, 0.01);
       console.log(document.cookie);
+      dispatch(
+        update({
+          userId: "",
+          username: username,
+        }),
+      );
+      navigate(`/diff`);
     }
   };
 
