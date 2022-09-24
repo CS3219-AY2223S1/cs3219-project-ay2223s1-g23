@@ -10,6 +10,10 @@ import {
   Typography,
   Paper,
   Grid,
+  Container,
+  Table,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
@@ -86,46 +90,44 @@ function LoginPage() {
         </Box>
       </Grid>
       <Grid item xs={5}>
-        <Paper elevation={3}>
+        <Paper elevation={3} sx={{ width: "80%", margin: "auto" }}>
           <Box display={"flex"}>
-            <Typography variant={"h3"} ma={"2rem"}>
+            <Typography variant={"h3"} mt={"2rem"} ml={"6rem"} mb={"1rem"}>
               Login
             </Typography>
           </Box>
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"center"}
-            justifyContent={"center"}>
-            <Box
-              display={"flex"}
-              flexDirection={"row"}
-              alignItems={"center"}
-              justifyContent={"center"}>
-              <Typography>Username</Typography>
-              <TextField
-                variant="filled"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                sx={{ marginBottom: "1rem" }}
-                autoFocus
-              />
-            </Box>
-            <Box
-              display={"flex"}
-              flexDirection={"row"}
-              alignItems={"center"}
-              justifyContent={"center"}>
-              <Typography>Password</Typography>
-              <TextField
-                variant="filled"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                sx={{ marginBottom: "2rem" }}
-              />
-            </Box>
-          </Box>
+          <Container fixed>
+            <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
+              <TableRow>
+                <TableCell sx={{ width: "50%", pl: "5rem" }}>
+                  <Typography variant={"body1"}>Username</Typography>
+                </TableCell>
+                <TableCell sx={{ width: "50%" }}>
+                  <TextField
+                    variant="filled"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    sx={{ marginBottom: "1rem" }}
+                    autoFocus
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{ width: "50%", pl: "5rem" }}>
+                  <Typography variant={"body1"}>Password</Typography>
+                </TableCell>
+                <TableCell sx={{ width: "50%" }}>
+                  <TextField
+                    variant="filled"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    sx={{ marginBottom: "2rem" }}
+                  />
+                </TableCell>
+              </TableRow>
+            </Table>
+          </Container>
           <Box
             display={"flex"}
             flexDirection={"column"}
@@ -136,7 +138,7 @@ function LoginPage() {
             </Button>
             <Box display={"flex"} alignItems={"center"} justifyContent={"center"} margin={"1rem"}>
               <Typography variant={"body1"}> Forgotten Password?</Typography>
-              <Typography component={Link} to="/signup" variant={"body1"}>
+              <Typography component={Link} to="/forget-password" variant={"body1"}>
                 Reset it
               </Typography>
             </Box>
