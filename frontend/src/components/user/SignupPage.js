@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { URL_USER_SVC } from "../configs";
-import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../constants";
+import { URL_USER_SVC } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
 import { Link } from "react-router-dom";
 
 function SignupPage() {
@@ -70,30 +70,48 @@ function SignupPage() {
             flexDirection={"column"}
             alignItems={"center"}
             justifyContent={"center"}>
-            <TextField
-              label="Username"
-              variant="filled"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              sx={{ marginBottom: "1rem" }}
-              autoFocus
-            />
-            <TextField
-              label="Email"
-              variant="filled"
-              type="email"
-              value={password}
-              onChange={(e) => setEmail(e.target.value)}
-              sx={{ marginBottom: "2rem" }}
-            />
-            <TextField
-              label="Password"
-              variant="filled"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              sx={{ marginBottom: "2rem" }}
-            />
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>Username</Typography>
+              <TextField
+                variant="filled"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                sx={{ marginBottom: "1rem" }}
+                autoFocus
+              />
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>Email</Typography>
+              <TextField
+                variant="filled"
+                type="email"
+                value={password}
+                onChange={(e) => setEmail(e.target.value)}
+                sx={{ marginBottom: "2rem" }}
+              />
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>Password</Typography>
+              <TextField
+                variant="filled"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                sx={{ marginBottom: "2rem" }}
+              />
+            </Box>
           </Box>
           <Box
             display={"flex"}

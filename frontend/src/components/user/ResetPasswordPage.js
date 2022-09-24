@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { URL_USER_SVC } from "../configs";
-import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../constants";
+import { URL_USER_SVC } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
 import { Link } from "react-router-dom";
 
 function ResetPasswordPage() {
@@ -69,30 +69,48 @@ function ResetPasswordPage() {
             flexDirection={"column"}
             alignItems={"center"}
             justifyContent={"center"}>
-            <TextField
-              label="Username"
-              variant="filled"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              sx={{ marginBottom: "1rem" }}
-              autoFocus
-            />
-            <TextField
-              label="New Password"
-              variant="filled"
-              type="email"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              sx={{ marginBottom: "2rem" }}
-            />
-            <TextField
-              label="Confirm New Password"
-              variant="filled"
-              type="confirm password"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-              sx={{ marginBottom: "2rem" }}
-            />
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>Username</Typography>
+              <TextField
+                variant="filled"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                sx={{ marginBottom: "1rem" }}
+                autoFocus
+              />
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>New Password</Typography>
+              <TextField
+                variant="filled"
+                type="email"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                sx={{ marginBottom: "2rem" }}
+              />
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>Confirm New Password</Typography>
+              <TextField
+                variant="filled"
+                type="confirm password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                sx={{ marginBottom: "2rem" }}
+              />
+            </Box>
           </Box>
           <Box
             display={"flex"}

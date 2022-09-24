@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
-import { VolumeUp } from "@mui/icons-material";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 
-function Room({ socket }) {
+function RoomPage({ socket }) {
   const [ids, setIds] = useState({
     user1: {
       userId: "",
@@ -66,9 +66,9 @@ function Room({ socket }) {
           <TextField multiline />
           <Box display={"flex"} flexDirection={"row"}>
             <IconButton>
-              <VolumeUp />
+              <VolumeUpIcon />
             </IconButton>
-            <Button variant="outlined" onClick={leaveRoomHandler}>
+            <Button variant="contained" onClick={leaveRoomHandler} color="secondary">
               Submit
             </Button>
             <Button variant="outlined" onClick={leaveRoomHandler} color="error">
@@ -81,4 +81,4 @@ function Room({ socket }) {
   );
 }
 
-export default Room;
+export default RoomPage;

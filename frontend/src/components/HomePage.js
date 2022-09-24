@@ -4,7 +4,7 @@ import axios from "axios";
 import { URL_INSERT_DIFFICULTY } from "../configs";
 import { STATUS_CODE_CREATED } from "../constants";
 import { useNavigate } from "react-router-dom";
-import MatchingDialog from "./MatchingDialog";
+import MatchingDialog from "./matching/MatchingDialog";
 import { useSelector } from "react-redux";
 
 export const MatchStatus = {
@@ -14,7 +14,7 @@ export const MatchStatus = {
   MATH_FAILED: "MATCH_FAILED",
 };
 
-function DifficultySelection({ socket }) {
+function HomePage({ socket }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const username = useSelector((state) => state.user.username);
   // eslint-disable-next-line no-unused-vars
@@ -108,27 +108,27 @@ function DifficultySelection({ socket }) {
           flexDirection={"column"}
           alignItems={"center"}
           justifyContent={"center"}>
-          <Button variant="contained" onClick={handleDifficulty("easy")}>
+          <Button variant="contained" onClick={handleDifficulty("easy")} color={"secondary"}>
             Easy
           </Button>
-          <Button variant="outlined" onClick={handleDifficulty("medium")}>
+          <Button variant="outlined" onClick={handleDifficulty("medium")} color={"secondary"}>
             Medium
           </Button>
-          <Button variant="contained" onClick={handleDifficulty("hard")}>
+          <Button variant="contained" onClick={handleDifficulty("hard")} color={"secondary"}>
             Hard
           </Button>
+          <MatchingDialog
+            initSeconds={30}
+            isOpen={isMatchingDialogOpen}
+            handleClose={stopFindingMatch}
+            matchStatus={matchStatus}
+            failedFindingMatch={failedFindingMatch}
+          />
         </Box>
-        <MatchingDialog
-          initSeconds={30}
-          isOpen={isMatchingDialogOpen}
-          handleClose={stopFindingMatch}
-          matchStatus={matchStatus}
-          failedFindingMatch={failedFindingMatch}
-        />
       </Grid>
       <Grid item xs={1} />
     </Grid>
   );
 }
 
-export default DifficultySelection;
+export default HomePage;

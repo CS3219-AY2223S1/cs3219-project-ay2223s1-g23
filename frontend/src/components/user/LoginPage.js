@@ -8,15 +8,15 @@ import {
   DialogTitle,
   TextField,
   Typography,
-  Grid,
   Paper,
+  Grid,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { URL_USER_SVC_LOGIN } from "../configs";
-import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../constants";
+import { URL_USER_SVC_LOGIN } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { useDispatch } from "react-redux";
-import { update } from "../modules/user/userSlice";
+import { update } from "../../modules/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -97,22 +97,34 @@ function LoginPage() {
             flexDirection={"column"}
             alignItems={"center"}
             justifyContent={"center"}>
-            <TextField
-              label="Username"
-              variant="filled"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              sx={{ marginBottom: "1rem" }}
-              autoFocus
-            />
-            <TextField
-              label="Password"
-              variant="filled"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              sx={{ marginBottom: "2rem" }}
-            />
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>Username</Typography>
+              <TextField
+                variant="filled"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                sx={{ marginBottom: "1rem" }}
+                autoFocus
+              />
+            </Box>
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              justifyContent={"center"}>
+              <Typography>Password</Typography>
+              <TextField
+                variant="filled"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                sx={{ marginBottom: "2rem" }}
+              />
+            </Box>
           </Box>
           <Box
             display={"flex"}

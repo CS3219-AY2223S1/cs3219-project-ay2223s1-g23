@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { URL_USER_SVC } from "../configs";
-import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../constants";
+import { URL_USER_SVC } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
 
 function ResetPasswordPage() {
   const [username, setUsername] = useState("");
@@ -61,11 +61,11 @@ function ResetPasswordPage() {
         <Paper elevation={3}>
           <Box
             display={"flex"}
-            flexDirection={"column"}
+            flexDirection={"row"}
             alignItems={"center"}
             justifyContent={"center"}>
+            <Typography>Username</Typography>
             <TextField
-              label="Username"
               variant="filled"
               value={username}
               onChange={(e) => setUsername(e.target.value)}

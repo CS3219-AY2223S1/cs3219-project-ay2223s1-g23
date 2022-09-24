@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
-import { MatchStatus } from "./DifficultySelection";
+import { MatchStatus } from "../HomePage";
 
 function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedFindingMatch }) {
   const [seconds, setSeconds] = useState(initSeconds);
