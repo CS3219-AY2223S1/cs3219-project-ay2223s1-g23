@@ -22,7 +22,7 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`User connected with ID: ${socket.id}`);
+  console.log(`User connected with socket ID: ${socket.id}`);
   initSocketEventHandlers(socket, io);
 });
 

@@ -23,10 +23,10 @@ export async function ormDeleteUserDifficulty(userId) {
         return false;
     }
     try {
-        await deleteUserDifficulty(username);
+        await deleteUserDifficulty(userId);
         return true;
     } catch (err) {
-        console.log("ERROR: Could not delete user");
+        console.log(`ERROR: ${err}`);
         return { err };
     }
 }
