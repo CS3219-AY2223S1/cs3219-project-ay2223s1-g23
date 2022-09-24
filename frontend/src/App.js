@@ -8,7 +8,7 @@ import HomePage from "./components/HomePage";
 import RoomPage from "./components/matching/RoomPage";
 import ForgetPassword from "./components/user/ForgetPasswordPage";
 import ResetPassword from "./components/user/ResetPasswordPage";
-import Navbar from "./components/util/Navbar";
+import Navbar from "./components/layout/Navbar";
 
 import { Box } from "@mui/material";
 
