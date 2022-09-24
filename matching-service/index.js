@@ -5,8 +5,6 @@ import { Server } from "socket.io";
 import { initSocketEventHandlers } from "./src/controllers/socketController.js";
 import { createUserDifficulty } from "./src/controllers/match-controller.js";
 
-// Initialize express
-
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // middleware
@@ -33,12 +31,7 @@ io.on("connection", (socket) => {
 app.get("/", (req, res) => {
   res.send("Hello World from matching-service");
 });
-
-// app.get("/difficulties", getUserDifficulties);
 app.post("/difficulties", createUserDifficulty);
-// app.get("/difficulties/:id", getUserDifficultyById);
-
-// Configure the port
 
 httpServer.listen(8001, () => {
   console.log("server listening on port 8001");

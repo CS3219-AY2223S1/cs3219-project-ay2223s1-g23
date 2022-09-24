@@ -21,16 +21,3 @@ export async function createUserDifficulty(req, res) {
         return res.status(500).json({ message: `${err}` })
     }
 }
-
-// export async function getAllUserDifficulties(req, res) {
-//     const difficulties = await MatchModel.find({});
-//     res.send(difficulties);
-// }
-
-// export async function getUserDifficultyById(req, res) {
-//     const requestedId = req.params.id;
-//     const userDifficulty = await MatchModel.findOne({
-//         where: { id: requestedId },
-//     });
-//     res.send(userDifficulty);
-// }

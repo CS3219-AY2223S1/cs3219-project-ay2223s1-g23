@@ -1,4 +1,3 @@
-import MatchModel from "../../MatchModel.js";
 import { ormDeleteUserDifficulty } from "../model/match-orm.js";
 import { updateUserDifficulty } from "../model/repository.js";
 
@@ -11,13 +10,6 @@ const findingMatchQueue = {
 };
 
 const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
-
-  // const userDifficulty = await MatchModel.findOne({
-  //   where: { userId: userIdFromQueue },
-  // });
-  // userDifficulty.matchedUser = matchedUserId;
-  // await userDifficulty.save();
-
   try {
     // Update matchedUser value of the user in the queue
     await updateUserDifficulty(userIdFromQueue, { matchedUser: matchedUserId });
