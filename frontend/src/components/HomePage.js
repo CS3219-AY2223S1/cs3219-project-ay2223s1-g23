@@ -108,13 +108,25 @@ function HomePage({ socket }) {
           flexDirection={"column"}
           alignItems={"center"}
           justifyContent={"center"}>
-          <Button variant="contained" onClick={handleDifficulty("easy")} color={"secondary"}>
+          <Button
+            variant="contained"
+            onClick={handleDifficulty("easy")}
+            color={"secondary"}
+            sx={{ padding: "1rem 8rem 1rem 8rem", margin: "1rem" }}>
             Easy
           </Button>
-          <Button variant="outlined" onClick={handleDifficulty("medium")} color={"secondary"}>
+          <Button
+            variant="outlined"
+            onClick={handleDifficulty("medium")}
+            color={"secondary"}
+            sx={{ padding: "1rem 7rem 1rem 7rem", margin: "1rem" }}>
             Medium
           </Button>
-          <Button variant="contained" onClick={handleDifficulty("hard")} color={"secondary"}>
+          <Button
+            variant="contained"
+            onClick={handleDifficulty("hard")}
+            color={"secondary"}
+            sx={{ padding: "1rem 8rem 1rem 8rem", margin: "1rem" }}>
             Hard
           </Button>
           <MatchingDialog

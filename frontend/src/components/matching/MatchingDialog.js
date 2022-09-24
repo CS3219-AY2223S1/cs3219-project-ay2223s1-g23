@@ -77,9 +77,11 @@ function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedF
         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           {description} Timer: {seconds} seconds
         </Typography>
-        <Button variant="outlined" color="error" onClick={handleClose}>
-          Cancel
-        </Button>
+        <Box display="flex" justifyContent="flex-end">
+          <Button variant="outlined" color="error" onClick={handleClose}>
+            Cancel
+          </Button>
+        </Box>
       </Box>
     </Modal>
   );

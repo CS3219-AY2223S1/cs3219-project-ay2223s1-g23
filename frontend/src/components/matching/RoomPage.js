@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
-import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import CallIcon from "@mui/icons-material/Call";
 
 function RoomPage({ socket }) {
   const [ids, setIds] = useState({
@@ -49,31 +49,51 @@ function RoomPage({ socket }) {
       <Grid item xs={6}>
         <Box mr={"1rem"}>
           <Box display={"flex"} flexDirection={"row"} mb={"1rem"}>
-            <Typography variant={"h4"}>Topic</Typography>
-            <Paper>
-              <Typography variant={"h5"} m={"5px"}>
-                {difficultyLevel}
-              </Typography>
-            </Paper>
+            <Grid container>
+              <Grid item xs={10}>
+                <Typography variant={"h4"}>Topic</Typography>
+              </Grid>
+              <Grid item xs={2} display="flex" justifyContent="flex-end">
+                <Paper varient={6}>
+                  <Typography variant={"h5"} m={"5px"}>
+                    {difficultyLevel}
+                  </Typography>
+                </Paper>
+              </Grid>
+            </Grid>
           </Box>
           <Paper variant="outlined" square>
-            <Typography>Question</Typography>
+            <Typography sx={{ height: "40rem" }}>Question</Typography>
           </Paper>
         </Box>
       </Grid>
       <Grid item xs={6}>
         <Box display={"flex"} flexDirection={"column"}>
-          <TextField multiline />
+          <TextField multiline rows={27} />
           <Box display={"flex"} flexDirection={"row"}>
-            <IconButton>
-              <VolumeUpIcon />
-            </IconButton>
-            <Button variant="contained" onClick={leaveRoomHandler} color="secondary">
-              Submit
-            </Button>
-            <Button variant="outlined" onClick={leaveRoomHandler} color="error">
-              Leave room
-            </Button>
+            <Grid container>
+              <Grid item xs={1}>
+                <IconButton>
+                  <CallIcon />
+                </IconButton>
+              </Grid>
+              <Grid item xs={11} display={"flex"} justifyContent="flex-end">
+                <Button
+                  variant="contained"
+                  onClick={leaveRoomHandler}
+                  color="secondary"
+                  sx={{ margin: 1 }}>
+                  Submit
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={leaveRoomHandler}
+                  color="error"
+                  sx={{ margin: 1 }}>
+                  Leave room
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
         </Box>
       </Grid>
