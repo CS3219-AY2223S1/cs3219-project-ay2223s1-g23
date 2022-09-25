@@ -92,7 +92,7 @@ function LoginPage() {
       <Grid item xs={5}>
         <Paper elevation={3} sx={{ width: "80%", margin: "auto" }}>
           <Box display={"flex"}>
-            <Typography variant={"h3"} mt={"2rem"} ml={"6rem"} mb={"1rem"}>
+            <Typography variant={"h3"} mt={"2rem"} ml={"4rem"} mb={"1rem"}>
               Login
             </Typography>
           </Box>
