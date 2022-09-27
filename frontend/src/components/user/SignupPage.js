@@ -93,7 +93,7 @@ function SignupPage() {
                   <TextField
                     variant="filled"
                     type="email"
-                    value={password}
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     sx={{ marginBottom: "2rem" }}
                   />
