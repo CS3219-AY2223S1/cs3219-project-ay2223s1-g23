@@ -8,6 +8,7 @@ import {
   Button,
   Grid,
   Stack,
+  Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -15,34 +16,27 @@ import { useState } from "react";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    setOpen(true);
   };
   const handleClose = () => {
     setAnchorEl(null);
+    setOpen(false);
   };
-  const open = Boolean(anchorEl);
-
-  return (
-    <AppBar position="static">
-      <Toolbar>
-        <Grid container>
-          <Grid item xs={11}>
-            <Typography variant="h5" components="div">
-              PeerPreasure
-            </Typography>
-          </Grid>
-          <Grid item xs={1} display="flex" justifyContent="flex-end">
-            <IconButton
-              id="account-button"
-              onClick={handleClick}
-              aria-controls={open ? "account" : undefined}
-              aria-expanded={open ? "true" : undefined}
-              aria-haspopup="true">
-              <MenuIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
+  const renderMenu = () => {
+    return (
+      <Box>
+        <IconButton
+          id="account-button"
+          onClick={handleClick}
+          aria-controls={open ? "account" : undefined}
+          aria-expanded={open ? "true" : undefined}
+          aria-haspopup="true">
+          <MenuIcon />
+        </IconButton>
         <Menu
           id="account"
           MenuListProps={{
@@ -81,6 +75,23 @@ export default function Navbar() {
             </Button>
           </MenuItem>
         </Menu>
+      </Box>
+    );
+  };
+
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Grid container>
+          <Grid item xs={11}>
+            <Typography variant="h5" components="div">
+              PeerPreasure
+            </Typography>
+          </Grid>
+          <Grid item xs={1} display="flex" justifyContent="flex-end">
+            {renderMenu()}
+          </Grid>
+        </Grid>
       </Toolbar>
     </AppBar>
   );
