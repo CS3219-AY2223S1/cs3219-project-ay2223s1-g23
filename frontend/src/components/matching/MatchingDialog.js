@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, Button } from "@mui/material";
-import { MatchStatus } from "./DifficultySelection";
+import { MatchStatus } from "../HomePage";
 
 function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedFindingMatch }) {
   const [seconds, setSeconds] = useState(initSeconds);
@@ -77,9 +77,11 @@ function MatchingDialog({ initSeconds, isOpen, handleClose, matchStatus, failedF
         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           {description} Timer: {seconds} seconds
         </Typography>
-        <Button variant="outlined" onClick={handleClose}>
-          Cancel
-        </Button>
+        <Box display="flex" justifyContent="flex-end">
+          <Button variant="outlined" color="error" onClick={handleClose}>
+            Cancel
+          </Button>
+        </Box>
       </Box>
     </Modal>
   );
