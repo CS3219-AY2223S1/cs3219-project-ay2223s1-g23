@@ -2,7 +2,7 @@ import { createMatchModel, deleteMatchModel } from './repository.js';
 import "dotenv/config";
 
 //need to separate orm functions from repository to decouple business logic from persistence
-export async function ormCreateUserDifficulty(userId, difficulty) {
+export async function createOneMatchModel(userId, difficulty) {
     try {
         const newDiff = await createMatchModel({
             userId: userId,
@@ -13,12 +13,12 @@ export async function ormCreateUserDifficulty(userId, difficulty) {
         return true;
 
     } catch (err) {
-        console.log('ERROR: Could not create new user difficulty');
+        console.log('ERROR: Could not create match model');
         return { err };
     }
 }
 
-export async function ormDeleteUserDifficulty(userId) {
+export async function deleteOneMatchModel(userId) {
     try {
         var doc = await deleteMatchModel(userId);
         if (!doc) {

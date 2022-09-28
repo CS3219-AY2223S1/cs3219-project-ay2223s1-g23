@@ -1,15 +1,15 @@
 import {
-    ormCreateUserDifficulty as _createUserDifficulty,
+    createOneMatchModel as _createOneMatchModel,
 } from '../model/match-orm.js'
 
-export async function createUserDifficulty(req, res) {
+export async function createMatch(req, res) {
     try {
         const { userId, difficulty } = req.body;
         if (userId && difficulty) {
-            const resp = await _createUserDifficulty(userId, difficulty);
+            const resp = await _createOneMatchModel(userId, difficulty);
             console.log(resp);
             if (resp.err) {
-                return res.status(400).json({ message: 'Could not create a new user difficulty!' });
+                return res.status(400).json({ message: 'Could not create a match!' });
             } else {
                 console.log(`Created new user id ${userId} with difficulty ${difficulty} successfully!`)
                 return res.status(201).json({ message: `Created new user id ${userId} with difficulty ${difficulty} successfully!` });

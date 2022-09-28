@@ -1,4 +1,4 @@
-import { ormDeleteUserDifficulty } from "../model/match-orm.js";
+import { deleteOneMatchModel } from "../model/match-orm.js";
 import { updateMatchModel } from "../model/repository.js";
 
 // Stores socket.id and user id of a user finding a match.
@@ -23,7 +23,7 @@ const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
 
 const deleteMatchModel = async (userId) => {
   try {
-    await ormDeleteUserDifficulty(userId);
+    await deleteOneMatchModel(userId);
   } catch (err) {
     console.log(err);
   }

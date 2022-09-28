@@ -3,7 +3,7 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { initSocketEventHandlers } from "./src/controllers/socketController.js";
-import { createUserDifficulty } from "./src/controllers/match-controller.js";
+import { createMatch } from "./src/controllers/match-controller.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +31,7 @@ io.on("connection", (socket) => {
 app.get("/", (req, res) => {
   res.send("Hello World from matching-service");
 });
-app.post("/difficulties", createUserDifficulty);
+app.post("/difficulties", createMatch);
 
 httpServer.listen(8001, () => {
   console.log("server listening on port 8001");
