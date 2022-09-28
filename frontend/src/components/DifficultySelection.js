@@ -23,14 +23,16 @@ function DifficultySelection({ socket }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    socket.on("match_success", (data) => {
+    const matchSuccessEventHandler = (data) => {
       successFindingMatch();
       const roomId = data.roomId;
       navigate(`/room/${roomId}`);
       socket.emit("join_room", roomId);
       socket.emit("prep_room", data);
-    });
-    return () => socket.off("match_success");
+    };
+
+    socket.on("match_success", matchSuccessEventHandler);
+    return () => socket.off("match_success", matchSuccessEventHandler);
   }, [socket]);
 
   const startFindingMatch = () => {

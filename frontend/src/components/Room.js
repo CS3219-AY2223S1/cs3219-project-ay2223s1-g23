@@ -18,8 +18,11 @@ function Room({ socket }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    socket.on("welcome_room", (data) => {
+    const welcomeRoomEventHandler = (data) => {
       const { userId1, userId2, socketId1, socketId2, roomId, difficulty } = data;
+      console.log(
+        "[welcome_room socket event emitted] userIds are " + userId1 + ", and " + userId2,
+      );
       setIds({
         user1: {
           userId: userId1,
@@ -33,8 +36,9 @@ function Room({ socket }) {
       });
       setRoomId(roomId);
       setDifficultyLevel(difficulty);
-    });
-    return () => socket.off("welcome_room");
+    };
+    socket.on("welcome_room", welcomeRoomEventHandler);
+    return () => socket.off("welcome_room", welcomeRoomEventHandler);
   }, [socket]);
 
   const leaveRoomHandler = () => {
