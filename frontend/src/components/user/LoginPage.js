@@ -24,6 +24,17 @@ import { update } from "../../modules/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+const col1Style = {
+  width: "50%",
+  pl: "5rem",
+};
+const col2Style = {
+  width: "50%",
+};
+const textfieldStyle = {
+  marginBottom: "1rem",
+};
+
 function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -99,30 +110,30 @@ function LoginPage() {
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
               <TableRow>
-                <TableCell sx={{ width: "50%", pl: "5rem" }}>
+                <TableCell sx={col1Style}>
                   <Typography variant={"body1"}>Username</Typography>
                 </TableCell>
-                <TableCell sx={{ width: "50%" }}>
+                <TableCell sx={col2Style}>
                   <TextField
                     variant="filled"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    sx={{ marginBottom: "1rem" }}
+                    sx={textfieldStyle}
                     autoFocus
                   />
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ width: "50%", pl: "5rem" }}>
+                <TableCell sx={col1Style}>
                   <Typography variant={"body1"}>Password</Typography>
                 </TableCell>
-                <TableCell sx={{ width: "50%" }}>
+                <TableCell sx={col2Style}>
                   <TextField
                     variant="filled"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    sx={{ marginBottom: "2rem" }}
+                    sx={textfieldStyle}
                   />
                 </TableCell>
               </TableRow>

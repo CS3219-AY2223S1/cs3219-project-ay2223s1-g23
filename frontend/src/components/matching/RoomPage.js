@@ -14,6 +14,7 @@ function RoomPage({ socket }) {
       socketId: "",
     },
   });
+  const [answer, setAnswer] = useState("");
   // eslint-disable-next-line no-unused-vars
   const [roomId, setRoomId] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("");
@@ -39,9 +40,12 @@ function RoomPage({ socket }) {
     return () => socket.off("welcome_room");
   }, [socket]);
 
-  const leaveRoomHandler = () => {
+  const handleLeaveRoom = () => {
     socket.emit("leave_room", ids.user2.userId);
     navigate(`/diff`);
+  };
+  const handleReset = () => {
+    setAnswer("");
   };
 
   return (
@@ -69,7 +73,23 @@ function RoomPage({ socket }) {
       </Grid>
       <Grid item xs={6}>
         <Box display={"flex"} flexDirection={"column"}>
-          <TextField multiline rows={27} />
+          <Grid container>
+            <Grid item xs={1} />
+            <Grid item xs={11} display={"flex"} justifyContent="flex-end">
+              <Button variant="contained" color="secondary" sx={{ margin: 1 }}>
+                Change Question
+              </Button>
+              <Button variant="contained" onClick={handleReset} color="error" sx={{ margin: 1 }}>
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+          <TextField
+            multiline
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            rows={25}
+          />
           <Box display={"flex"} flexDirection={"row"}>
             <Grid container>
               <Grid item xs={1}>
@@ -79,15 +99,8 @@ function RoomPage({ socket }) {
               </Grid>
               <Grid item xs={11} display={"flex"} justifyContent="flex-end">
                 <Button
-                  variant="contained"
-                  onClick={leaveRoomHandler}
-                  color="secondary"
-                  sx={{ margin: 1 }}>
-                  Submit
-                </Button>
-                <Button
                   variant="outlined"
-                  onClick={leaveRoomHandler}
+                  onClick={handleLeaveRoom}
                   color="error"
                   sx={{ margin: 1 }}>
                   Leave room

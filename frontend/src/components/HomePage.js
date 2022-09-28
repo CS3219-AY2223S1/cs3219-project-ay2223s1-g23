@@ -14,6 +14,11 @@ export const MatchStatus = {
   MATH_FAILED: "MATCH_FAILED",
 };
 
+const difficultyStyle = {
+  padding: "1rem 8rem 1rem 8rem",
+  margin: "1rem",
+};
+
 function HomePage({ socket }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const username = useSelector((state) => state.user.username);
@@ -112,21 +117,21 @@ function HomePage({ socket }) {
             variant="contained"
             onClick={handleDifficulty("easy")}
             color={"secondary"}
-            sx={{ padding: "1rem 8rem 1rem 8rem", margin: "1rem" }}>
+            sx={difficultyStyle}>
             Easy
           </Button>
           <Button
             variant="outlined"
             onClick={handleDifficulty("medium")}
             color={"secondary"}
-            sx={{ padding: "1rem 7rem 1rem 7rem", margin: "1rem" }}>
+            sx={difficultyStyle}>
             Medium
           </Button>
           <Button
             variant="contained"
             onClick={handleDifficulty("hard")}
             color={"secondary"}
-            sx={{ padding: "1rem 8rem 1rem 8rem", margin: "1rem" }}>
+            sx={difficultyStyle}>
             Hard
           </Button>
           <MatchingDialog
