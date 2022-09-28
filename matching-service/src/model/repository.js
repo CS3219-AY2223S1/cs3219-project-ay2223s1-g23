@@ -12,18 +12,18 @@ mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-export async function createUserDifficulty(params) {
+export async function createMatchModel(params) {
     return new MatchModel(params)
 }
 
-export async function deleteUserDifficulty(params) {
+export async function deleteMatchModel(params) {
     return (await MatchModel.findOneAndRemove({ userId: params }))
 }
 
-export async function existsUserDifficulty(params) {
+export async function existsMatchModel(params) {
     return (await MatchModel.findOne({ userId: params }, 'userId')) !== null
 }
 
-export async function updateUserDifficulty(params, updateParams) {
+export async function updateMatchModel(params, updateParams) {
     return await MatchModel.findOneAndUpdate({ userId: params }, updateParams)
 }

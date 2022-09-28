@@ -1,10 +1,10 @@
-import { createUserDifficulty, deleteUserDifficulty, existsUserDifficulty } from './repository.js';
+import { createMatchModel, deleteMatchModel } from './repository.js';
 import "dotenv/config";
 
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function ormCreateUserDifficulty(userId, difficulty) {
     try {
-        const newDiff = await createUserDifficulty({
+        const newDiff = await createMatchModel({
             userId: userId,
             difficulty: difficulty,
             matchedUser: null,
@@ -20,7 +20,7 @@ export async function ormCreateUserDifficulty(userId, difficulty) {
 
 export async function ormDeleteUserDifficulty(userId) {
     try {
-        var doc = await deleteUserDifficulty(userId);
+        var doc = await deleteMatchModel(userId);
         if (!doc) {
             return false;
         } else {

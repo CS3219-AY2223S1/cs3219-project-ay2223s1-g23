@@ -1,5 +1,5 @@
 import { ormDeleteUserDifficulty } from "../model/match-orm.js";
-import { updateUserDifficulty } from "../model/repository.js";
+import { updateMatchModel } from "../model/repository.js";
 
 // Stores socket.id and user id of a user finding a match.
 // Use queue to handle the case when 2 users join and request at the same time to match with 1 existing user.
@@ -12,7 +12,7 @@ const findingMatchQueue = {
 const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
   try {
     // Update matchedUser value of the user in the queue
-    await updateUserDifficulty(userIdFromQueue, { matchedUser: matchedUserId });
+    await updateMatchModel(userIdFromQueue, { matchedUser: matchedUserId });
 
     // Delete the newer user's match model
     deleteMatchModel(matchedUserId);
