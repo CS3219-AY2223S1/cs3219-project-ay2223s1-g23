@@ -19,12 +19,13 @@ export async function ormCreateUserDifficulty(userId, difficulty) {
 }
 
 export async function ormDeleteUserDifficulty(userId) {
-    if (!await existsUserDifficulty(userId)) {
-        return false;
-    }
     try {
-        await deleteUserDifficulty(userId);
-        return true;
+        var doc = await deleteUserDifficulty(userId);
+        if (!doc) {
+            return false;
+        } else {
+            return true;
+        }
     } catch (err) {
         console.log(`ERROR: ${err}`);
         return { err };

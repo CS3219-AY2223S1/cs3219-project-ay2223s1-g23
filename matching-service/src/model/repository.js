@@ -17,7 +17,7 @@ export async function createUserDifficulty(params) {
 }
 
 export async function deleteUserDifficulty(params) {
-    return (await MatchModel.deleteOne({ userId: params }))
+    return (await MatchModel.findOneAndRemove({ userId: params }))
 }
 
 export async function existsUserDifficulty(params) {
