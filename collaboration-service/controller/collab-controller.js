@@ -7,15 +7,15 @@ import {
 
 export async function createCollab(req, res) {
   try {
-    const { user1, user2, roomId, text } = req.body;
+    const { user1, user2, roomId, difficulty, text } = req.body;
     if (user1 && user2 && roomId) {
       const resp = await createOneCollab({
         user1,
         user2,
         roomId,
+        difficulty,
         text,
       });
-      console.log(resp);
       if (resp.err) {
         return res
           .status(400)
@@ -38,6 +38,7 @@ export async function createCollab(req, res) {
         .json({ message: "User IDs and/or room ID are missing!" });
     }
   } catch (err) {
+    console.log("ERROR " + err);
     return res
       .status(500)
       .json({ message: "Database failure when creating new collab!" });
@@ -47,6 +48,13 @@ export async function createCollab(req, res) {
 export async function deleteCollab(req, res) {
   try {
     const { roomId } = req.params;
+    const existingCollab = await getOneCollab(roomId);
+    if (!existingCollab) {
+      return res.status(200).json({
+        message: `Collab ${roomId} already deleted!`,
+        data: existingCollab,
+      });
+    }
     const resp = deleteOneCollab(roomId);
     if (resp.err) {
       return res.status(400).json({ message: "Could not delete the collab" });

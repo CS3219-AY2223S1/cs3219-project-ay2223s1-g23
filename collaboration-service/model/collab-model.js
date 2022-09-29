@@ -17,6 +17,10 @@ let CollabModelSchema = new Schema(
       required: true,
       unique: true,
     },
+    difficulty: {
+      type: String,
+      required: true,
+    },
     text: {
       type: String,
     },

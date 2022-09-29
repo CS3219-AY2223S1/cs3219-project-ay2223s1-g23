@@ -25,4 +25,6 @@ app.put("/collab", updateCollab);
 //     res.setHeader('Access-Control-Allow-Origin', '*')
 // })
 
-app.listen(8002, () => console.log("user-service listening on port 8002"));
+app.listen(8002, () =>
+  console.log("collaboration-service listening on port 8002"),
+);

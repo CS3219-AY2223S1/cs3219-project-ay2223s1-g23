@@ -15,7 +15,11 @@ let db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 export async function createCollab(params) {
-  return new CollabModel(params);
+  return await CollabModel.findOneAndUpdate({ roomId: params.roomId }, params, {
+    // if exist update else create
+    upsert: true,
+    new: true,
+  });
 }
 
 export async function deleteCollab(params) {

@@ -8,7 +8,13 @@ import {
 import "dotenv/config";
 
 //need to separate orm functions from repository to decouple business logic from persistence
-export async function createOneCollab({ user1, user2, roomId, text }) {
+export async function createOneCollab({
+  user1,
+  user2,
+  roomId,
+  difficulty,
+  text,
+}) {
   try {
     if (await existsCollab({ user1, user2 })) {
       return false;
@@ -17,6 +23,7 @@ export async function createOneCollab({ user1, user2, roomId, text }) {
         user1,
         user2,
         roomId,
+        difficulty,
         text: text ?? "",
       });
       newCollab.save();
