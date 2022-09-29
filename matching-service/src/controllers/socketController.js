@@ -57,12 +57,8 @@ export const initSocketEventHandlers = (socket, io) => {
     }
   });
 
-  socket.on("join_room", (data) => {
-    socket.join(data);
-  });
-
-  socket.on("prep_room", (data) => {
-    io.to(data.roomId).emit("welcome_room", data);
+  socket.on("join_room", async (data) => {
+    await socket.join(data);
   });
 
   socket.on("stop_find_match", (data) => {
@@ -75,6 +71,10 @@ export const initSocketEventHandlers = (socket, io) => {
 
   socket.on("leave_room", (userId) => {
     deleteMatchModel(userId);
+  });
+
+  socket.on("send-changes", (data) => {
+    io.in(data.roomId).emit("receive-changes", data);
   });
 
   socket.on("connect_error", function (err) {

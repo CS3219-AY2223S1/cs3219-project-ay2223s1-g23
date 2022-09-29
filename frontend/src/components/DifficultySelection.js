@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { URL_INSERT_DIFFICULTY } from "../configs";
+import { URL_INSERT_DIFFICULTY, URL_COLLAB } from "../configs";
 import { STATUS_CODE_CREATED } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./MatchingDialog";
 import { useSelector } from "react-redux";
+import { STATUS_CODE_BAD_REQUEST } from "../constants";
 
 export const MatchStatus = {
   NOT_MATCHING: "NOT_MATCHING",
@@ -16,22 +17,40 @@ export const MatchStatus = {
 function DifficultySelection({ socket }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const username = useSelector((state) => state.user.username);
-  // eslint-disable-next-line no-unused-vars
   const [userId, setUserId] = useState(username);
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    socket.on("match_success", (data) => {
+    const matchSuccessEventHandler = (data) => {
       successFindingMatch();
       const roomId = data.roomId;
-      navigate(`/room/${roomId}`);
       socket.emit("join_room", roomId);
-      socket.emit("prep_room", data);
-    });
-    return () => socket.off("match_success");
+      handleCollabRoom(data);
+    };
+    socket.on("match_success", matchSuccessEventHandler);
+    return () => socket.off("match_success", matchSuccessEventHandler);
   }, [socket]);
+
+  const handleCollabRoom = async (data) => {
+    await createCollaboration(data);
+    const roomId = data.roomId;
+    navigate(`/room/${roomId}`, { state: roomId });
+  };
+
+  const createCollaboration = async (data) => {
+    const { userId1, userId2, socketId1, socketId2, roomId, difficulty } = data;
+    await axios
+      .post(URL_COLLAB, { user1: userId1, user2: userId2, roomId, difficulty })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+  };
 
   const startFindingMatch = () => {
     setMatchStatus(MatchStatus.MATCHING);
