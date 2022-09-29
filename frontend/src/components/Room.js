@@ -102,7 +102,7 @@ function Room({ socket }) {
 
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
     if (source !== "user") return; // tracking only user changes
-    const text = editor.getText(content);
+    const text = editor.getText();
     socket.emit("send-changes", { roomId: roomId, text: text });
   };
 
@@ -117,6 +117,7 @@ function Room({ socket }) {
         Leave room
       </Button>
       <ReactQuill
+        preserveWhitespace
         value={value}
         modules={modules}
         theme="snow"
