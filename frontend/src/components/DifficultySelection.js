@@ -85,8 +85,8 @@ function DifficultySelection({ socket }) {
         userId: userId,
         difficulty: selectedDifficulty,
       })
-      .catch(() => {
-        console.log("Please try again later");
+      .catch((err) => {
+        console.log(`error in post: ${err}`);
       });
     if (res && res.status === STATUS_CODE_CREATED) {
       console.log("Difficulty successfully inserted");
