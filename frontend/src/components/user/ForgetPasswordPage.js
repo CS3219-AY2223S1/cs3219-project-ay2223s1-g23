@@ -17,24 +17,28 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { URL_USER_SVC } from "../../configs";
-import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
+import { URL_USER_SVC_FORGET_PASSWORD } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
+import { Link } from "react-router-dom";
 
 function ResetPasswordPage() {
   const [username, setUsername] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogMsg, setDialogMsg] = useState("");
+  const [isSuccessDialog, setIsSuccessDialog] = useState(false);
 
   const handleResetPassword = async () => {
-    const res = await axios.post(URL_USER_SVC, { username }).catch((err) => {
+    const res = await axios.post(URL_USER_SVC_FORGET_PASSWORD, { username }).catch((err) => {
+      setIsSuccessDialog(false);
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         setErrorDialog("ERROR: " + err.response.data.message);
       } else {
         setErrorDialog("Please try again later");
       }
     });
-    if (res && res.status === STATUS_CODE_CREATED) {
+    if (res && res.status === STATUS_CODE_OK) {
+      setIsSuccessDialog(true);
       setSuccessDialog("Password reset link has been sent to your email");
     }
   };
@@ -51,6 +55,27 @@ function ResetPasswordPage() {
     setIsDialogOpen(true);
     setDialogTitle("Error");
     setDialogMsg(msg);
+  };
+
+  const renderDialogButton = () => {
+    if (isSuccessDialog) {
+      return (
+        <Button
+          component={Link}
+          to="/login"
+          variant={"contained"}
+          onClick={closeDialog}
+          color={"secondary"}>
+          Done
+        </Button>
+      );
+    }
+
+    return (
+      <Button variant={"contained"} onClick={closeDialog} color={"secondary"}>
+        Retry
+      </Button>
+    );
   };
 
   return (
@@ -96,9 +121,7 @@ function ResetPasswordPage() {
           <DialogContent>
             <DialogContentText>{dialogMsg}</DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={closeDialog}>Done</Button>
-          </DialogActions>
+          <DialogActions>{renderDialogButton()}</DialogActions>
         </Dialog>
       </Grid>
       <Grid item xs={2} />
