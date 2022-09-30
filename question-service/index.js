@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
-import { createQuestion } from "./controllers/question-controller.js";
+import { createQuestion, getQuestionByDiff } from "./controllers/question-controller.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -14,6 +14,7 @@ app.get("/", (req, res) => {
     res.send("Hello World from question service");
 });
 app.post("/q", createQuestion);
+app.get("/q/:diff", getQuestionByDiff);
 
 
 const httpServer = createServer(app);
