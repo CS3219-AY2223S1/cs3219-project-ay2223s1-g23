@@ -1,12 +1,14 @@
 import { ormCreateUser as _createUser,
         ormLoginUser as _loginUser,
-        ormDeleteUser as _deleteUser } from '../model/user-orm.js';
+        ormForgetPassword as _forgetPassword,
+        ormResetPassword as _resetPassword,
+        ormDeleteUser as _deleteUser } from '../model/user-orm.js'
 
 export async function createUser(req, res) {
     try {
-        const { username, password } = req.body;
-        if (username && password) {
-            const resp = await _createUser(username, password);
+        const { username, email, password } = req.body;
+        if (username && email && password) {
+            const resp = await _createUser(username, email, password);
             console.log(resp);
             if (resp.err) {
                 return res.status(400).json({message: 'Could not create a new user!'});
@@ -20,7 +22,7 @@ export async function createUser(req, res) {
                 }
             }
         } else {
-            return res.status(400).json({message: 'Username and/or Password are missing!'});
+            return res.status(400).json({message: 'Username, Email and/or Password are missing!'});
         }
     } catch (err) {
         return res.status(500).json({message: 'Database failure when creating new user!'})
@@ -63,3 +65,48 @@ export async function loginUser(req, res) {
         return res.status(500).json({ message: `Database failure when logging in as ${username}!` })
     }
 }
+
+export async function forgetPassword(req, res) {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            return res.status(400).json({ message: 'Username is missing!' });
+        }
+
+        const resp = await _forgetPassword(username);
+        if(resp.err) {
+            return res.status(400).json({ message: resp.err });
+        } else {
+            const msg = resp.message;
+            console.log(msg);
+            return res.status(200).json({ msg });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: `Database failure when sending reset link!` })
+    }
+}
+
+export async function resetPassword(req, res) {
+    try {
+        const { token } = req.params;
+        const { username, password, confirmPassword } = req.body;
+        if (!password || !confirmPassword) {
+            return res.status(400).json({ message: 'Password and/or Confirm Password is missing!' }); 
+        }
+
+        const resp = await _resetPassword(username, token, password, confirmPassword);
+
+        if (resp.err) {
+            return res.status(400).json({message: 'Fail to reset password!'});
+        } else if (resp) {
+            console.log(`Password updated successfully!`)
+            return res.status(200).json({message: `Password updated successfully!`});
+        } else {
+            console.log('Password does not match!')
+            return res.status(400).json({message: 'Password does not match!'});
+        }
+    } catch (err) {
+        return res.status(500).json({ message: `Database failure while resetting password!` })
+    }
+}
+    
