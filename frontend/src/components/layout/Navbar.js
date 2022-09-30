@@ -9,21 +9,38 @@ import {
   Grid,
   Stack,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Alert,
+  Snackbar,
 } from "@mui/material";
+import axios from "axios";
 import MenuIcon from "@mui/icons-material/Menu";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
+import { URL_USER_SVC_LOGOUT } from "../../configs";
+import { STATUS_CODE_OK } from "../../constants";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const navigate = useNavigate();
+
+  const closeDialog = () => setIsDialogOpen(false);
+
+  const closeAlert = () => setIsAlertOpen(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
@@ -38,6 +55,22 @@ export default function Navbar() {
     removeCookie("token");
     navigate("/login");
     window.location.reload();
+  };
+
+  const handleDelete = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    const res = await axios.delete(URL_USER_SVC_LOGOUT).catch(() => {
+      setIsAlertOpen(true);
+      setIsDialogOpen(false);
+    });
+    if (res && res.status === STATUS_CODE_OK) {
+      removeCookie("token");
+      navigate(`/signup`);
+      window.location.reload();
+    }
   };
 
   const renderMenu = () => {
@@ -72,9 +105,25 @@ export default function Navbar() {
                 </Stack>
               </Grid>
               <Grid item xs={1} display="flex" justifyContent="flex-end">
-                <IconButton color="error">
+                <IconButton onClick={handleDelete} color="error">
                   <DeleteIcon />
                 </IconButton>
+                <Dialog open={isDialogOpen} onClose={closeDialog}>
+                  <DialogTitle>Warning</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Are you sure you want to delete this account?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button variant="contained" onClick={handleConfirmDelete} color="error">
+                      Delete
+                    </Button>
+                    <Button variant="outlined" onClick={closeDialog} color="secondary">
+                      Cancle
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </Grid>
             </Grid>
           </MenuItem>
@@ -111,6 +160,15 @@ export default function Navbar() {
           </Grid>
         </Grid>
       </Toolbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isAlertOpen}
+        autoHideDuration={4000}
+        onClose={closeAlert}>
+        <Alert severity="error" onClose={closeAlert}>
+          This is an error alert — <strong>check it out!</strong>
+        </Alert>
+      </Snackbar>
     </AppBar>
   );
 }

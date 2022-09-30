@@ -21,8 +21,7 @@ import { URL_USER_SVC_LOGIN } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { useDispatch } from "react-redux";
 import { update } from "../../modules/user/userSlice";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const col1Style = {
   width: "50%",
