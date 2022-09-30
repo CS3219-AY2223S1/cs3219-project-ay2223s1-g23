@@ -21,15 +21,19 @@ import axios from "axios";
 import MenuIcon from "@mui/icons-material/Menu";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
-import { URL_USER_SVC_LOGOUT } from "../../configs";
+import { URL_USER_SVC_LOGOUT, URL_USER_SVC } from "../../configs";
 import { STATUS_CODE_OK } from "../../constants";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { fontSize } from "@mui/system";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
+  const username = useSelector((state) => state.user.username);
   const navigate = useNavigate();
 
   const closeDialog = () => setIsDialogOpen(false);
@@ -61,8 +65,31 @@ export default function Navbar() {
     setIsDialogOpen(true);
   };
 
+  function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == " ") {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
   const handleConfirmDelete = async () => {
-    const res = await axios.delete(URL_USER_SVC_LOGOUT).catch(() => {
+    const token = getCookie("token");
+    console.log(token);
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const res = await axios.delete(URL_USER_SVC + "/" + username, config).catch((err) => {
+      console.log(err);
+      setAlertMsg(err.response.data.message);
       setIsAlertOpen(true);
       setIsDialogOpen(false);
     });
@@ -71,6 +98,11 @@ export default function Navbar() {
       navigate(`/signup`);
       window.location.reload();
     }
+  };
+
+  const userFont = {
+    fontWeight: "bold",
+    fontSize: 21,
   };
 
   const renderMenu = () => {
@@ -101,7 +133,7 @@ export default function Navbar() {
               <Grid item xs={11}>
                 <Stack spacing={1}>
                   <Typography>Username</Typography>
-                  <Typography>name</Typography>
+                  <Typography sx={userFont}>{username}</Typography>
                 </Stack>
               </Grid>
               <Grid item xs={1} display="flex" justifyContent="flex-end">
@@ -130,7 +162,7 @@ export default function Navbar() {
           <MenuItem>
             <Stack spacing={1}>
               <Typography>Email</Typography>
-              <Typography>@.com</Typography>
+              <Typography sx={userFont}>@.com</Typography>
             </Stack>
           </MenuItem>
           <MenuItem>
@@ -166,7 +198,7 @@ export default function Navbar() {
         autoHideDuration={4000}
         onClose={closeAlert}>
         <Alert severity="error" onClose={closeAlert}>
-          This is an error alert — <strong>check it out!</strong>
+          {alertMsg}
         </Alert>
       </Snackbar>
     </AppBar>
