@@ -1,9 +1,10 @@
+import { Grid, Box, Typography, Button } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { URL_INSERT_DIFFICULTY } from "../configs";
 import { STATUS_CODE_CREATED } from "../constants";
 import { useNavigate } from "react-router-dom";
-import MatchingDialog from "./MatchingDialog";
+import MatchingDialog from "./room/MatchingDialog";
 import { useSelector } from "react-redux";
 
 export const MatchStatus = {
@@ -13,7 +14,12 @@ export const MatchStatus = {
   MATH_FAILED: "MATCH_FAILED",
 };
 
-function DifficultySelection({ socket }) {
+const difficultyStyle = {
+  padding: "1rem 8rem 1rem 8rem",
+  margin: "1rem",
+};
+
+function HomePage({ socket }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const username = useSelector((state) => state.user.username);
   // eslint-disable-next-line no-unused-vars
@@ -66,12 +72,9 @@ function DifficultySelection({ socket }) {
     setIsMatchingDialogOpen(false);
   };
 
-  const handleOptionChange = (event) => {
-    setSelectedDifficulty(event.target.value);
-  };
-
-  const handleFormSubmit = async (event) => {
+  const handleDifficulty = (selectedDifficulty) => async (event) => {
     event.preventDefault();
+    setSelectedDifficulty(selectedDifficulty);
     if (!selectedDifficulty) {
       console.log("You must select a difficulty level before matching");
       return;
@@ -97,58 +100,52 @@ function DifficultySelection({ socket }) {
   };
 
   return (
-    <div className="container">
-      <MatchingDialog
-        initSeconds={30}
-        isOpen={isMatchingDialogOpen}
-        handleClose={stopFindingMatch}
-        matchStatus={matchStatus}
-        failedFindingMatch={failedFindingMatch}
-      />
-      <div className="row">
-        <div className="col-sm-12">
-          <form onSubmit={handleFormSubmit}>
-            <div className="radio">
-              <label>
-                <input
-                  type="radio"
-                  value="easy"
-                  checked={selectedDifficulty === "easy"}
-                  onChange={handleOptionChange}
-                />
-                Easy
-              </label>
-            </div>
-            <div className="radio">
-              <label>
-                <input
-                  type="radio"
-                  value="medium"
-                  checked={selectedDifficulty === "medium"}
-                  onChange={handleOptionChange}
-                />
-                Medium
-              </label>
-            </div>
-            <div className="radio">
-              <label>
-                <input
-                  type="radio"
-                  value="hard"
-                  checked={selectedDifficulty === "hard"}
-                  onChange={handleOptionChange}
-                />
-                Hard
-              </label>
-            </div>
-            <button className="btn btn-default" type="submit">
-              Match
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+    <Grid container>
+      <Grid item xs={1} />
+      <Grid item xs={10}>
+        <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
+          <Typography variant={"h3"} ma={"2rem"}>
+            Random Matching
+          </Typography>
+        </Box>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          justifyContent={"center"}>
+          <Button
+            variant="contained"
+            onClick={handleDifficulty("easy")}
+            color={"secondary"}
+            sx={difficultyStyle}>
+            Easy
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleDifficulty("medium")}
+            color={"secondary"}
+            sx={difficultyStyle}>
+            Medium
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleDifficulty("hard")}
+            color={"secondary"}
+            sx={difficultyStyle}>
+            Hard
+          </Button>
+          <MatchingDialog
+            initSeconds={30}
+            isOpen={isMatchingDialogOpen}
+            handleClose={stopFindingMatch}
+            matchStatus={matchStatus}
+            failedFindingMatch={failedFindingMatch}
+          />
+        </Box>
+      </Grid>
+      <Grid item xs={1} />
+    </Grid>
   );
 }
 
-export default DifficultySelection;
+export default HomePage;
