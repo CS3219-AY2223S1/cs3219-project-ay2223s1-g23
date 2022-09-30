@@ -12,34 +12,40 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
   };
-  function setCookie(cname, cvalue, exdays) {
-    const d = new Date();
-    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+
+  function removeCookie(cname) {
+    let expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    document.cookie = cname + "=;" + expires + "path=/";
   }
-  const navigate = useNavigate();
+
   const handleLogout = async () => {
-    const token = "";
-    setCookie("token", token, 0);
-    console.log(document.cookie);
+    removeCookie("token");
     navigate("/login");
+    window.location.reload();
   };
+
   const renderMenu = () => {
+    if (!document.cookie.includes("token")) {
+      return;
+    }
+
     return (
       <Box>
         <IconButton
