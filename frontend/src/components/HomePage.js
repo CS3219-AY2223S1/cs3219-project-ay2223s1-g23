@@ -4,7 +4,7 @@ import axios from "axios";
 import { URL_INSERT_DIFFICULTY } from "../configs";
 import { STATUS_CODE_CREATED } from "../constants";
 import { useNavigate } from "react-router-dom";
-import MatchingDialog from "./matching/MatchingDialog";
+import MatchingDialog from "./room/MatchingDialog";
 import { useSelector } from "react-redux";
 
 export const MatchStatus = {
