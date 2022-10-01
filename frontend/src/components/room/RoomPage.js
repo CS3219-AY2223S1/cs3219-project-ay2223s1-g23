@@ -100,8 +100,9 @@ function RoomPage({ socket }) {
     deleteCollab();
     navigate(`/diff`);
   };
+
   const handleReset = () => {
-    setValue("");
+    socket.emit("send-changes", { roomId: roomId, text: "" });
   };
 
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
