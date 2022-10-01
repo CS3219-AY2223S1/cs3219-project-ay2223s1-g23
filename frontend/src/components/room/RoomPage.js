@@ -33,7 +33,6 @@ function RoomPage({ socket }) {
       userId: "",
     },
   });
-  // const [answer, setAnswer] = useState("");
   const [roomId, setRoomId] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
@@ -118,9 +117,8 @@ function RoomPage({ socket }) {
           <Box display={"flex"} flexDirection={"row"} mb={"1rem"}>
             <Grid container>
               <Grid item xs={10}>
-                {/* <Typography variant={"h4"}>Topic</Typography> */}
-                <Typography variant={"h6"}>
-                  Welcome {ids.user1.userId} and {ids.user2.userId}
+                <Typography variant={"h4"}>
+                  {ids.user1.userId} and {ids.user2.userId}&apos;s room
                 </Typography>
               </Grid>
               <Grid item xs={2} display="flex" justifyContent="flex-end">
@@ -150,12 +148,6 @@ function RoomPage({ socket }) {
               </Button>
             </Grid>
           </Grid>
-          {/* <TextField
-            multiline
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            rows={25}
-          /> */}
           <ReactQuill
             preserveWhitespace
             value={value}
