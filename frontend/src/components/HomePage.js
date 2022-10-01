@@ -39,12 +39,12 @@ function HomePage({ socket }) {
     return () => socket.off("match_success");
   }, [socket]);
 
-  const startFindingMatch = () => {
+  const startFindingMatch = (diff) => {
     setMatchStatus(MatchStatus.MATCHING);
     setIsMatchingDialogOpen(true);
     socket.emit("find_match", {
       userId: userId,
-      difficulty: selectedDifficulty,
+      difficulty: diff,
     });
   };
 
@@ -72,21 +72,21 @@ function HomePage({ socket }) {
     setIsMatchingDialogOpen(false);
   };
 
-  const handleDifficulty = (selectedDifficulty) => async (event) => {
+  const handleDifficulty = (diff) => async (event) => {
     event.preventDefault();
-    setSelectedDifficulty(selectedDifficulty);
-    if (!selectedDifficulty) {
+    setSelectedDifficulty(diff);
+    if (!diff) {
       console.log("You must select a difficulty level before matching");
       return;
     }
     console.log("Your userId: ", userId);
-    console.log("You have selected: ", selectedDifficulty);
+    console.log("You have selected: ", diff);
 
     // Post difficult level chosen.
     const res = await axios
       .post(URL_INSERT_DIFFICULTY, {
         userId: userId,
-        difficulty: selectedDifficulty,
+        difficulty: diff,
       })
       .catch((err) => {
         console.log(`error in post: ${err}`);
@@ -96,7 +96,8 @@ function HomePage({ socket }) {
     }
 
     // Start finding match for the user.
-    startFindingMatch();
+    // Need to pass in diff because selectedDifficulty state may not have been updated.
+    startFindingMatch(diff);
   };
 
   return (
