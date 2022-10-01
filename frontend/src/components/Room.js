@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
-import CallIcon from "@mui/icons-material/Call";
+import { Button } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB } from "../../configs";
-import { STATUS_CODE_BAD_REQUEST } from "../../constants";
+import { URL_COLLAB } from "../configs";
+import { STATUS_CODE_BAD_REQUEST } from "../constants";
 
 const modules = {
   toolbar: [
@@ -23,7 +22,7 @@ const modules = {
   ],
 };
 
-function RoomPage({ socket }) {
+function Room({ socket }) {
   const { state } = useLocation();
   const [ids, setIds] = useState({
     user1: {
@@ -33,7 +32,6 @@ function RoomPage({ socket }) {
       userId: "",
     },
   });
-  // const [answer, setAnswer] = useState("");
   const [roomId, setRoomId] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
@@ -94,15 +92,12 @@ function RoomPage({ socket }) {
     });
   };
 
-  const handleLeaveRoom = () => {
+  const leaveRoomHandler = () => {
     socket.emit("leave_room", ids.user2.userId);
     updateCollab();
     // TODO: add data to history-service
     deleteCollab();
     navigate(`/diff`);
-  };
-  const handleReset = () => {
-    setValue("");
   };
 
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
@@ -112,80 +107,25 @@ function RoomPage({ socket }) {
   };
 
   return (
-    <Grid container>
-      <Grid item xs={6}>
-        <Box mr={"1rem"}>
-          <Box display={"flex"} flexDirection={"row"} mb={"1rem"}>
-            <Grid container>
-              <Grid item xs={10}>
-                {/* <Typography variant={"h4"}>Topic</Typography> */}
-                <Typography variant={"h6"}>
-                  Welcome {ids.user1.userId} and {ids.user2.userId}
-                </Typography>
-              </Grid>
-              <Grid item xs={2} display="flex" justifyContent="flex-end">
-                <Paper varient={6}>
-                  <Typography variant={"h5"} m={"5px"}>
-                    {difficultyLevel ?? "unknown diff"}
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Box>
-          <Paper variant="outlined" square>
-            <Typography sx={{ height: "40rem" }}>Question</Typography>
-          </Paper>
-        </Box>
-      </Grid>
-      <Grid item xs={6}>
-        <Box display={"flex"} flexDirection={"column"}>
-          <Grid container>
-            <Grid item xs={1} />
-            <Grid item xs={11} display={"flex"} justifyContent="flex-end">
-              <Button variant="contained" color="secondary" sx={{ margin: 1 }}>
-                Change Question
-              </Button>
-              <Button variant="contained" onClick={handleReset} color="error" sx={{ margin: 1 }}>
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-          {/* <TextField
-            multiline
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            rows={25}
-          /> */}
-          <ReactQuill
-            preserveWhitespace
-            value={value}
-            modules={modules}
-            theme="snow"
-            onChange={quillEditorOnChangeHandler}
-            placeholder="Content goes here..."
-          />
-          <Box display={"flex"} flexDirection={"row"}>
-            <Grid container>
-              <Grid item xs={1}>
-                <IconButton>
-                  <CallIcon />
-                </IconButton>
-              </Grid>
-              <Grid item xs={11} display={"flex"} justifyContent="flex-end">
-                <Button
-                  variant="outlined"
-                  onClick={handleLeaveRoom}
-                  color="error"
-                  sx={{ margin: 1 }}>
-                  Leave room
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-      </Grid>
-    </Grid>
+    <div className="container">
+      <div>
+        {" "}
+        Welcome {ids.user1.userId} and {ids.user2.userId} to room {roomId}! Your choice of
+        difficulty is {difficultyLevel}
+      </div>
+      <Button variant="outlined" onClick={leaveRoomHandler}>
+        Leave room
+      </Button>
+      <ReactQuill
+        preserveWhitespace
+        value={value}
+        modules={modules}
+        theme="snow"
+        onChange={quillEditorOnChangeHandler}
+        placeholder="Content goes here..."
+      />
+    </div>
   );
 }
 
-export default RoomPage;
+export default Room;
