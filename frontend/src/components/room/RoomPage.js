@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
+import { IconButton, Paper, Box, Grid, Button, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB, URL_QUES } from "../../configs";
+import { URL_COLLAB } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
 
 const modules = {
@@ -34,15 +34,24 @@ function RoomPage({ socket }) {
     },
   });
   const [roomId, setRoomId] = useState("");
-  const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
-  const [question, setQuestion] = useState({
-    id: "",
-    title: "",
-    body: "",
-    difficulty: "",
-    url: "",
-  });
+  const [question, setQuestion] = useState(
+    state.ques
+      ? {
+          id: state.ques._id,
+          title: state.ques.title,
+          body: state.ques.body,
+          difficulty: state.ques.difficulty,
+          url: state.ques.url,
+        }
+      : {
+          id: "id",
+          title: "title",
+          body: "body",
+          difficulty: "difficulty",
+          url: "url",
+        },
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,25 +66,8 @@ function RoomPage({ socket }) {
     return () => socket.off("receive-changes", receiveChangesEventHandler);
   }, [socket]);
 
-  const fetchQuestion = async (_difficulty) => {
-    try {
-      const res = await axios.get(`${URL_QUES}/${_difficulty}`);
-      //console.log(res.data);
-      const { _id, title, body, difficulty, url } = res.data.data;
-      setQuestion({
-        id: _id,
-        title: title,
-        body: body,
-        difficulty: difficulty,
-        url: url,
-      });
-    } catch (err) {
-      console.log("error in question page: " + err);
-    }
-  };
-
   const fetchRoomDetails = async () => {
-    const res = await axios.get(`${URL_COLLAB}/${state}`).catch((err) => {
+    const res = await axios.get(`${URL_COLLAB}/${state.roomId}`).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         console.log("ERROR: " + err.response.data.message);
       } else {
@@ -94,9 +86,6 @@ function RoomPage({ socket }) {
       },
     });
     setRoomId(roomId);
-    setDifficultyLevel(difficulty);
-
-    await fetchQuestion(difficulty);
   };
 
   const deleteCollab = async () => {
@@ -158,12 +147,10 @@ function RoomPage({ socket }) {
             </Grid>
           </Box>
           <Paper variant="outlined" square>
-            <Typography sx={{ height: "40rem" }}>
+            <Typography sx={{ height: "1.5rem", textDecoration: "underline" }}>
               {question.title}
-              <hr />
-              {question.body}
-              <hr />
             </Typography>
+            <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
           </Paper>
         </Box>
       </Grid>

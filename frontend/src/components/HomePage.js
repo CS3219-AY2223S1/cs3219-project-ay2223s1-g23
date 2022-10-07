@@ -42,7 +42,12 @@ function HomePage({ socket }) {
   const handleCollabRoom = async (data) => {
     await createCollaboration(data);
     const roomId = data.roomId;
-    navigate(`/room/${roomId}`, { state: roomId });
+    navigate(`/room/${roomId}`, {
+      state: {
+        roomId: roomId,
+        ques: data.ques,
+      },
+    });
   };
 
   const createCollaboration = async (data) => {
