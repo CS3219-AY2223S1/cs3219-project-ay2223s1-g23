@@ -18,8 +18,8 @@ app.get("/q/:diff", getQuestionByDiff);
 
 
 const httpServer = createServer(app);
-httpServer.listen(8002, () => {
-    console.log("server listening on port 8002");
+httpServer.listen(8009, () => {
+    console.log("server listening on port 8009");
 });
 
 
