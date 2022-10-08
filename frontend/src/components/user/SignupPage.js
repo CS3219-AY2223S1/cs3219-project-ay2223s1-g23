@@ -21,6 +21,16 @@ import { URL_USER_SVC } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
 import { Link } from "react-router-dom";
 
+const col1Style = {
+  pl: "8rem",
+};
+const col2Style = {
+  width: "50%",
+};
+const textfieldStyle = {
+  marginBottom: "1rem",
+};
+
 function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -72,44 +82,44 @@ function SignupPage() {
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
               <TableRow>
-                <TableCell sx={{ pl: "10rem" }}>
+                <TableCell sx={col1Style}>
                   <Typography variant={"body1"}>Username</Typography>
                 </TableCell>
-                <TableCell sx={{ width: "50%" }}>
+                <TableCell sx={col2Style}>
                   <TextField
                     variant="filled"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    sx={{ marginBottom: "1rem" }}
+                    sx={textfieldStyle}
                     autoFocus
                   />
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ pl: "10rem" }}>
+                <TableCell sx={col1Style}>
                   <Typography variant={"body1"}>Email</Typography>
                 </TableCell>
-                <TableCell sx={{ width: "50%" }}>
+                <TableCell sx={col2Style}>
                   <TextField
                     variant="filled"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    sx={{ marginBottom: "2rem" }}
+                    sx={textfieldStyle}
                   />
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ pl: "10rem" }}>
+                <TableCell sx={col1Style}>
                   <Typography variant={"body1"}>Password</Typography>
                 </TableCell>
-                <TableCell sx={{ width: "50%" }}>
+                <TableCell sx={col2Style}>
                   <TextField
                     variant="filled"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    sx={{ marginBottom: "2rem" }}
+                    sx={textfieldStyle}
                   />
                 </TableCell>
               </TableRow>

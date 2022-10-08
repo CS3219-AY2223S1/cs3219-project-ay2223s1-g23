@@ -1,4 +1,5 @@
-import MatchModel from "../../MatchModel.js";
+import { deleteOneMatchModel } from "../model/match-orm.js";
+import { updateMatchModel } from "../model/repository.js";
 
 // Stores socket.id and user id of a user finding a match.
 // Use queue to handle the case when 2 users join and request at the same time to match with 1 existing user.
@@ -9,25 +10,33 @@ const findingMatchQueue = {
 };
 
 const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
-  // Update matchedUser value of the user in the queue
-  const userDifficulty = await MatchModel.findOne({
-    where: { userId: userIdFromQueue },
-  });
-  userDifficulty.matchedUser = matchedUserId;
-  await userDifficulty.save();
+  try {
+    // Update matchedUser value of the user in the queue
+    await updateMatchModel(userIdFromQueue, { matchedUser: matchedUserId });
 
-  // Delete the newer user's match model
-  deleteMatchModel(matchedUserId);
+    // Delete the newer user's match model
+    deleteMatchModel(matchedUserId);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const deleteMatchModel = async (userId) => {
-  await MatchModel.destroy({ where: { userId: userId } });
+  try {
+    await deleteOneMatchModel(userId);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const initSocketEventHandlers = (socket, io) => {
   socket.on("find_match", (data) => {
     const { userId, difficulty } = data;
     const socketId = socket.id;
+
+    if (!findingMatchQueue[difficulty]) {
+      findingMatchQueue[difficulty] = [];
+    }
 
     if (findingMatchQueue[difficulty].length > 0) {
       const userFromQueue = findingMatchQueue[difficulty].shift();
@@ -57,12 +66,8 @@ export const initSocketEventHandlers = (socket, io) => {
     }
   });
 
-  socket.on("join_room", (data) => {
-    socket.join(data);
-  });
-
-  socket.on("prep_room", (data) => {
-    io.to(data.roomId).emit("welcome_room", data);
+  socket.on("join_room", async (data) => {
+    await socket.join(data);
   });
 
   socket.on("stop_find_match", (data) => {
@@ -75,6 +80,10 @@ export const initSocketEventHandlers = (socket, io) => {
 
   socket.on("leave_room", (userId) => {
     deleteMatchModel(userId);
+  });
+
+  socket.on("send-changes", (data) => {
+    io.in(data.roomId).emit("receive-changes", data);
   });
 
   socket.on("connect_error", function (err) {

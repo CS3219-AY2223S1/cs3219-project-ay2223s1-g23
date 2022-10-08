@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import SignupPage from "./components/user/SignupPage";
 import LoginPage from "./components/user/LoginPage";
 import HomePage from "./components/HomePage";
-import RoomPage from "./components/matching/RoomPage";
+import RoomPage from "./components/room/RoomPage";
 import ForgetPassword from "./components/user/ForgetPasswordPage";
 import ResetPassword from "./components/user/ResetPasswordPage";
 import Navbar from "./components/layout/Navbar";
