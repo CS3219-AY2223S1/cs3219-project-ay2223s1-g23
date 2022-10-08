@@ -7,6 +7,8 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { URL_COLLAB } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
+import { URL_COLLAB_SVC } from "../../configs";
+import io from "socket.io-client";
 
 const modules = {
   toolbar: [
@@ -23,8 +25,9 @@ const modules = {
   ],
 };
 
-function RoomPage({ socket }) {
+function RoomPage() {
   const { state } = useLocation();
+  const [socket, setSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
       userId: "",
@@ -39,10 +42,16 @@ function RoomPage({ socket }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // socket
+    const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
+    setSocket(socketObj);
+
     fetchRoomDetails();
+    socketObj.emit("join_room", state);
   }, []);
 
   useEffect(() => {
+    if (!socket) return;
     const receiveChangesEventHandler = ({ roomId, text }) => {
       setValue(text);
     };
@@ -94,7 +103,8 @@ function RoomPage({ socket }) {
   };
 
   const handleLeaveRoom = () => {
-    socket.emit("leave_room", ids.user2.userId);
+    socket.emit("leave_room");
+    // socket.emit("leave_room", ids.user2.userId);
     updateCollab();
     // TODO: add data to history-service
     deleteCollab();

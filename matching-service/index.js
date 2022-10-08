@@ -15,6 +15,7 @@ app.options("*", cors());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
+  path: "/diff",
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
@@ -22,7 +23,9 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`User connected with socket ID: ${socket.id}`);
+  console.log(
+    `User connected to matching-service with socket ID: ${socket.id}`,
+  );
   initSocketEventHandlers(socket, io);
 });
 

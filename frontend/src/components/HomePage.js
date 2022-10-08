@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
 import { useSelector } from "react-redux";
 import { STATUS_CODE_BAD_REQUEST } from "../constants";
+import { URL_MATCH_SVC } from "../configs";
+import io from "socket.io-client";
 
 export const MatchStatus = {
   NOT_MATCHING: "NOT_MATCHING",
@@ -20,7 +22,8 @@ const difficultyStyle = {
   margin: "1rem",
 };
 
-function HomePage({ socket }) {
+function HomePage() {
+  const [socket, setSocket] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const username = useSelector((state) => state.user.username);
   const [userId, setUserId] = useState(username);
@@ -29,10 +32,17 @@ function HomePage({ socket }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const socket = io.connect(URL_MATCH_SVC, { path: "/diff" });
+    setSocket(socket);
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
     const matchSuccessEventHandler = (data) => {
       successFindingMatch();
       const roomId = data.roomId;
-      socket.emit("join_room", roomId);
+      // socket.emit("join_room", roomId);
+      socket.emit("clean_up", userId);
       handleCollabRoom(data);
     };
     socket.on("match_success", matchSuccessEventHandler);

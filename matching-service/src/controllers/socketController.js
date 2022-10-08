@@ -9,6 +9,8 @@ const findingMatchQueue = {
   hard: [],
 };
 
+const socketIdToUserId = [];
+
 const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
   try {
     // Update matchedUser value of the user in the queue
@@ -33,6 +35,7 @@ export const initSocketEventHandlers = (socket, io) => {
   socket.on("find_match", (data) => {
     const { userId, difficulty } = data;
     const socketId = socket.id;
+    socketIdToUserId[socketId] = userId;
 
     if (!findingMatchQueue[difficulty]) {
       findingMatchQueue[difficulty] = [];
@@ -66,8 +69,8 @@ export const initSocketEventHandlers = (socket, io) => {
     }
   });
 
-  socket.on("join_room", async (data) => {
-    await socket.join(data);
+  socket.on("clean_up", async (data) => {
+    socket.disconnect();
   });
 
   socket.on("stop_find_match", (data) => {
@@ -76,14 +79,6 @@ export const initSocketEventHandlers = (socket, io) => {
       (user) => user.userId != userId,
     );
     deleteMatchModel(userId);
-  });
-
-  socket.on("leave_room", (userId) => {
-    deleteMatchModel(userId);
-  });
-
-  socket.on("send-changes", (data) => {
-    io.in(data.roomId).emit("receive-changes", data);
   });
 
   socket.on("connect_error", function (err) {
@@ -96,5 +91,14 @@ export const initSocketEventHandlers = (socket, io) => {
 
   socket.on("disconnect", () => {
     console.log(`User disconnected, id is: ${socket.id}`);
+    // if not deleted, delete userId from db and queue
+    const userId = socketIdToUserId[socket.id];
+    deleteMatchModel(userId);
+    const diffs = ["easy", "medium", "hard"];
+    for (let i = 0; i < diffs.length; i++) {
+      findingMatchQueue[diffs[i]] = findingMatchQueue[diffs[i]].filter(
+        (user) => user.userId != userId,
+      );
+    }
   });
 };
