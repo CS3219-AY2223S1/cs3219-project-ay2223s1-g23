@@ -46,7 +46,6 @@ function SignupPage() {
   const [passwordErr, setPasswordErr] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [alertMsg, setAlertMsg] = useState("");
 
   const handleSignup = async () => {
     const res = await axios.post(URL_USER_SVC, { username, email, password }).catch((err) => {
@@ -71,7 +70,6 @@ function SignupPage() {
         }
       } else {
         setIsAlertOpen(true);
-        setAlertMsg("Please try again later");
       }
     });
     if (res && res.status === STATUS_CODE_CREATED) {
@@ -90,7 +88,7 @@ function SignupPage() {
           autoHideDuration={4000}
           onClose={closeAlert}>
           <Alert severity="error" onClose={closeAlert}>
-            {alertMsg}
+            Please try again later
           </Alert>
         </Snackbar>
         <Dialog open={isDialogOpen}>

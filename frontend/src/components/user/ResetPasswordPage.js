@@ -13,6 +13,7 @@ import {
   Table,
   TableRow,
   TableCell,
+  TableBody,
   Container,
 } from "@mui/material";
 import { useState } from "react";
@@ -99,48 +100,50 @@ function ResetPasswordPage() {
           </Box>
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
-              <TableRow>
-                <TableCell sx={{ pl: "6rem" }}>
-                  <Typography variant={"body1"}>Username</Typography>
-                </TableCell>
-                <TableCell sx={{ width: "50%" }}>
-                  <TextField
-                    variant="filled"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    sx={{ marginBottom: "1rem" }}
-                    autoFocus
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ pl: "6rem" }}>
-                  <Typography variant={"body1"}>New Password</Typography>
-                </TableCell>
-                <TableCell sx={{ width: "50%" }}>
-                  <TextField
-                    variant="filled"
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    sx={{ marginBottom: "2rem" }}
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ pl: "6rem" }}>
-                  <Typography variant={"body1"}>Confirm New Password</Typography>
-                </TableCell>
-                <TableCell sx={{ width: "50%" }}>
-                  <TextField
-                    variant="filled"
-                    type="password"
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    sx={{ marginBottom: "2rem" }}
-                  />
-                </TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ pl: "6rem" }}>
+                    <Typography variant={"body1"}>Username</Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: "50%" }}>
+                    <TextField
+                      variant="filled"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      sx={{ marginBottom: "1rem" }}
+                      autoFocus
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ pl: "6rem" }}>
+                    <Typography variant={"body1"}>New Password</Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: "50%" }}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      sx={{ marginBottom: "2rem" }}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ pl: "6rem" }}>
+                    <Typography variant={"body1"}>Confirm New Password</Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: "50%" }}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      sx={{ marginBottom: "2rem" }}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </Container>
           <Box
