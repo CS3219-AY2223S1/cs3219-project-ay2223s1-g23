@@ -50,7 +50,6 @@ function LoginPage() {
         if (err.response.data.err.type == "user") {
           setIsUserErr(true);
           setUserErr(err.response.data.err.msg);
-          console.log(userErr);
         } else if (err.response.data.err.type == "password") {
           setIsPasswordErr(true);
           setPasswordErr(err.response.data.err.msg);

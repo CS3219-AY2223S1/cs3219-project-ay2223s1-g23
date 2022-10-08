@@ -1,4 +1,5 @@
 import { createUser, existsUser, getPassword, updateUser, getEmail, deleteUser } from './repository.js';
+import * as EmailValidator from 'node-email-validation';
 import jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
 import "dotenv/config";
@@ -8,7 +9,20 @@ import nodemailer from "nodemailer";
 export async function ormCreateUser(username, email, password) {
     try {
         if (await existsUser(username)) {
-            return false;
+            console.log("123");
+            return {
+                err: {
+                    type: "user",
+                    msg: `${username} already exists!`
+                }
+            };
+        } else if (!EmailValidator.is_email_valid(email)) {
+            return {
+                err: {
+                    type: "email",
+                    msg: "Please provide a valid email address."
+                }
+            };
         } else {
             const encryptedPassword = await bcrypt.hash(password, 10);
             const newUser = await createUser({

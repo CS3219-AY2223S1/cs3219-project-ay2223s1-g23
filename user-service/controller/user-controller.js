@@ -11,18 +11,23 @@ export async function createUser(req, res) {
             const resp = await _createUser(username, email, password);
             console.log(resp);
             if (resp.err) {
-                return res.status(400).json({message: 'Could not create a new user!'});
+                return res.status(400).json(resp);
             } else {
                 if (resp) {
                     console.log(`Created new user ${username} successfully!`)
                     return res.status(201).json({message: `Created new user ${username} successfully!`});
                 } else {
                     console.log(`${username} already exists!`)
-                    return res.status(400).json({message: `${username} already exists!`});
+                    return res.status(400).json(resp);
                 }
             }
         } else {
-            return res.status(400).json({message: 'Username, Email and/or Password are missing!'});
+            return res.status(400).json({ 
+                err: {
+                    type: "general",
+                    msg: 'Username, Email and/or Password are missing!' 
+                }
+            });
         }
     } catch (err) {
         return res.status(500).json({message: 'Database failure when creating new user!'})

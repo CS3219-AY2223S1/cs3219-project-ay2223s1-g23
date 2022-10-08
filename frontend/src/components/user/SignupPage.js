@@ -14,6 +14,8 @@ import {
   Table,
   TableRow,
   TableCell,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
@@ -33,40 +35,73 @@ const textfieldStyle = {
 
 function SignupPage() {
   const [username, setUsername] = useState("");
+  const [isUserErr, setIsUserErr] = useState(false);
+  const [userErr, setUserErr] = useState("");
   const [email, setEmail] = useState("");
+  const [isEmailErr, setIsEmailErr] = useState(false);
+  const [emailErr, setEmailErr] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordErr, setIsPasswordErr] = useState(false);
+  const [passwordErr, setPasswordErr] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogMsg, setDialogMsg] = useState("");
-  const [isSignupSuccess, setIsSignupSuccess] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
 
   const handleSignup = async () => {
-    setIsSignupSuccess(false);
     const res = await axios.post(URL_USER_SVC, { username, email, password }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
-        setErrorDialog("ERROR: " + err.response.data.message);
+        console.log(err.response.data);
+        if (err.response.data.err.type == "user") {
+          setIsUserErr(true);
+          setUserErr(err.response.data.err.msg);
+        } else if (err.response.data.err.type == "email") {
+          setIsEmailErr(true);
+          setEmailErr(err.response.data.err.msg);
+        } else {
+          setIsUserErr(true);
+          setUserErr(err.response.data.err.msg);
+          setIsEmailErr(true);
+          setEmailErr(err.response.data.err.msg);
+          setIsPasswordErr(true);
+          setPasswordErr(err.response.data.err.msg);
+        }
       } else {
-        setErrorDialog("Please try again later");
+        setIsAlertOpen(true);
+        setAlertMsg("Please try again later");
       }
     });
     if (res && res.status === STATUS_CODE_CREATED) {
-      setSuccessDialog("Account successfully created");
-      setIsSignupSuccess(true);
+      setIsDialogOpen(true);
     }
   };
 
-  const closeDialog = () => setIsDialogOpen(false);
+  const closeAlert = () => setIsAlertOpen(false);
 
-  const setSuccessDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Success");
-    setDialogMsg(msg);
-  };
-
-  const setErrorDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Error");
-    setDialogMsg(msg);
+  const signupResult = () => {
+    return (
+      <Box>
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={isAlertOpen}
+          autoHideDuration={4000}
+          onClose={closeAlert}>
+          <Alert severity="error" onClose={closeAlert}>
+            {alertMsg}
+          </Alert>
+        </Snackbar>
+        <Dialog open={isDialogOpen}>
+          <DialogTitle>Success</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Account successfully created</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button component={Link} to="/login">
+              Log in
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    );
   };
 
   return (
@@ -90,6 +125,8 @@ function SignupPage() {
                     variant="filled"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    error={isUserErr}
+                    helperText={userErr}
                     sx={textfieldStyle}
                     autoFocus
                   />
@@ -105,6 +142,8 @@ function SignupPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    error={isEmailErr}
+                    helperText={emailErr}
                     sx={textfieldStyle}
                   />
                 </TableCell>
@@ -119,6 +158,8 @@ function SignupPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    error={isPasswordErr}
+                    helperText={passwordErr}
                     sx={textfieldStyle}
                   />
                 </TableCell>
@@ -133,6 +174,7 @@ function SignupPage() {
             <Button variant={"contained"} onClick={handleSignup}>
               Sign up
             </Button>
+            {signupResult()}
             <Box display={"flex"} alignItems={"center"} justifyContent={"center"} m={"1rem"}>
               <Typography variant={"body1"}>Already have an account?</Typography>
               <Typography component={Link} to="/login" variant={"body1"}>
@@ -140,21 +182,6 @@ function SignupPage() {
               </Typography>
             </Box>
           </Box>
-          <Dialog open={isDialogOpen} onClose={closeDialog}>
-            <DialogTitle>{dialogTitle}</DialogTitle>
-            <DialogContent>
-              <DialogContentText>{dialogMsg}</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              {isSignupSuccess ? (
-                <Button component={Link} to="/login">
-                  Log in
-                </Button>
-              ) : (
-                <Button onClick={closeDialog}>Done</Button>
-              )}
-            </DialogActions>
-          </Dialog>
         </Paper>
       </Grid>
       <Grid item xs={2} />
