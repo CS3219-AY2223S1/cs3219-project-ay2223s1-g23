@@ -21,8 +21,8 @@ import { URL_USER_SVC_LOGIN } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { useDispatch } from "react-redux";
 import { update } from "../../modules/user/userSlice";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { setCookie } from "../../util/cookies";
 
 const col1Style = {
   width: "50%",
@@ -65,13 +65,6 @@ function LoginPage() {
       navigate(`/diff`);
     }
   };
-
-  function setCookie(cname, cvalue, exdays) {
-    const d = new Date();
-    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-    let expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-  }
 
   const closeDialog = () => setIsDialogOpen(false);
 

@@ -14,26 +14,39 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Alert,
+  Snackbar,
 } from "@mui/material";
+import axios from "axios";
 import MenuIcon from "@mui/icons-material/Menu";
 import DeleteIcon from "@mui/icons-material/Delete";
-import axios from "axios";
-import { URL_USER_SVC_FORGET_PASSWORD } from "../../configs";
+import { URL_USER_SVC_FORGET_PASSWORD, URL_USER_SVC_LOGOUT, URL_USER_SVC } from "../../configs";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { fontSize } from "@mui/system";
+import { removeCookie, getCookie } from "../../util/cookies";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const [isSuccessDialog, setIsSuccessDialog] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogMsg, setDialogMsg] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
   const username = useSelector((state) => state.user.username);
   const navigate = useNavigate();
+
+  const closeDialog = () => setIsDialogOpen(false);
+
+  const closeDeleteDialog = () => setIsDeleteDialogOpen(false);
+
+  const closeAlert = () => setIsAlertOpen(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -44,11 +57,6 @@ export default function Navbar() {
     setAnchorEl(null);
     setOpen(false);
   };
-
-  function removeCookie(cname) {
-    let expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    document.cookie = cname + "=;" + expires + "path=/";
-  }
 
   const handleLogout = async () => {
     removeCookie("token");
@@ -71,8 +79,6 @@ export default function Navbar() {
     }
   };
 
-  const closeDialog = () => setIsDialogOpen(false);
-
   const setSuccessDialog = (msg) => {
     setIsDialogOpen(true);
     setDialogTitle("Success");
@@ -83,6 +89,34 @@ export default function Navbar() {
     setIsDialogOpen(true);
     setDialogTitle("Error");
     setDialogMsg(msg);
+  };
+
+  const handleDelete = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    const token = getCookie("token");
+    console.log(token);
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const res = await axios.delete(URL_USER_SVC + "/" + username, config).catch((err) => {
+      console.log(err);
+      setAlertMsg(err.response.data.message);
+      setIsAlertOpen(true);
+      setIsDeleteDialogOpen(false);
+    });
+    if (res && res.status === STATUS_CODE_OK) {
+      removeCookie("token");
+      navigate(`/signup`);
+      window.location.reload();
+    }
+  };
+
+  const userFont = {
+    fontWeight: "bold",
+    fontSize: 21,
   };
 
   const renderMenu = () => {
@@ -113,20 +147,36 @@ export default function Navbar() {
               <Grid item xs={11}>
                 <Stack spacing={1}>
                   <Typography>Username</Typography>
-                  <Typography>name</Typography>
+                  <Typography sx={userFont}>{username}</Typography>
                 </Stack>
               </Grid>
               <Grid item xs={1} display="flex" justifyContent="flex-end">
-                <IconButton color="error">
+                <IconButton onClick={handleDelete} color="error">
                   <DeleteIcon />
                 </IconButton>
+                <Dialog open={isDeleteDialogOpen} onClose={closeDialog}>
+                  <DialogTitle>Warning</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Are you sure you want to delete this account?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button variant="contained" onClick={handleConfirmDelete} color="error">
+                      Delete
+                    </Button>
+                    <Button variant="outlined" onClick={closeDeleteDialog} color="secondary">
+                      Cancle
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </Grid>
             </Grid>
           </MenuItem>
           <MenuItem>
             <Stack spacing={1}>
               <Typography>Email</Typography>
-              <Typography>@.com</Typography>
+              <Typography sx={userFont}>@.com</Typography>
             </Stack>
           </MenuItem>
           <MenuItem>
@@ -171,6 +221,15 @@ export default function Navbar() {
           </Grid>
         </Grid>
       </Toolbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isAlertOpen}
+        autoHideDuration={4000}
+        onClose={closeAlert}>
+        <Alert severity="error" onClose={closeAlert}>
+          {alertMsg}
+        </Alert>
+      </Snackbar>
     </AppBar>
   );
 }
