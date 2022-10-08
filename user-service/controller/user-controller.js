@@ -52,14 +52,19 @@ export async function loginUser(req, res) {
             const resp = await _loginUser(username, password);
             console.log(resp);
             if (resp.err) {
-                return res.status(400).json({ message: resp.err });
+                return res.status(400).json(resp);
             } else {
                 const jwt = resp.jwt;
                 console.log(`Login in as user ${username} successfully!`)
                 return res.status(200).json({ jwt });
             }
         } else {
-            return res.status(400).json({ message: 'Username and/or Password are missing!' });
+            return res.status(400).json({ 
+                err: {
+                    type: "general",
+                    msg: 'Username and/or Password are missing!' 
+                }
+            });
         }
     } catch (err) {
         return res.status(500).json({ message: `Database failure when logging in as ${username}!` })

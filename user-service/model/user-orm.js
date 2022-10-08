@@ -46,10 +46,20 @@ export async function ormLoginUser(username, password) {
                 const token = generateAccessToken({ username });
                 return { jwt: token };
             } else {
-                return { err: "The password provided is inaccurate!" };
+                return { 
+                    err: {
+                        type: "password",
+                        msg: "The password provided is inaccurate!" 
+                    }
+                };
             }
         } else {
-            return { err: "User does not exist!" };
+            return { 
+                err: {
+                    type: "user",
+                    msg: "User does not exist!" 
+                } 
+            };
         }
     } catch (err) {
         console.log("ERROR: Could not login user");
