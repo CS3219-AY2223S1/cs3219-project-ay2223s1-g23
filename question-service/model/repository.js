@@ -16,14 +16,3 @@ export async function createQuestionModel(params) {
     return new QuestionModel(params)
 }
 
-// export async function deleteMatchModel(params) {
-//     return (await MatchModel.findOneAndRemove({ userId: params }))
-// }
-
-// export async function existsMatchModel(params) {
-//     return (await MatchModel.findOne({ userId: params }, 'userId')) !== null
-// }
-
-// export async function updateMatchModel(params, updateParams) {
-//     return await MatchModel.findOneAndUpdate({ userId: params }, updateParams)
-// }

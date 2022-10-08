@@ -50,11 +50,3 @@ async function randSelectQuestionId(difficulty) {
     return quesId;
 }
 
-// async function getNumOfQuestions(difficulty) {
-//     const result = await QuestionModel.countDocuments({ difficulty: { $eq: difficulty } })
-//         .exec()
-//         .then((res) => {
-//             return res
-//         })
-//     return result
-// }
