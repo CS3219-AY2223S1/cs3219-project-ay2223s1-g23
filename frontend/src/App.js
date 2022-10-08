@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import SignupPage from "./components/user/SignupPage";
 import LoginPage from "./components/user/LoginPage";
 import HomePage from "./components/HomePage";
-import RoomPage from "./components/matching/RoomPage";
+import RoomPage from "./components/room/RoomPage";
 import ForgetPassword from "./components/user/ForgetPasswordPage";
 import ResetPassword from "./components/user/ResetPasswordPage";
 import Navbar from "./components/layout/Navbar";
@@ -17,9 +17,9 @@ const socket = io.connect(URL_MATCH_SVC);
 function App() {
   return (
     <div className="App">
-      <Navbar />
-      <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
-        <Router>
+      <Router>
+        <Navbar />
+        <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
             <Route exact path="/" element={<Navigate replace to="/login" />}></Route>
             <Route path="/signup" element={<SignupPage />} />
@@ -29,8 +29,8 @@ function App() {
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>
-        </Router>
-      </Box>
+        </Box>
+      </Router>
     </div>
   );
 }

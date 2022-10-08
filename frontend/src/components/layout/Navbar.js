@@ -13,20 +13,39 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
   };
+
+  function removeCookie(cname) {
+    let expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    document.cookie = cname + "=;" + expires + "path=/";
+  }
+
+  const handleLogout = async () => {
+    removeCookie("token");
+    navigate("/login");
+    window.location.reload();
+  };
+
   const renderMenu = () => {
+    if (!document.cookie.includes("token")) {
+      return;
+    }
+
     return (
       <Box>
         <IconButton
@@ -70,7 +89,7 @@ export default function Navbar() {
             <Button variant={"outlined"} sx={{ margin: 1 }} color={"secondary"}>
               Reset Password
             </Button>
-            <Button variant={"contained"} sx={{ margin: 1 }}>
+            <Button variant={"contained"} onClick={handleLogout} sx={{ margin: 1 }}>
               Logout
             </Button>
           </MenuItem>
