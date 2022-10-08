@@ -54,7 +54,6 @@ function LoginPage() {
     });
     if (res && res.status === STATUS_CODE_OK) {
       const token = res.data.jwt;
-      setSuccessDialog("Account successfully login with JWT:" + token);
       setCookie("token", token, 0.01);
       console.log(document.cookie);
       dispatch(
@@ -75,12 +74,6 @@ function LoginPage() {
   }
 
   const closeDialog = () => setIsDialogOpen(false);
-
-  const setSuccessDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Success");
-    setDialogMsg(msg);
-  };
 
   const setErrorDialog = (msg) => {
     setIsDialogOpen(true);
