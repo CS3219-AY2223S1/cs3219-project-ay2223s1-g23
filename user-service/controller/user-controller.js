@@ -89,12 +89,12 @@ export async function forgetPassword(req, res) {
 export async function resetPassword(req, res) {
     try {
         const { token } = req.params;
-        const { username, password, confirmPassword } = req.body;
-        if (!password || !confirmPassword) {
+        const { username, newPassword, confirmNewPassword } = req.body;
+        if (!newPassword || !confirmNewPassword) {
             return res.status(400).json({ message: 'Password and/or Confirm Password is missing!' }); 
         }
 
-        const resp = await _resetPassword(username, token, password, confirmPassword);
+        const resp = await _resetPassword(username, token, newPassword, confirmNewPassword);
 
         if (resp.err) {
             return res.status(400).json({message: 'Fail to reset password!'});

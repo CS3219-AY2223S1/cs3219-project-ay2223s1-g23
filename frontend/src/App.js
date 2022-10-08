@@ -27,7 +27,7 @@ function App() {
             <Route path="/diff" element={<HomePage socket={socket} />} />
             <Route path="/room/:id" element={<RoomPage socket={socket} />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>
         </Box>
       </Router>
