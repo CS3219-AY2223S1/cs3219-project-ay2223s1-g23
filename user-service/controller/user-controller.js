@@ -7,28 +7,36 @@ import { ormCreateUser as _createUser,
 export async function createUser(req, res) {
     try {
         const { username, email, password } = req.body;
-        if (username && email && password) {
-            const resp = await _createUser(username, email, password);
-            console.log(resp);
-            if (resp.err) {
-                return res.status(400).json(resp);
-            } else {
-                if (resp) {
-                    console.log(`Created new user ${username} successfully!`)
-                    return res.status(201).json({message: `Created new user ${username} successfully!`});
-                } else {
-                    console.log(`${username} already exists!`)
-                    return res.status(400).json(resp);
-                }
-            }
-        } else {
-            return res.status(400).json({ 
-                err: {
-                    type: "general",
-                    msg: 'Username, Email and/or Password are missing!' 
-                }
-            });
+        const emptyError = { err: {} }
+        if (!username) {
+            emptyError.err.username = 'Username is missing!' 
+        } 
+        if (!email) {
+            emptyError.err.email = 'Email is missing!' 
+        } 
+        if (!password) {
+            emptyError.err.password = 'Password is missing!' 
+        } 
+
+        if (emptyError.err.username || emptyError.err.email || emptyError.err.password) {
+            return res.status(400).json(emptyError);
         }
+        
+        
+        const resp = await _createUser(username, email, password);
+        console.log(resp);
+        if (resp.err) {
+            return res.status(400).json(resp);
+        } else {
+            if (resp) {
+                console.log(`Created new user ${username} successfully!`)
+                return res.status(201).json({message: `Created new user ${username} successfully!`});
+            } else {
+                console.log(`${username} already exists!`)
+                return res.status(400).json(resp);
+            }
+        }
+        
     } catch (err) {
         return res.status(500).json({message: 'Database failure when creating new user!'})
     }

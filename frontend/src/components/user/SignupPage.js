@@ -50,20 +50,23 @@ function SignupPage() {
   const handleSignup = async () => {
     const res = await axios.post(URL_USER_SVC, { username, email, password }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
-        console.log(err.response.data);
-        if (err.response.data.err.type == "user") {
+        setIsUserErr(false);
+        setUserErr("");
+        setIsEmailErr(false);
+        setEmailErr("");
+        setIsPasswordErr(false);
+        setPasswordErr("");
+        if (err.response.data.err.username) {
           setIsUserErr(true);
-          setUserErr(err.response.data.err.msg);
-        } else if (err.response.data.err.type == "email") {
+          setUserErr(err.response.data.err.username);
+        }
+        if (err.response.data.err.email) {
           setIsEmailErr(true);
-          setEmailErr(err.response.data.err.msg);
-        } else {
-          setIsUserErr(true);
-          setUserErr(err.response.data.err.msg);
-          setIsEmailErr(true);
-          setEmailErr(err.response.data.err.msg);
+          setEmailErr(err.response.data.err.email);
+        }
+        if (err.response.data.err.password) {
           setIsPasswordErr(true);
-          setPasswordErr(err.response.data.err.msg);
+          setPasswordErr(err.response.data.err.password);
         }
       } else {
         setIsAlertOpen(true);

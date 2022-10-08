@@ -8,21 +8,17 @@ import nodemailer from "nodemailer";
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function ormCreateUser(username, email, password) {
     try {
+        const error = { err: {} };
         if (await existsUser(username)) {
-            console.log("123");
-            return {
-                err: {
-                    type: "user",
-                    msg: `${username} already exists!`
-                }
-            };
-        } else if (!EmailValidator.is_email_valid(email)) {
-            return {
-                err: {
-                    type: "email",
-                    msg: "Please provide a valid email address."
-                }
-            };
+            error.err.username = `${username} already exists!`;
+        }
+        
+        if (!EmailValidator.is_email_valid(email)) {
+            error.err.email = "Please provide a valid email address.";
+        } 
+        
+        if (error.err.username || error.err.email) {
+            return error;
         } else {
             const encryptedPassword = await bcrypt.hash(password, 10);
             const newUser = await createUser({
