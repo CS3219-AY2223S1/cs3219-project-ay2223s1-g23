@@ -26,6 +26,7 @@ import { STATUS_CODE_OK } from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fontSize } from "@mui/system";
+import { removeCookie, getCookie } from "../../util/cookies";
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -50,11 +51,6 @@ export default function Navbar() {
     setOpen(false);
   };
 
-  function removeCookie(cname) {
-    let expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    document.cookie = cname + "=;" + expires + "path=/";
-  }
-
   const handleLogout = async () => {
     removeCookie("token");
     navigate("/login");
@@ -64,22 +60,6 @@ export default function Navbar() {
   const handleDelete = () => {
     setIsDialogOpen(true);
   };
-
-  function getCookie(cname) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(";");
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == " ") {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-      }
-    }
-    return "";
-  }
 
   const handleConfirmDelete = async () => {
     const token = getCookie("token");
