@@ -14,6 +14,7 @@ import {
   Table,
   TableRow,
   TableCell,
+  TableBody,
   Snackbar,
   Alert,
 } from "@mui/material";
@@ -119,54 +120,56 @@ function SignupPage() {
           </Box>
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Username</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    error={isUserErr}
-                    helperText={userErr}
-                    sx={textfieldStyle}
-                    autoFocus
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Email</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    error={isEmailErr}
-                    helperText={emailErr}
-                    sx={textfieldStyle}
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Password</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    error={isPasswordErr}
-                    helperText={passwordErr}
-                    sx={textfieldStyle}
-                  />
-                </TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Username</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      error={isUserErr}
+                      helperText={userErr}
+                      sx={textfieldStyle}
+                      autoFocus
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Email</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      error={isEmailErr}
+                      helperText={emailErr}
+                      sx={textfieldStyle}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Password</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      error={isPasswordErr}
+                      helperText={passwordErr}
+                      sx={textfieldStyle}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </Container>
           <Box

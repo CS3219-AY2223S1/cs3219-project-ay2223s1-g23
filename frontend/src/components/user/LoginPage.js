@@ -9,6 +9,7 @@ import {
   Table,
   TableRow,
   TableCell,
+  TableBody,
   Snackbar,
   Alert,
 } from "@mui/material";
@@ -47,17 +48,17 @@ function LoginPage() {
   const handleLogin = async () => {
     const res = await axios.post(URL_USER_SVC_LOGIN, { username, password }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
-        if (err.response.data.err.type == "user") {
+        setIsUserErr(false);
+        setUserErr("");
+        setIsPasswordErr(false);
+        setPasswordErr("");
+        if (err.response.data.err.username) {
           setIsUserErr(true);
-          setUserErr(err.response.data.err.msg);
-        } else if (err.response.data.err.type == "password") {
+          setUserErr(err.response.data.err.username);
+        }
+        if (err.response.data.err.password) {
           setIsPasswordErr(true);
-          setPasswordErr(err.response.data.err.msg);
-        } else {
-          setIsUserErr(true);
-          setUserErr(err.response.data.err.msg);
-          setIsPasswordErr(true);
-          setPasswordErr(err.response.data.err.msg);
+          setPasswordErr(err.response.data.err.password);
         }
       } else {
         setIsAlertOpen(true);
@@ -101,38 +102,40 @@ function LoginPage() {
           </Box>
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Username</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    error={isUserErr}
-                    helperText={userErr}
-                    sx={textfieldStyle}
-                    autoFocus
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Password</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    error={isPasswordErr}
-                    helperText={passwordErr}
-                    sx={textfieldStyle}
-                  />
-                </TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Username</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      error={isUserErr}
+                      helperText={userErr}
+                      sx={textfieldStyle}
+                      autoFocus
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Password</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      error={isPasswordErr}
+                      helperText={passwordErr}
+                      sx={textfieldStyle}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </Container>
           <Box

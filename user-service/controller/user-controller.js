@@ -61,23 +61,26 @@ export async function deleteUser(req, res) {
 export async function loginUser(req, res) {
     try {
         const { username, password } = req.body;
-        if (username && password) {
-            const resp = await _loginUser(username, password);
-            console.log(resp);
-            if (resp.err) {
-                return res.status(400).json(resp);
-            } else {
-                const jwt = resp.jwt;
-                console.log(`Login in as user ${username} successfully!`)
-                return res.status(200).json({ jwt });
-            }
+        const emptyError = { err: {} }
+        if (!username) {
+            emptyError.err.username = 'Username is missing!' 
+        }  
+        if (!password) {
+            emptyError.err.password = 'Password is missing!' 
+        }
+
+        if (emptyError.err.username || emptyError.err.password) {
+            return res.status(400).json(emptyError);
+        }
+        
+        const resp = await _loginUser(username, password);
+        console.log(resp);
+        if (resp.err) {
+            return res.status(400).json(resp);
         } else {
-            return res.status(400).json({ 
-                err: {
-                    type: "general",
-                    msg: 'Username and/or Password are missing!' 
-                }
-            });
+            const jwt = resp.jwt;
+            console.log(`Login in as user ${username} successfully!`)
+            return res.status(200).json({ jwt });
         }
     } catch (err) {
         return res.status(500).json({ message: `Database failure when logging in as ${username}!` })

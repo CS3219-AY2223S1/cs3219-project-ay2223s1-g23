@@ -50,27 +50,20 @@ export async function ormDeleteUser(username) {
 
 export async function ormLoginUser(username, password) {
     try {
-        if (await existsUser(username)) {
-            const encryptedPassword = await getPassword(username);
-            if (await bcrypt.compare(password, encryptedPassword)) {
-                const token = generateAccessToken({ username });
-                return { jwt: token };
-            } else {
-                return { 
-                    err: {
-                        type: "password",
-                        msg: "The password provided is inaccurate!" 
-                    }
-                };
-            }
-        } else {
-            return { 
-                err: {
-                    type: "user",
-                    msg: "User does not exist!" 
-                } 
-            };
+        const error = { err: {} };
+        if (!await existsUser(username)) {
+            error.err.username = "User does not exist!";
+            return error;
         }
+
+        const encryptedPassword = await getPassword(username);
+        if (!await bcrypt.compare(password, encryptedPassword)) {
+            error.err.password = "The password provided is inaccurate!";
+            return error;
+        } 
+        
+        const token = generateAccessToken({ username });
+        return { jwt: token };
     } catch (err) {
         console.log("ERROR: Could not login user");
         return { err };
