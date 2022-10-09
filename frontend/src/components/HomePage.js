@@ -40,8 +40,6 @@ function HomePage() {
     if (!socket) return;
     const matchSuccessEventHandler = (data) => {
       successFindingMatch();
-      const roomId = data.roomId;
-      // socket.emit("join_room", roomId);
       socket.emit("clean_up", userId);
       handleCollabRoom(data);
     };
@@ -51,7 +49,6 @@ function HomePage() {
 
   const handleCollabRoom = async (data) => {
     const collabExist = await doesCollabExist(data.roomId);
-    console.log(collabExist);
     if (!collabExist) await createCollaboration(data);
     const roomId = data.roomId;
     navigate(`/room/${roomId}`, { state: roomId });
@@ -154,26 +151,30 @@ function HomePage() {
           display={"flex"}
           flexDirection={"column"}
           alignItems={"center"}
-          justifyContent={"center"}>
+          justifyContent={"center"}
+        >
           <Button
             variant="contained"
             onClick={handleDifficulty("easy")}
             color={"secondary"}
-            sx={difficultyStyle}>
+            sx={difficultyStyle}
+          >
             Easy
           </Button>
           <Button
             variant="outlined"
             onClick={handleDifficulty("medium")}
             color={"secondary"}
-            sx={difficultyStyle}>
+            sx={difficultyStyle}
+          >
             Medium
           </Button>
           <Button
             variant="contained"
             onClick={handleDifficulty("hard")}
             color={"secondary"}
-            sx={difficultyStyle}>
+            sx={difficultyStyle}
+          >
             Hard
           </Button>
           <MatchingDialog
