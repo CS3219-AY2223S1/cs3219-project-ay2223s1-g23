@@ -66,7 +66,7 @@ function ResetPasswordPage() {
           </DialogContent>
           <DialogActions>
             <Button component={Link} to="/login" variant={"contained"} color={"secondary"}>
-              Log in
+              Done
             </Button>
           </DialogActions>
         </Dialog>
