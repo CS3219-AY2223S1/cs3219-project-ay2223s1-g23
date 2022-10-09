@@ -2,11 +2,6 @@ import {
   Box,
   Typography,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   TextField,
   Grid,
   Paper,
@@ -15,14 +10,13 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC_FORGET_PASSWORD } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { Link } from "react-router-dom";
+import AlertAndDialog from "./AlertAndDialog";
 
 function ResetPasswordPage() {
   const [username, setUsername] = useState("");
@@ -46,33 +40,6 @@ function ResetPasswordPage() {
   };
 
   const closeAlert = () => setIsAlertOpen(false);
-
-  const resetResult = () => {
-    return (
-      <Box>
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          open={isAlertOpen}
-          autoHideDuration={4000}
-          onClose={closeAlert}>
-          <Alert severity="error" onClose={closeAlert}>
-            Please try again later
-          </Alert>
-        </Snackbar>
-        <Dialog open={isDialogOpen}>
-          <DialogTitle>Success</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Password reset link has been sent to your email</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button component={Link} to="/login" variant={"contained"} color={"secondary"}>
-              Done
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
-    );
-  };
 
   return (
     <Grid container>
@@ -116,7 +83,17 @@ function ResetPasswordPage() {
             Reset
           </Button>
         </Box>
-        {resetResult()}
+        <AlertAndDialog
+          alertMsg={"Please try again later"}
+          isAlertOpen={isAlertOpen}
+          alertDuration={4000}
+          closeAlert={closeAlert}
+          isDialogOpen={isDialogOpen}
+          dialogTitle={"Success"}
+          dialogText={"Password reset link has been sent to your email"}
+          buttonText={"Done"}
+          buttonLink={"/login"}
+        />
       </Grid>
       <Grid item xs={2} />
     </Grid>

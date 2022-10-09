@@ -2,11 +2,6 @@ import {
   Box,
   Typography,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   TextField,
   Grid,
   Paper,
@@ -15,14 +10,13 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
 import { Link } from "react-router-dom";
+import AlertAndDialog from "./AlertAndDialog";
 
 const col1Style = {
   pl: "8rem",
@@ -78,33 +72,6 @@ function SignupPage() {
   };
 
   const closeAlert = () => setIsAlertOpen(false);
-
-  const signupResult = () => {
-    return (
-      <Box>
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          open={isAlertOpen}
-          autoHideDuration={4000}
-          onClose={closeAlert}>
-          <Alert severity="error" onClose={closeAlert}>
-            Please try again later
-          </Alert>
-        </Snackbar>
-        <Dialog open={isDialogOpen}>
-          <DialogTitle>Success</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Account successfully created</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button component={Link} to="/login">
-              Log in
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
-    );
-  };
 
   return (
     <Grid container>
@@ -178,7 +145,17 @@ function SignupPage() {
             <Button variant={"contained"} onClick={handleSignup}>
               Sign up
             </Button>
-            {signupResult()}
+            <AlertAndDialog
+              alertMsg={"Please try again later"}
+              isAlertOpen={isAlertOpen}
+              alertDuration={4000}
+              closeAlert={closeAlert}
+              isDialogOpen={isDialogOpen}
+              dialogTitle={"Success"}
+              dialogText={"Account successfully created"}
+              buttonText={"Login"}
+              buttonLink={"/login"}
+            />
             <Box display={"flex"} alignItems={"center"} justifyContent={"center"} m={"1rem"}>
               <Typography variant={"body1"}>Already have an account?</Typography>
               <Typography component={Link} to="/login" variant={"body1"}>
