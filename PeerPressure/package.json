@@ -1,0 +1,27 @@
+{
+  "name": "peerpressure",
+  "version": "1.0.0",
+  "description": "This is a template repository for CS3219 project.",
+  "main": "index.js",
+  "scripts": {
+    "collab": "cd ../collaboration-service && npm run dev",
+    "comm": "cd ../communication-service && npm run dev",
+    "front": "cd ../frontend && npm start",
+    "match": "cd ../matching-service && npm run dev",
+    "user": "cd ../user-service && npm run dev",
+    "dev": "concurrently \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g23.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g23/issues"
+  },
+  "homepage": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g23#readme",
+  "devDependencies": {
+    "concurrently": "^1.0.0"
+  }
+}
