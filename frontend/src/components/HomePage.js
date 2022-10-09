@@ -151,30 +151,26 @@ function HomePage() {
           display={"flex"}
           flexDirection={"column"}
           alignItems={"center"}
-          justifyContent={"center"}
-        >
+          justifyContent={"center"}>
           <Button
             variant="contained"
             onClick={handleDifficulty("easy")}
             color={"secondary"}
-            sx={difficultyStyle}
-          >
+            sx={difficultyStyle}>
             Easy
           </Button>
           <Button
             variant="outlined"
             onClick={handleDifficulty("medium")}
             color={"secondary"}
-            sx={difficultyStyle}
-          >
+            sx={difficultyStyle}>
             Medium
           </Button>
           <Button
             variant="contained"
             onClick={handleDifficulty("hard")}
             color={"secondary"}
-            sx={difficultyStyle}
-          >
+            sx={difficultyStyle}>
             Hard
           </Button>
           <MatchingDialog

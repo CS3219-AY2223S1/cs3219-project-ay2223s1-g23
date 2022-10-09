@@ -53,8 +53,7 @@ export default function Navbar() {
           onClick={handleClick}
           aria-controls={open ? "account" : undefined}
           aria-expanded={open ? "true" : undefined}
-          aria-haspopup="true"
-        >
+          aria-haspopup="true">
           <MenuIcon />
         </IconButton>
         <Menu
@@ -64,8 +63,7 @@ export default function Navbar() {
           }}
           anchorEl={anchorEl}
           open={open}
-          onClose={handleClose}
-        >
+          onClose={handleClose}>
           <MenuItem>
             <Grid container>
               <Grid item xs={11}>

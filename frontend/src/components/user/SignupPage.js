@@ -129,8 +129,7 @@ function SignupPage() {
             display={"flex"}
             flexDirection={"column"}
             alignItems={"center"}
-            justifyContent={"center"}
-          >
+            justifyContent={"center"}>
             <Button variant={"contained"} onClick={handleSignup}>
               Sign up
             </Button>

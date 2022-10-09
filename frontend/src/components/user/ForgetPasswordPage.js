@@ -86,8 +86,7 @@ function ResetPasswordPage() {
           display={"flex"}
           flexDirection={"column"}
           alignItems={"center"}
-          justifyContent={"center"}
-        >
+          justifyContent={"center"}>
           <Button variant={"contained"} onClick={handleResetPassword} sx={{ margin: "2rem" }}>
             Reset
           </Button>

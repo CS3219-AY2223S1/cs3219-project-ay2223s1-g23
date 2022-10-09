@@ -136,8 +136,7 @@ function LoginPage() {
             display={"flex"}
             flexDirection={"column"}
             alignItems={"center"}
-            justifyContent={"center"}
-          >
+            justifyContent={"center"}>
             <Button variant={"contained"} onClick={handleLogin}>
               Log in
             </Button>

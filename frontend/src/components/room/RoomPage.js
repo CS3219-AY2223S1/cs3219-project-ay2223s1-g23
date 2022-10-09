@@ -213,8 +213,7 @@ function RoomPage() {
                   variant="outlined"
                   onClick={handleLeaveRoom}
                   color="error"
-                  sx={{ margin: 1 }}
-                >
+                  sx={{ margin: 1 }}>
                   Leave room
                 </Button>
               </Grid>
