@@ -2,7 +2,7 @@ import { Grid, Box, Typography, Button } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { URL_INSERT_DIFFICULTY, URL_COLLAB } from "../configs";
-import { STATUS_CODE_CREATED } from "../constants";
+import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
 import { useSelector } from "react-redux";
@@ -50,7 +50,9 @@ function HomePage() {
   }, [socket]);
 
   const handleCollabRoom = async (data) => {
-    await createCollaboration(data);
+    const collabExist = await doesCollabExist(data.roomId);
+    console.log(collabExist);
+    if (!collabExist) await createCollaboration(data);
     const roomId = data.roomId;
     navigate(`/room/${roomId}`, { state: roomId });
   };
@@ -66,6 +68,16 @@ function HomePage() {
           console.log("Please try again later");
         }
       });
+  };
+
+  const doesCollabExist = async (data) => {
+    let exists = true;
+    exists = await axios.get(`${URL_COLLAB}/${data}`).catch((err) => {
+      if (err.response.status === STATUS_CODE_NOT_FOUND) {
+        return false;
+      }
+    });
+    return exists;
   };
 
   const startFindingMatch = (diff) => {

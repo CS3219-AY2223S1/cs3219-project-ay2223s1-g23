@@ -8,7 +8,7 @@ import {
 export async function createCollab(req, res) {
   try {
     const { user1, user2, roomId, difficulty, text } = req.body;
-    if (user1 && user2 && roomId) {
+    if (user1 && user2 && roomId && difficulty) {
       const resp = await createOneCollab({
         user1,
         user2,
@@ -92,9 +92,10 @@ export async function getCollab(req, res) {
 
 export async function updateCollab(req, res) {
   try {
-    const { roomId, text } = req.body;
+    const data = req.body;
+    const { roomId } = data;
     if (roomId) {
-      const resp = await updateOneCollab(roomId, text);
+      const resp = await updateOneCollab(roomId, { ...data, roomId: roomId });
       if (!resp || resp.err) {
         return res.status(400).json({ message: "Could not update collab!" });
       } else {

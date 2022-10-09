@@ -58,11 +58,12 @@ export async function getOneCollab(roomId) {
   }
 }
 
-// only allow text to be updated
-export async function updateOneCollab(roomId, text) {
+export async function updateOneCollab(roomId, data) {
   try {
+    // prevent updating roomId
     const updatedCollab = await updateCollab(roomId, {
-      text: text ?? "",
+      ...data,
+      roomId: roomId,
     });
     if (!updatedCollab) {
       return false;

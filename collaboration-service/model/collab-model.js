@@ -4,12 +4,10 @@ let CollabModelSchema = new Schema(
   {
     user1: {
       type: String,
-      required: true,
       unique: true,
     },
     user2: {
       type: String,
-      required: true,
       unique: true,
     },
     roomId: {

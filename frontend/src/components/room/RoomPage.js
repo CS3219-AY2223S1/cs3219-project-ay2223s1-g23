@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import ReactQuill from "react-quill";
@@ -26,7 +27,8 @@ const modules = {
 };
 
 function RoomPage() {
-  const { state } = useLocation();
+  const roomId = useLocation().state;
+  const userId = useSelector((state) => state.user.username);
   const [socket, setSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
@@ -36,18 +38,16 @@ function RoomPage() {
       userId: "",
     },
   });
-  const [roomId, setRoomId] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    // socket
     const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
     setSocket(socketObj);
 
     fetchRoomDetails();
-    socketObj.emit("join_room", state);
+    socketObj.emit("join_room", roomId);
   }, []);
 
   useEffect(() => {
@@ -59,8 +59,28 @@ function RoomPage() {
     return () => socket.off("receive-changes", receiveChangesEventHandler);
   }, [socket]);
 
+  useEffect(() => {
+    if (!socket) return;
+    // this event is only handled if the first user and not the second user disconnects
+    const tryUpdateCollabDbHandler = async () => {
+      console.log("[try_update_collab_db] from the user still in the room (second user)");
+      await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
+      // TODO: add data to history-service
+      await updateCollabToRemoveUser(false); // remove userId of the (other) user that left
+    };
+    socket.on("try_update_collab_db", tryUpdateCollabDbHandler);
+    return () => socket.off("try_update_collab_db", tryUpdateCollabDbHandler);
+  }, [socket, value]);
+
+  const updateCollabInDb = async () => {
+    await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
+    // TODO: add data to history-service
+    const updatedCollab = (await updateCollabToRemoveUser()).data.data; // remove userId of the (current) user that left
+    if (!updatedCollab.user1 && !updatedCollab.user2) await deleteCollab(); // if both users have left, delete collab
+  };
+
   const fetchRoomDetails = async () => {
-    const res = await axios.get(`${URL_COLLAB}/${state}`).catch((err) => {
+    const res = await axios.get(`${URL_COLLAB}/${roomId}`).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         console.log("ERROR: " + err.response.data.message);
       } else {
@@ -68,7 +88,7 @@ function RoomPage() {
       }
     });
     if (res.status != 200) return;
-    const { user1, user2, roomId, difficulty } = res.data.data;
+    const { user1, user2, difficulty } = res.data.data;
     setIds({
       user1: {
         userId: user1,
@@ -78,7 +98,6 @@ function RoomPage() {
         userId: user2,
       },
     });
-    setRoomId(roomId);
     setDifficultyLevel(difficulty);
   };
 
@@ -92,27 +111,42 @@ function RoomPage() {
     });
   };
 
-  const updateCollab = async () => {
-    const res = await axios.put(`${URL_COLLAB}`, { roomId: roomId, text: value }).catch((err) => {
+  const updateCollab = async (data) => {
+    const res = await axios.put(`${URL_COLLAB}`, { ...data, roomId: roomId }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         console.log("ERROR: " + err.response.data.message);
       } else {
         console.log("Please try again later");
       }
     });
+    return res;
   };
 
-  const handleLeaveRoom = () => {
-    socket.emit("leave_room");
-    // socket.emit("leave_room", ids.user2.userId);
-    updateCollab();
-    // TODO: add data to history-service
-    deleteCollab();
+  const updateCollabToRemoveUser = async (removeCurrentUser = true) => {
+    let isCurrentUser1;
+    if (userId == ids.user1.userId) isCurrentUser1 = true;
+    else if (userId == ids.user2.userId) isCurrentUser1 = false;
+    else return; // throw error here
+    const updatedUserId =
+      (isCurrentUser1 && removeCurrentUser) || (!isCurrentUser1 && !removeCurrentUser)
+        ? {
+            user1: null,
+          }
+        : {
+            user2: null,
+          };
+    const res = await updateCollab({ ...updatedUserId });
+    return res;
+  };
+
+  const handleLeaveRoom = async () => {
+    await socket.disconnect();
+    updateCollabInDb();
     navigate(`/diff`);
   };
 
   const handleReset = () => {
-    socket.emit("send-changes", { roomId: roomId, text: "" });
+    socket.emit("send-changes", { text: "" });
   };
 
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
