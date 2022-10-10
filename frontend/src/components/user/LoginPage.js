@@ -13,7 +13,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { URL_USER_SVC_LOGIN } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { update } from "../../modules/user/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { setCookie } from "../../util/cookies";
+import useAuth from "../../util/auth/useAuth";
 
 const col1Style = {
   width: "50%",
@@ -42,6 +43,7 @@ function LoginPage() {
   const [passwordErr, setPasswordErr] = useState("");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
+  const auth = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -75,7 +77,9 @@ function LoginPage() {
           username: username,
         }),
       );
-      navigate(`/diff`);
+      auth.login();
+      console.log(auth.isLogin);
+      navigate(`/`);
     }
   };
 

@@ -9,6 +9,7 @@ import RoomPage from "./components/room/RoomPage";
 import ForgetPassword from "./components/user/ForgetPasswordPage";
 import ResetPassword from "./components/user/ResetPasswordPage";
 import Navbar from "./components/layout/Navbar";
+import AuthRoute from "./util/auth/AuthRoute";
 
 import { Box } from "@mui/material";
 
@@ -21,11 +22,12 @@ function App() {
         <Navbar />
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
-            <Route exact path="/" element={<Navigate replace to="/login" />}></Route>
+            <Route element={<AuthRoute />}>
+              <Route path="/" element={<HomePage socket={socket} />} />
+              <Route path="/room/:id" element={<RoomPage socket={socket} />} />
+            </Route>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/diff" element={<HomePage socket={socket} />} />
-            <Route path="/room/:id" element={<RoomPage socket={socket} />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>
