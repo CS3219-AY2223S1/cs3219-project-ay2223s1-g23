@@ -1,4 +1,4 @@
-import { createUser, existsUser, getPassword, updateUser, getEmail, deleteUser } from './repository.js';
+import { createUser, existsUser, getPassword, updateUser, getEmail, deleteUser, getUser } from './repository.js';
 import * as EmailValidator from 'node-email-validation';
 import jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
@@ -62,7 +62,8 @@ export async function ormLoginUser(username, password) {
             return error;
         } 
         
-        const token = generateAccessToken({ username });
+        const userDetail = await getUser(username);
+        const token = generateAccessToken(userDetail.toJSON());
         return { jwt: token };
     } catch (err) {
         console.log("ERROR: Could not login user");

@@ -1,9 +1,16 @@
+import jwtDecode from "jwt-decode";
 import { useState, createContext } from "react";
+import { getCookie } from "../cookies";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLogin, setIsLogin] = useState(document.cookie.includes("token"));
+  let initialIsLogin = false;
+  const decodedToken = getCookie("token") ? jwtDecode(getCookie("token")) : {};
+  if (decodedToken && decodedToken.exp * 1000 >= Date.now()) {
+    initialIsLogin = true;
+  }
+  const [isLogin, setIsLogin] = useState(initialIsLogin);
 
   const login = () => {
     setIsLogin(true);

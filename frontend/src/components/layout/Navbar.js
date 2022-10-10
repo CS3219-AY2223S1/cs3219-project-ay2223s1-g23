@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fontSize } from "@mui/system";
 import { removeCookie, getCookie } from "../../util/cookies";
+import jwtDecode from "jwt-decode";
 import useAuth from "../../util/auth/useAuth";
 
 export default function Navbar() {
@@ -40,7 +41,9 @@ export default function Navbar() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
-  const username = useSelector((state) => state.user.username);
+  const decodedToken = getCookie("token") ? jwtDecode(getCookie("token")) : {};
+  const username = decodedToken.username;
+  const email = decodedToken.email;
   const navigate = useNavigate();
   const auth = useAuth();
 
@@ -123,7 +126,7 @@ export default function Navbar() {
   };
 
   const renderMenu = () => {
-    if (!document.cookie.includes("token")) {
+    if (!auth.isLogin) {
       return;
     }
 
@@ -179,7 +182,7 @@ export default function Navbar() {
           <MenuItem>
             <Stack spacing={1}>
               <Typography>Email</Typography>
-              <Typography sx={userFont}>@.com</Typography>
+              <Typography sx={userFont}>{email}</Typography>
             </Stack>
           </MenuItem>
           <MenuItem>
@@ -216,7 +219,7 @@ export default function Navbar() {
         <Grid container>
           <Grid item xs={11}>
             <Typography variant="h5" components="div">
-              PeerPreasure
+              PeerPressure
             </Typography>
           </Grid>
           <Grid item xs={1} display="flex" justifyContent="flex-end">
