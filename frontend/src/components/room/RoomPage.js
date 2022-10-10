@@ -147,9 +147,6 @@ function RoomPage({ socket }) {
             </Grid>
           </Box>
           <Paper variant="outlined" square>
-            <Typography sx={{ height: "1.5rem", textDecoration: "underline" }}>
-              {question.title}
-            </Typography>
             <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
           </Paper>
         </Box>
