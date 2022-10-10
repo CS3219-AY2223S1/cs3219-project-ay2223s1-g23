@@ -4,6 +4,7 @@ var Schema = mongoose.Schema
 let QuestionModelSchema = new Schema({
     title: {
         type: String,
+        unique: true
     },
     body: {
         type: String,

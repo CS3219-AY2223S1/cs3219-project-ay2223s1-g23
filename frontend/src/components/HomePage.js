@@ -45,7 +45,7 @@ function HomePage({ socket }) {
     navigate(`/room/${roomId}`, {
       state: {
         roomId: roomId,
-        ques: data.ques,
+        quesId: data.quesId,
       },
     });
   };

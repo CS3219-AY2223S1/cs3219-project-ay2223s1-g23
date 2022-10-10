@@ -13,6 +13,10 @@ let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 export async function createQuestionModel(params) {
-    return new QuestionModel(params)
+    return new QuestionModel(params);
+}
+
+export async function getQuestionModelById(id) {
+    return await QuestionModel.findById(id);
 }
 

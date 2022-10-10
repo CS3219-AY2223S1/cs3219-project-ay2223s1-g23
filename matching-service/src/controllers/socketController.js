@@ -25,7 +25,7 @@ const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
 
 const fetchQuestion = async (_difficulty) => {
   try {
-    const res = await axios.get(`${URL_QUES}/${_difficulty}`);
+    const res = await axios.get(`${URL_QUES}/diff`, { params: { diff: _difficulty } });
     //console.log(res.data);
     return res.data.data;
   } catch (err) {
@@ -66,7 +66,7 @@ export const initSocketEventHandlers = (socket, io) => {
         socketId2: socketIdFromQueue,
         roomId: roomId,
         difficulty: difficulty,
-        ques: ques
+        quesId: ques._id
       };
 
       // Emit successful match to both users.

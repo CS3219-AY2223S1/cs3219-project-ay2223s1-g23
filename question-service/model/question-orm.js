@@ -1,4 +1,4 @@
-import { createQuestionModel } from './repository.js';
+import { createQuestionModel, getQuestionModelById } from './repository.js';
 import QuestionModel from "./question-model.js";
 import "dotenv/config";
 
@@ -20,19 +20,19 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
     }
 }
 
-export async function getOneQuestion(difficulty) {
+export async function getOneQuestionByDifficulty(difficulty) {
     try {
         const quesId = await randSelectQuestionId(difficulty);
-        const ques = await QuestionModel.findById(quesId);
+        const ques = await getQuestionModelById(quesId);
         if (ques != null) {
             return ques;
         } else {
             return {
-                err: "ques empty"
+                err: "no question found by difficulty"
             }
         }
     } catch (err) {
-        console.log('ERROR: Could not create ques model');
+        console.log('ERROR: Could not get one question by difficulty');
         return { err };
     }
 }
@@ -50,3 +50,19 @@ async function randSelectQuestionId(difficulty) {
     return quesId;
 }
 
+
+export async function getOneQuestionById(id) {
+    try {
+        const ques = await getQuestionModelById(id);
+        if (ques != null) {
+            return ques;
+        } else {
+            return {
+                err: "ques not found by id"
+            }
+        }
+    } catch (err) {
+        console.log('ERROR: Could not get one question by id');
+        return { err };
+    }
+}

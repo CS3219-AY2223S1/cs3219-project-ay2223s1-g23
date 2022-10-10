@@ -1,6 +1,7 @@
 import {
     createOneQuestionModel as _createOneQuestionModel,
-    getOneQuestion as _getOneQuestion
+    getOneQuestionByDifficulty as _getOneQuestionByDifficulty,
+    getOneQuestionById as _getOneQuestionById
 } from '../model/question-orm.js'
 
 export async function createQuestion(req, res) {
@@ -25,14 +26,35 @@ export async function createQuestion(req, res) {
 
 export async function getQuestionByDiff(req, res) {
     try {
-        const { diff } = req.params;
-        const resp = await _getOneQuestion(diff);
+        const { diff } = req.query;
+        const resp = await _getOneQuestionByDifficulty(diff);
         //console.log(resp);
         if (resp.err) {
             return res.status(400).json({ message: 'Could not get question by diff' });
         } else if (resp) {
             return res.status(200).json({
                 message: "Success getting question!",
+                data: resp
+            });
+        } else {
+            return res.status(404).json({ message: 'Ques not found!' });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: 'Database failure when getting ques!' })
+    }
+}
+
+
+export async function getQuestionById(req, res) {
+    try {
+        const { id } = req.query;
+        const resp = await _getOneQuestionById(id);
+        //console.log(resp);
+        if (resp.err) {
+            return res.status(400).json({ message: 'Could not get question by id' });
+        } else if (resp) {
+            return res.status(200).json({
+                message: "Success getting question by id!",
                 data: resp
             });
         } else {

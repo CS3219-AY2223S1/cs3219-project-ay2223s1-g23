@@ -5,7 +5,7 @@ import CallIcon from "@mui/icons-material/Call";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB } from "../../configs";
+import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
 
 const modules = {
@@ -35,28 +35,47 @@ function RoomPage({ socket }) {
   });
   const [roomId, setRoomId] = useState("");
   const [value, setValue] = useState("");
-  const [question, setQuestion] = useState(
-    state.ques
-      ? {
-          id: state.ques._id,
-          title: state.ques.title,
-          body: state.ques.body,
-          difficulty: state.ques.difficulty,
-          url: state.ques.url,
-        }
-      : {
-          id: "id",
-          title: "title",
-          body: "body",
-          difficulty: "difficulty",
-          url: "url",
-        },
-  );
+  const [question, setQuestion] = useState({
+    id: "id",
+    title: "title",
+    body: "body",
+    difficulty: "difficulty",
+    url: "url",
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchRoomDetails();
   }, []);
+
+  useEffect(() => {
+    fetchQuesDetails();
+  }, [state.quesId]);
+
+  const fetchQuesDetails = async () => {
+    const res = await axios
+      .get(`${URL_QUES}/id`, {
+        params: {
+          id: state.quesId,
+        },
+      })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+    if (res.status != 200) return;
+    const { _id, title, body, difficulty, url } = res.data.data;
+    setQuestion({
+      id: _id,
+      title: title,
+      body: body,
+      difficulty: difficulty,
+      url: url,
+    });
+  };
 
   useEffect(() => {
     const receiveChangesEventHandler = ({ roomId, text }) => {
