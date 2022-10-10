@@ -16,8 +16,13 @@ export const MatchStatus = {
 };
 
 const difficultyStyle = {
-  padding: "1rem 8rem 1rem 8rem",
+  //padding: "1rem 8rem 1rem 8rem",
   margin: "1rem",
+  height: 65,
+  width: 300,
+  border: 3,
+  borderColor: "secondary.main",
+  fontWeight: "bold",
 };
 
 function HomePage({ socket }) {
