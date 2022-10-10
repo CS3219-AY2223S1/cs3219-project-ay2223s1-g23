@@ -10,12 +10,15 @@ import ForgetPassword from "./components/user/ForgetPasswordPage";
 import ResetPassword from "./components/user/ResetPasswordPage";
 import Navbar from "./components/layout/Navbar";
 import AuthRoute from "./util/auth/AuthRoute";
+import useAuth from "./util/auth/useAuth";
 
 import { Box } from "@mui/material";
 
 const socket = io.connect(URL_MATCH_SVC);
 
 function App() {
+  const auth = useAuth();
+
   return (
     <div className="App">
       <Router>
@@ -27,7 +30,7 @@ function App() {
               <Route path="/room/:id" element={<RoomPage socket={socket} />} />
             </Route>
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>

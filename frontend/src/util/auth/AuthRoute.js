@@ -4,7 +4,7 @@ import useAuth from "./useAuth";
 
 const AuthRoute = () => {
   const auth = useAuth();
-  return auth.isLogin ? <Outlet /> : <Navigate to="/login" />;
+  return auth.isLogin ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default AuthRoute;
