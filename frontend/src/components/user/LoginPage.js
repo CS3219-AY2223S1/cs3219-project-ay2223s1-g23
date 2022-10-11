@@ -17,8 +17,6 @@ import { useState, useContext } from "react";
 import axios from "axios";
 import { URL_USER_SVC_LOGIN } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
-import { useDispatch } from "react-redux";
-import { update } from "../../modules/user/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { setCookie } from "../../util/cookies";
 import useAuth from "../../util/auth/useAuth";
@@ -44,7 +42,6 @@ function LoginPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
   const auth = useAuth();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -71,12 +68,6 @@ function LoginPage() {
       const token = res.data.jwt;
       setCookie("token", token, 0.01);
       console.log(document.cookie);
-      dispatch(
-        update({
-          userId: "",
-          username: username,
-        }),
-      );
       auth.login();
       console.log(auth.isLogin);
       navigate(`/`);

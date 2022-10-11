@@ -27,7 +27,7 @@ function App() {
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
             <Route element={<AuthRoute />}>
-              <Route path="/" element={<HomePage socket={socket} />} />
+              <Route path="/" element={<HomePage socket={matchSocket} />} />
               <Route
                 path="/room/:id"
                 element={<RoomPage matchSocket={matchSocket} voiceSocket={voiceSocket} />}

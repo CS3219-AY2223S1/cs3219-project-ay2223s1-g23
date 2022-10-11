@@ -17,7 +17,7 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
-import { useSelector } from "react-redux";
+import decodedJwt from "../../util/decodeJwt";
 
 const modules = {
   toolbar: [
@@ -98,7 +98,8 @@ function RoomPage({ matchSocket, voiceSocket }) {
     url: "url",
   });
   const navigate = useNavigate();
-  const username = useSelector((state) => state.user.username);
+  const decodedToken = decodedJwt();
+  const username = decodedToken.username;
 
   useEffect(() => {
     fetchRoomDetails();
@@ -202,7 +203,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
     updateCollab();
     // TODO: add data to history-service
     deleteCollab();
-    navigate(`/diff`);
+    navigate(`/`);
   };
 
   const handleReset = () => {
@@ -226,7 +227,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
           <Box display={"flex"} flexDirection={"row"} mt={"1rem"} mb={"1rem"}>
             <Grid container>
               <Grid item xs={10}>
-                <Typography variant={"h5"}>question.title</Typography>
+                <Typography variant={"h5"}>{question.title}</Typography>
               </Grid>
               <Grid item xs={2} display="flex" justifyContent="flex-end">
                 <Paper varient={6}>

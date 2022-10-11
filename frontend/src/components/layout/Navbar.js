@@ -25,10 +25,9 @@ import { useState, useContext } from "react";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { fontSize } from "@mui/system";
 import { removeCookie, getCookie } from "../../util/cookies";
-import jwtDecode from "jwt-decode";
+import decodedJwt from "../../util/decodeJwt";
 import useAuth from "../../util/auth/useAuth";
 
 export default function Navbar() {
@@ -41,7 +40,7 @@ export default function Navbar() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
-  const decodedToken = getCookie("token") ? jwtDecode(getCookie("token")) : {};
+  const decodedToken = decodedJwt();
   const username = decodedToken.username;
   const email = decodedToken.email;
   const navigate = useNavigate();
