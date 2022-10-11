@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
+import { IconButton, Paper, Box, Grid, Button, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB } from "../../configs";
+import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
 
 const modules = {
@@ -34,13 +34,48 @@ function RoomPage({ socket }) {
     },
   });
   const [roomId, setRoomId] = useState("");
-  const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
+  const [question, setQuestion] = useState({
+    id: "id",
+    title: "title",
+    body: "body",
+    difficulty: "difficulty",
+    url: "url",
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchRoomDetails();
   }, []);
+
+  useEffect(() => {
+    fetchQuesDetails();
+  }, [state.quesId]);
+
+  const fetchQuesDetails = async () => {
+    const res = await axios
+      .get(`${URL_QUES}/id`, {
+        params: {
+          id: state.quesId,
+        },
+      })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+    if (res.status != 200) return;
+    const { _id, title, body, difficulty, url } = res.data.data;
+    setQuestion({
+      id: _id,
+      title: title,
+      body: body,
+      difficulty: difficulty,
+      url: url,
+    });
+  };
 
   useEffect(() => {
     const receiveChangesEventHandler = ({ roomId, text }) => {
@@ -51,7 +86,7 @@ function RoomPage({ socket }) {
   }, [socket]);
 
   const fetchRoomDetails = async () => {
-    const res = await axios.get(`${URL_COLLAB}/${state}`).catch((err) => {
+    const res = await axios.get(`${URL_COLLAB}/${state.roomId}`).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         console.log("ERROR: " + err.response.data.message);
       } else {
@@ -70,7 +105,6 @@ function RoomPage({ socket }) {
       },
     });
     setRoomId(roomId);
-    setDifficultyLevel(difficulty);
   };
 
   const deleteCollab = async () => {
@@ -125,14 +159,14 @@ function RoomPage({ socket }) {
               <Grid item xs={2} display="flex" justifyContent="flex-end">
                 <Paper varient={6}>
                   <Typography variant={"h5"} m={"5px"}>
-                    {difficultyLevel ?? "unknown diff"}
+                    {question.difficulty ?? "unknown diff"}
                   </Typography>
                 </Paper>
               </Grid>
             </Grid>
           </Box>
           <Paper variant="outlined" square>
-            <Typography sx={{ height: "40rem" }}>Question</Typography>
+            <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
           </Paper>
         </Box>
       </Grid>
