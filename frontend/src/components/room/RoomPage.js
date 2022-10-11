@@ -70,7 +70,7 @@ function RoomPage() {
     };
     socket.on("try_update_collab_db", tryUpdateCollabDbHandler);
     return () => socket.off("try_update_collab_db", tryUpdateCollabDbHandler);
-  }, [socket, value]);
+  }, [socket, value, ids]);
 
   const updateCollabInDb = async () => {
     await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
@@ -124,9 +124,14 @@ function RoomPage() {
 
   const updateCollabToRemoveUser = async (removeCurrentUser = true) => {
     let isCurrentUser1;
-    if (userId == ids.user1.userId) isCurrentUser1 = true;
-    else if (userId == ids.user2.userId) isCurrentUser1 = false;
-    else return; // throw error here
+    if (userId == ids.user1.userId) {
+      isCurrentUser1 = true;
+    } else if (userId == ids.user2.userId) {
+      isCurrentUser1 = false;
+    } else {
+      console.log("something went wrong in updateCollabToRemoveUser");
+      return;
+    }
     const updatedUserId =
       (isCurrentUser1 && removeCurrentUser) || (!isCurrentUser1 && !removeCurrentUser)
         ? {
