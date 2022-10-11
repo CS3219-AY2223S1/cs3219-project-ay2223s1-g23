@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
+import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
@@ -207,12 +208,6 @@ function RoomPage({ matchSocket, voiceSocket }) {
               <Button variant="contained" onClick={handleReset} color="error" sx={{ margin: 1 }}>
                 Reset
               </Button>
-              <Button variant="contained" onClick={joinCall} color="secondary" sx={{ margin: 1 }}>
-                Join Call
-              </Button>
-              <Button variant="contained" onClick={leaveCall} color="secondary" sx={{ margin: 1 }}>
-                Leave Call
-              </Button>
             </Grid>
           </Grid>
           <ReactQuill
@@ -225,12 +220,15 @@ function RoomPage({ matchSocket, voiceSocket }) {
           />
           <Box display={"flex"} flexDirection={"row"}>
             <Grid container>
-              <Grid item xs={1}>
-                <IconButton>
+              <Grid item xs={2}>
+                <IconButton onClick={joinCall} color="secondary">
                   <CallIcon />
                 </IconButton>
+                <IconButton onClick={leaveCall} color="error">
+                  <PhoneDisabledIcon />
+                </IconButton>
               </Grid>
-              <Grid item xs={11} display={"flex"} justifyContent="flex-end">
+              <Grid item xs={10} display={"flex"} justifyContent="flex-end">
                 <Button
                   variant="outlined"
                   onClick={handleLeaveRoom}
