@@ -47,7 +47,12 @@ function HomePage({ socket }) {
   const handleCollabRoom = async (data) => {
     await createCollaboration(data);
     const roomId = data.roomId;
-    navigate(`/room/${roomId}`, { state: roomId });
+    navigate(`/room/${roomId}`, {
+      state: {
+        roomId: roomId,
+        quesId: data.quesId,
+      },
+    });
   };
 
   const createCollaboration = async (data) => {

@@ -11,11 +11,13 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import CallIcon from "@mui/icons-material/Call";
+import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB } from "../../configs";
+import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
+import { useSelector } from "react-redux";
 
 const modules = {
   toolbar: [
@@ -32,7 +34,51 @@ const modules = {
   ],
 };
 
-function RoomPage({ socket }) {
+function RoomPage({ matchSocket, voiceSocket }) {
+  const setUpVoiceChat = async (time) => {
+    console.log("Setting up voice recording");
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      var madiaRecorder = new MediaRecorder(stream);
+      madiaRecorder.start();
+
+      var audioChunks = [];
+
+      madiaRecorder.addEventListener("dataavailable", function (event) {
+        audioChunks.push(event.data);
+      });
+
+      madiaRecorder.addEventListener("stop", function () {
+        var audioBlob = new Blob(audioChunks);
+
+        audioChunks = [];
+
+        var fileReader = new FileReader();
+        fileReader.readAsDataURL(audioBlob);
+        fileReader.onloadend = function () {
+          console.log("sending sound " + username);
+          var base64String = fileReader.result;
+          voiceSocket.emit("voice", base64String);
+        };
+
+        madiaRecorder.start();
+
+        setTimeout(function () {
+          madiaRecorder.stop();
+        }, time);
+      });
+
+      setTimeout(function () {
+        madiaRecorder.stop();
+      }, time);
+    });
+
+    voiceSocket.on("send", function (data) {
+      var audio = new Audio(data);
+      audio.play();
+      console.log("playing sound " + username);
+    });
+  };
+
   const { state } = useLocation();
   const [ids, setIds] = useState({
     user1: {
@@ -43,24 +89,74 @@ function RoomPage({ socket }) {
     },
   });
   const [roomId, setRoomId] = useState("");
-  const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
+  const [question, setQuestion] = useState({
+    id: "id",
+    title: "title",
+    body: "body",
+    difficulty: "difficulty",
+    url: "url",
+  });
   const navigate = useNavigate();
+  const username = useSelector((state) => state.user.username);
 
   useEffect(() => {
     fetchRoomDetails();
+  });
+
+  useEffect(() => {
+    setUpVoiceChat(1000);
   }, []);
+
+  useEffect(() => {
+    fetchQuesDetails();
+  }, [state.quesId]);
+
+  const fetchQuesDetails = async () => {
+    const res = await axios
+      .get(`${URL_QUES}/id`, {
+        params: {
+          id: state.quesId,
+        },
+      })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+    if (res.status != 200) return;
+    const { _id, title, body, difficulty, url } = res.data.data;
+    setQuestion({
+      id: _id,
+      title: title,
+      body: body,
+      difficulty: difficulty,
+      url: url,
+    });
+  };
 
   useEffect(() => {
     const receiveChangesEventHandler = ({ roomId, text }) => {
       setValue(text);
     };
-    socket.on("receive-changes", receiveChangesEventHandler);
-    return () => socket.off("receive-changes", receiveChangesEventHandler);
-  }, [socket]);
+    matchSocket.on("receive-changes", receiveChangesEventHandler);
+    return () => matchSocket.off("receive-changes", receiveChangesEventHandler);
+  }, [matchSocket]);
+
+  function joinCall(e) {
+    console.log("Setting online status to true");
+    voiceSocket.emit("userInfo", { roomId, online: true });
+  }
+
+  function leaveCall(e) {
+    console.log("Setting online status to false");
+    voiceSocket.emit("userInfo", { roomId, online: false });
+  }
 
   const fetchRoomDetails = async () => {
-    const res = await axios.get(`${URL_COLLAB}/${state}`).catch((err) => {
+    const res = await axios.get(`${URL_COLLAB}/${state.roomId}`).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         console.log("ERROR: " + err.response.data.message);
       } else {
@@ -79,7 +175,6 @@ function RoomPage({ socket }) {
       },
     });
     setRoomId(roomId);
-    setDifficultyLevel(difficulty);
   };
 
   const deleteCollab = async () => {
@@ -103,7 +198,7 @@ function RoomPage({ socket }) {
   };
 
   const handleLeaveRoom = () => {
-    socket.emit("leave_room", ids.user2.userId);
+    matchSocket.emit("leave_room", ids.user2.userId);
     updateCollab();
     // TODO: add data to history-service
     deleteCollab();
@@ -111,13 +206,13 @@ function RoomPage({ socket }) {
   };
 
   const handleReset = () => {
-    socket.emit("send-changes", { roomId: roomId, text: "" });
+    matchSocket.emit("send-changes", { roomId: roomId, text: "" });
   };
 
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
     if (source !== "user") return; // tracking only user changes
     const text = editor.getText();
-    socket.emit("send-changes", { roomId: roomId, text: text });
+    matchSocket.emit("send-changes", { roomId: roomId, text: text });
   };
 
   return (
@@ -136,14 +231,14 @@ function RoomPage({ socket }) {
               <Grid item xs={2} display="flex" justifyContent="flex-end">
                 <Paper varient={6}>
                   <Typography variant={"h5"} m={"5px"}>
-                    {difficultyLevel ?? "unknown diff"}
+                    {question.difficulty ?? "unknown diff"}
                   </Typography>
                 </Paper>
               </Grid>
             </Grid>
           </Box>
           <Paper variant="outlined" square>
-            <Typography sx={{ height: "40rem" }}>Question</Typography>
+            <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
           </Paper>
         </Box>
       </Grid>
@@ -170,12 +265,15 @@ function RoomPage({ socket }) {
           />
           <Box display={"flex"} flexDirection={"row"}>
             <Grid container>
-              <Grid item xs={1}>
-                <IconButton>
+              <Grid item xs={2}>
+                <IconButton onClick={joinCall} color="secondary">
                   <CallIcon />
                 </IconButton>
+                <IconButton onClick={leaveCall} color="error">
+                  <PhoneDisabledIcon />
+                </IconButton>
               </Grid>
-              <Grid item xs={11} display={"flex"} justifyContent="flex-end">
+              <Grid item xs={10} display={"flex"} justifyContent="flex-end">
                 <Button
                   variant="outlined"
                   onClick={handleLeaveRoom}

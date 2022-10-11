@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { URL_MATCH_SVC } from "./configs";
+import { URL_COMM_SVC, URL_MATCH_SVC } from "./configs";
 import io from "socket.io-client";
 
 import SignupPage from "./components/user/SignupPage";
@@ -14,7 +14,8 @@ import useAuth from "./util/auth/useAuth";
 
 import { Box } from "@mui/material";
 
-const socket = io.connect(URL_MATCH_SVC);
+const matchSocket = io.connect(URL_MATCH_SVC);
+const voiceSocket = io.connect(URL_COMM_SVC);
 
 function App() {
   const auth = useAuth();
@@ -27,7 +28,10 @@ function App() {
           <Routes>
             <Route element={<AuthRoute />}>
               <Route path="/" element={<HomePage socket={socket} />} />
-              <Route path="/room/:id" element={<RoomPage socket={socket} />} />
+              <Route
+                path="/room/:id"
+                element={<RoomPage matchSocket={matchSocket} voiceSocket={voiceSocket} />}
+              />
             </Route>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
