@@ -2,11 +2,6 @@ import {
   Box,
   Typography,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   TextField,
   Grid,
   Paper,
@@ -14,69 +9,37 @@ import {
   Table,
   TableRow,
   TableCell,
+  TableBody,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC_FORGET_PASSWORD } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { Link } from "react-router-dom";
+import AlertAndDialog from "./AlertAndDialog";
 
 function ResetPasswordPage() {
   const [username, setUsername] = useState("");
+  const [isUserErr, setIsUserErr] = useState(false);
+  const [userErr, setUserErr] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogMsg, setDialogMsg] = useState("");
-  const [isSuccessDialog, setIsSuccessDialog] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const handleResetPassword = async () => {
     const res = await axios.post(URL_USER_SVC_FORGET_PASSWORD, { username }).catch((err) => {
-      setIsSuccessDialog(false);
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
-        setErrorDialog("ERROR: " + err.response.data.message);
+        setIsUserErr(true);
+        setUserErr(err.response.data.message);
       } else {
-        setErrorDialog("Please try again later");
+        setIsAlertOpen(true);
       }
     });
     if (res && res.status === STATUS_CODE_OK) {
-      setIsSuccessDialog(true);
-      setSuccessDialog("Password reset link has been sent to your email");
+      setIsDialogOpen(true);
     }
   };
 
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const setSuccessDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Success");
-    setDialogMsg(msg);
-  };
-
-  const setErrorDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Error");
-    setDialogMsg(msg);
-  };
-
-  const renderDialogButton = () => {
-    if (isSuccessDialog) {
-      return (
-        <Button
-          component={Link}
-          to="/login"
-          variant={"contained"}
-          onClick={closeDialog}
-          color={"secondary"}>
-          Done
-        </Button>
-      );
-    }
-
-    return (
-      <Button variant={"contained"} onClick={closeDialog} color={"secondary"}>
-        Retry
-      </Button>
-    );
-  };
+  const closeAlert = () => setIsAlertOpen(false);
 
   return (
     <Grid container>
@@ -90,20 +53,24 @@ function ResetPasswordPage() {
         <Paper elevation={3} sx={{ width: "65%", margin: "auto" }}>
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
-              <TableRow>
-                <TableCell sx={{ pl: "10rem" }}>
-                  <Typography variant={"body1"}>Username</Typography>
-                </TableCell>
-                <TableCell sx={{ width: "50%" }}>
-                  <TextField
-                    variant="filled"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    sx={{ margin: "1rem" }}
-                    autoFocus
-                  />
-                </TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ pl: "10rem" }}>
+                    <Typography variant={"body1"}>Username</Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: "50%" }}>
+                    <TextField
+                      variant="filled"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      error={isUserErr}
+                      helperText={userErr}
+                      sx={{ margin: "1rem" }}
+                      autoFocus
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </Container>
         </Paper>
@@ -116,13 +83,17 @@ function ResetPasswordPage() {
             Reset
           </Button>
         </Box>
-        <Dialog open={isDialogOpen} onClose={closeDialog}>
-          <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>{dialogMsg}</DialogContentText>
-          </DialogContent>
-          <DialogActions>{renderDialogButton()}</DialogActions>
-        </Dialog>
+        <AlertAndDialog
+          alertMsg={"Please try again later"}
+          isAlertOpen={isAlertOpen}
+          alertDuration={4000}
+          closeAlert={closeAlert}
+          isDialogOpen={isDialogOpen}
+          dialogTitle={"Success"}
+          dialogText={"Password reset link has been sent to your email"}
+          buttonText={"Done"}
+          buttonLink={"/login"}
+        />
       </Grid>
       <Grid item xs={2} />
     </Grid>

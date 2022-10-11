@@ -1,11 +1,6 @@
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   TextField,
   Typography,
   Paper,
@@ -14,15 +9,17 @@ import {
   Table,
   TableRow,
   TableCell,
+  TableBody,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { URL_USER_SVC_LOGIN } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
-import { useDispatch } from "react-redux";
-import { update } from "../../modules/user/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { setCookie } from "../../util/cookies";
+import useAuth from "../../util/auth/useAuth";
 
 const col1Style = {
   width: "50%",
@@ -38,41 +35,46 @@ const textfieldStyle = {
 function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogMsg, setDialogMsg] = useState("");
-  const dispatch = useDispatch();
+  const [isUserErr, setIsUserErr] = useState(false);
+  const [userErr, setUserErr] = useState("");
+  const [isPasswordErr, setIsPasswordErr] = useState(false);
+  const [passwordErr, setPasswordErr] = useState("");
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
+  const auth = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     const res = await axios.post(URL_USER_SVC_LOGIN, { username, password }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
-        setErrorDialog("ERROR: " + err.response.data.message);
+        setIsUserErr(false);
+        setUserErr("");
+        setIsPasswordErr(false);
+        setPasswordErr("");
+        if (err.response.data.err.username) {
+          setIsUserErr(true);
+          setUserErr(err.response.data.err.username);
+        }
+        if (err.response.data.err.password) {
+          setIsPasswordErr(true);
+          setPasswordErr(err.response.data.err.password);
+        }
       } else {
-        setErrorDialog("Please try again later");
+        setIsAlertOpen(true);
+        setAlertMsg("Please try again later");
       }
     });
     if (res && res.status === STATUS_CODE_OK) {
       const token = res.data.jwt;
       setCookie("token", token, 0.01);
       console.log(document.cookie);
-      dispatch(
-        update({
-          userId: "",
-          username: username,
-        }),
-      );
-      navigate(`/diff`);
+      auth.login();
+      console.log(auth.isLogin);
+      navigate(`/`);
     }
   };
 
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const setErrorDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Error");
-    setDialogMsg(msg);
-  };
+  const closeAlert = () => setIsAlertOpen(false);
 
   return (
     <Grid container>
@@ -95,34 +97,40 @@ function LoginPage() {
           </Box>
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Username</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    sx={textfieldStyle}
-                    autoFocus
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Password</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    sx={textfieldStyle}
-                  />
-                </TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Username</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      error={isUserErr}
+                      helperText={userErr}
+                      sx={textfieldStyle}
+                      autoFocus
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Password</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      error={isPasswordErr}
+                      helperText={passwordErr}
+                      sx={textfieldStyle}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </Container>
           <Box
@@ -133,6 +141,15 @@ function LoginPage() {
             <Button variant={"contained"} onClick={handleLogin}>
               Log in
             </Button>
+            <Snackbar
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              open={isAlertOpen}
+              autoHideDuration={4000}
+              onClose={closeAlert}>
+              <Alert severity="error" onClose={closeAlert}>
+                {alertMsg}
+              </Alert>
+            </Snackbar>
             <Box display={"flex"} alignItems={"center"} justifyContent={"center"} margin={"1rem"}>
               <Typography variant={"body1"}> Forgotten Password?</Typography>
               <Typography component={Link} to="/forget-password" variant={"body1"}>
@@ -148,15 +165,6 @@ function LoginPage() {
               </Typography>
             </Box>
           </Box>
-          <Dialog open={isDialogOpen} onClose={closeDialog}>
-            <DialogTitle>{dialogTitle}</DialogTitle>
-            <DialogContent>
-              <DialogContentText>{dialogMsg}</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeDialog}>Done</Button>
-            </DialogActions>
-          </Dialog>
         </Paper>
       </Grid>
     </Grid>

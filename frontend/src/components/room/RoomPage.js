@@ -1,6 +1,15 @@
+import {
+  IconButton,
+  Paper,
+  Box,
+  Grid,
+  Button,
+  TextField,
+  Typography,
+  Divider,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { IconButton, Paper, Box, Grid, Button, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
@@ -8,7 +17,7 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
-import { useSelector } from "react-redux";
+import decodedJwt from "../../util/decodeJwt";
 
 const modules = {
   toolbar: [
@@ -89,7 +98,8 @@ function RoomPage({ matchSocket, voiceSocket }) {
     url: "url",
   });
   const navigate = useNavigate();
-  const username = useSelector((state) => state.user.username);
+  const decodedToken = decodedJwt();
+  const username = decodedToken.username;
 
   useEffect(() => {
     fetchRoomDetails();
@@ -193,7 +203,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
     updateCollab();
     // TODO: add data to history-service
     deleteCollab();
-    navigate(`/diff`);
+    navigate(`/`);
   };
 
   const handleReset = () => {
@@ -210,12 +220,14 @@ function RoomPage({ matchSocket, voiceSocket }) {
     <Grid container>
       <Grid item xs={6}>
         <Box mr={"1rem"}>
-          <Box display={"flex"} flexDirection={"row"} mb={"1rem"}>
+          <Typography variant={"h4"}>
+            {ids.user1.userId} and {ids.user2.userId}&apos;s room
+          </Typography>
+          <Divider variant="middle" />
+          <Box display={"flex"} flexDirection={"row"} mt={"1rem"} mb={"1rem"}>
             <Grid container>
               <Grid item xs={10}>
-                <Typography variant={"h4"}>
-                  {ids.user1.userId} and {ids.user2.userId}&apos;s room
-                </Typography>
+                <Typography variant={"h5"}>{question.title}</Typography>
               </Grid>
               <Grid item xs={2} display="flex" justifyContent="flex-end">
                 <Paper varient={6}>

@@ -3,19 +3,18 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { store } from "./app/store";
-import { Provider } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import themeFile from "./util/theme";
+import { AuthProvider } from "./util/auth/AuthProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = createTheme(themeFile);
 
 root.render(
   <ThemeProvider theme={theme}>
-    <Provider store={store}>
+    <AuthProvider>
       <App />
-    </Provider>
+    </AuthProvider>
   </ThemeProvider>,
 );
 
