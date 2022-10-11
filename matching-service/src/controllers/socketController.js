@@ -1,5 +1,7 @@
+import { URL_QUES } from "../../configs.js";
 import { deleteOneMatchModel } from "../model/match-orm.js";
 import { updateMatchModel } from "../model/repository.js";
+import axios from "axios";
 
 // Stores socket.id and user id of a user finding a match.
 // Use queue to handle the case when 2 users join and request at the same time to match with 1 existing user.
@@ -21,6 +23,17 @@ const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
   }
 };
 
+const fetchQuestion = async (_difficulty) => {
+  try {
+    const res = await axios.get(`${URL_QUES}/diff`, { params: { diff: _difficulty } });
+    //console.log(res.data);
+    return res.data.data;
+  } catch (err) {
+    console.log("error in fetching question: " + err);
+    return null;
+  }
+};
+
 const deleteMatchModel = async (userId) => {
   try {
     await deleteOneMatchModel(userId);
@@ -30,7 +43,7 @@ const deleteMatchModel = async (userId) => {
 };
 
 export const initSocketEventHandlers = (socket, io) => {
-  socket.on("find_match", (data) => {
+  socket.on("find_match", async (data) => {
     const { userId, difficulty } = data;
     const socketId = socket.id;
 
@@ -39,6 +52,9 @@ export const initSocketEventHandlers = (socket, io) => {
     }
 
     if (findingMatchQueue[difficulty].length > 0) {
+      // find a ques
+      const ques = await fetchQuestion(difficulty);
+
       const userFromQueue = findingMatchQueue[difficulty].shift();
       const { socketId: socketIdFromQueue, userId: userIdFromQueue } =
         userFromQueue;
@@ -50,6 +66,7 @@ export const initSocketEventHandlers = (socket, io) => {
         socketId2: socketIdFromQueue,
         roomId: roomId,
         difficulty: difficulty,
+        quesId: ques._id
       };
 
       // Emit successful match to both users.

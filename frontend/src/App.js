@@ -18,9 +18,9 @@ const voiceSocket = io.connect(URL_COMM_SVC);
 function App() {
   return (
     <div className="App">
-      <Navbar />
-      <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
-        <Router>
+      <Router>
+        <Navbar />
+        <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
             <Route exact path="/" element={<Navigate replace to="/login" />}></Route>
             <Route path="/signup" element={<SignupPage />} />
@@ -31,10 +31,10 @@ function App() {
               element={<RoomPage matchSocket={matchSocket} voiceSocket={voiceSocket} />}
             />
             <Route path="/forget-password" element={<ForgetPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>
-        </Router>
-      </Box>
+        </Box>
+      </Router>
     </div>
   );
 }
