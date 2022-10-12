@@ -37,8 +37,7 @@ const modules = {
 };
 
 function RoomPage({ voiceSocket }) {
-  const { state } = useLocation();
-  const roomId = useLocation().state;
+  const { roomId, quesId } = useLocation().state;
   const navigate = useNavigate();
   const decodedToken = decodedJwt();
   const userId = decodedToken.username;
@@ -128,13 +127,13 @@ function RoomPage({ voiceSocket }) {
 
   useEffect(() => {
     fetchQuesDetails();
-  }, [state.quesId]);
+  }, [quesId]);
 
   const fetchQuesDetails = async () => {
     const res = await axios
       .get(`${URL_QUES}/id`, {
         params: {
-          id: state.quesId,
+          id: quesId,
         },
       })
       .catch((err) => {
@@ -179,9 +178,7 @@ function RoomPage({ voiceSocket }) {
   }, [socket, value, ids]);
 
   const updateCollabInDb = async () => {
-    console.log("here");
     await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
-    console.log("here2");
     // TODO: add data to history-service
     const updatedCollab = (await updateCollabToRemoveUser()).data.data; // remove userId of the (current) user that left
     if (!updatedCollab.user1 && !updatedCollab.user2) await deleteCollab(); // if both users have left, delete collab

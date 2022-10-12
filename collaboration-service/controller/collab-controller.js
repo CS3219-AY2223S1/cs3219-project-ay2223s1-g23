@@ -22,13 +22,11 @@ export async function createCollab(req, res) {
           .json({ message: "Could not create a new collab!" });
       } else {
         if (resp) {
-          console.log(`Created new collab ${roomId} successfully!`);
           return res.status(201).json({
             message: `Created new collab ${roomId} successfully!`,
             data: resp,
           });
         } else {
-          console.log(`${roomId} already exists!`);
           return res.status(400).json({ message: `${roomId} already exists!` });
         }
       }
@@ -99,7 +97,6 @@ export async function updateCollab(req, res) {
       if (!resp || resp.err) {
         return res.status(400).json({ message: "Could not update collab!" });
       } else {
-        console.log(`Updated collab ${roomId} successfully!`);
         return res.status(201).json({
           message: `Updated collab ${roomId} successfully!`,
           data: resp,
