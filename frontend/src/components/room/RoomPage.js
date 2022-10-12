@@ -10,8 +10,6 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
@@ -38,9 +36,12 @@ const modules = {
   ],
 };
 
-function RoomPage({ matchSocket, voiceSocket }) {
+function RoomPage({ voiceSocket }) {
+  const { state } = useLocation();
   const roomId = useLocation().state;
-  const userId = useSelector((state) => state.user.username);
+  const navigate = useNavigate();
+  const decodedToken = decodedJwt();
+  const userId = decodedToken.username;
   const [socket, setSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
@@ -50,7 +51,6 @@ function RoomPage({ matchSocket, voiceSocket }) {
       userId: "",
     },
   });
-  // const { state } = useLocation();
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
   const [question, setQuestion] = useState({
@@ -60,9 +60,6 @@ function RoomPage({ matchSocket, voiceSocket }) {
     difficulty: "difficulty",
     url: "url",
   });
-  const navigate = useNavigate();
-  const decodedToken = decodedJwt();
-  const username = decodedToken.username;
 
   const setUpVoiceChat = async (time) => {
     console.log("Setting up voice recording");
@@ -84,7 +81,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
         var fileReader = new FileReader();
         fileReader.readAsDataURL(audioBlob);
         fileReader.onloadend = function () {
-          console.log("sending sound " + username);
+          console.log("sending sound " + userId);
           var base64String = fileReader.result;
           voiceSocket.emit("voice", base64String);
         };
@@ -104,7 +101,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
     voiceSocket.on("send", function (data) {
       var audio = new Audio(data);
       audio.play();
-      console.log("playing sound " + username);
+      console.log("playing sound " + userId);
     });
   };
 
@@ -121,9 +118,9 @@ function RoomPage({ matchSocket, voiceSocket }) {
     const receiveChangesEventHandler = ({ roomId, text }) => {
       setValue(text);
     };
-    matchSocket.on("receive-changes", receiveChangesEventHandler);
-    return () => matchSocket.off("receive-changes", receiveChangesEventHandler);
-  }, [matchSocket]);
+    socket.on("receive-changes", receiveChangesEventHandler);
+    return () => socket.off("receive-changes", receiveChangesEventHandler);
+  }, [socket]);
 
   useEffect(() => {
     setUpVoiceChat(1000);
@@ -182,7 +179,9 @@ function RoomPage({ matchSocket, voiceSocket }) {
   }, [socket, value, ids]);
 
   const updateCollabInDb = async () => {
+    console.log("here");
     await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
+    console.log("here2");
     // TODO: add data to history-service
     const updatedCollab = (await updateCollabToRemoveUser()).data.data; // remove userId of the (current) user that left
     if (!updatedCollab.user1 && !updatedCollab.user2) await deleteCollab(); // if both users have left, delete collab
@@ -208,7 +207,6 @@ function RoomPage({ matchSocket, voiceSocket }) {
       },
     });
     setDifficultyLevel(difficulty);
-    setRoomId(roomId);
   };
 
   const deleteCollab = async () => {
@@ -267,7 +265,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
     if (source !== "user") return; // tracking only user changes
     const text = editor.getText();
-    matchSocket.emit("send-changes", { roomId: roomId, text: text });
+    socket.emit("send-changes", { roomId: roomId, text: text });
   };
 
   return (
