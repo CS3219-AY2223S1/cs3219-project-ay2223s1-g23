@@ -14,7 +14,6 @@ import useAuth from "./util/auth/useAuth";
 
 import { Box } from "@mui/material";
 
-const matchSocket = io.connect(URL_MATCH_SVC);
 const voiceSocket = io.connect(URL_COMM_SVC);
 
 function App() {
@@ -27,14 +26,13 @@ function App() {
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
             <Route element={<AuthRoute />}>
-              <Route path="/" element={<HomePage socket={matchSocket} />} />
-              <Route
-                path="/room/:id"
-                element={<RoomPage matchSocket={matchSocket} voiceSocket={voiceSocket} />}
-              />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/room/:id" element={<RoomPage voiceSocket={voiceSocket} />} />
             </Route>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
+            <Route path="/diff" element={<HomePage />} />
+            <Route path="/room/:id" element={<RoomPage />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>

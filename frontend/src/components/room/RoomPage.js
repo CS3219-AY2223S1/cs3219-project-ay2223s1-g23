@@ -17,6 +17,8 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
+import { URL_COLLAB_SVC } from "../../configs";
+import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
 
 const modules = {
@@ -34,7 +36,30 @@ const modules = {
   ],
 };
 
-function RoomPage({ matchSocket, voiceSocket }) {
+function RoomPage({ voiceSocket }) {
+  const { roomId, quesId } = useLocation().state;
+  const navigate = useNavigate();
+  const decodedToken = decodedJwt();
+  const userId = decodedToken.username;
+  const [socket, setSocket] = useState(null);
+  const [ids, setIds] = useState({
+    user1: {
+      userId: "",
+    },
+    user2: {
+      userId: "",
+    },
+  });
+  const [difficultyLevel, setDifficultyLevel] = useState("");
+  const [value, setValue] = useState("");
+  const [question, setQuestion] = useState({
+    id: "id",
+    title: "title",
+    body: "body",
+    difficulty: "difficulty",
+    url: "url",
+  });
+
   const setUpVoiceChat = async (time) => {
     console.log("Setting up voice recording");
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -55,7 +80,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
         var fileReader = new FileReader();
         fileReader.readAsDataURL(audioBlob);
         fileReader.onloadend = function () {
-          console.log("sending sound " + username);
+          console.log("sending sound " + userId);
           var base64String = fileReader.result;
           voiceSocket.emit("voice", base64String);
         };
@@ -75,35 +100,26 @@ function RoomPage({ matchSocket, voiceSocket }) {
     voiceSocket.on("send", function (data) {
       var audio = new Audio(data);
       audio.play();
-      console.log("playing sound " + username);
+      console.log("playing sound " + userId);
     });
   };
 
-  const { state } = useLocation();
-  const [ids, setIds] = useState({
-    user1: {
-      userId: "",
-    },
-    user2: {
-      userId: "",
-    },
-  });
-  const [roomId, setRoomId] = useState("");
-  const [value, setValue] = useState("");
-  const [question, setQuestion] = useState({
-    id: "id",
-    title: "title",
-    body: "body",
-    difficulty: "difficulty",
-    url: "url",
-  });
-  const navigate = useNavigate();
-  const decodedToken = decodedJwt();
-  const username = decodedToken.username;
+  useEffect(() => {
+    const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
+    setSocket(socketObj);
+
+    fetchRoomDetails();
+    socketObj.emit("join_room", roomId);
+  }, []);
 
   useEffect(() => {
-    fetchRoomDetails();
-  });
+    if (!socket) return;
+    const receiveChangesEventHandler = ({ roomId, text }) => {
+      setValue(text);
+    };
+    socket.on("receive-changes", receiveChangesEventHandler);
+    return () => socket.off("receive-changes", receiveChangesEventHandler);
+  }, [socket]);
 
   useEffect(() => {
     setUpVoiceChat(1000);
@@ -111,13 +127,13 @@ function RoomPage({ matchSocket, voiceSocket }) {
 
   useEffect(() => {
     fetchQuesDetails();
-  }, [state.quesId]);
+  }, [quesId]);
 
   const fetchQuesDetails = async () => {
     const res = await axios
       .get(`${URL_QUES}/id`, {
         params: {
-          id: state.quesId,
+          id: quesId,
         },
       })
       .catch((err) => {
@@ -138,14 +154,6 @@ function RoomPage({ matchSocket, voiceSocket }) {
     });
   };
 
-  useEffect(() => {
-    const receiveChangesEventHandler = ({ roomId, text }) => {
-      setValue(text);
-    };
-    matchSocket.on("receive-changes", receiveChangesEventHandler);
-    return () => matchSocket.off("receive-changes", receiveChangesEventHandler);
-  }, [matchSocket]);
-
   function joinCall(e) {
     console.log("Setting online status to true");
     voiceSocket.emit("userInfo", { roomId, online: true });
@@ -156,8 +164,28 @@ function RoomPage({ matchSocket, voiceSocket }) {
     voiceSocket.emit("userInfo", { roomId, online: false });
   }
 
+  useEffect(() => {
+    if (!socket) return;
+    // this event is only handled if the first user and not the second user disconnects
+    const tryUpdateCollabDbHandler = async () => {
+      console.log("[try_update_collab_db] from the user still in the room (second user)");
+      await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
+      // TODO: add data to history-service
+      await updateCollabToRemoveUser(false); // remove userId of the (other) user that left
+    };
+    socket.on("try_update_collab_db", tryUpdateCollabDbHandler);
+    return () => socket.off("try_update_collab_db", tryUpdateCollabDbHandler);
+  }, [socket, value, ids]);
+
+  const updateCollabInDb = async () => {
+    await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
+    // TODO: add data to history-service
+    const updatedCollab = (await updateCollabToRemoveUser()).data.data; // remove userId of the (current) user that left
+    if (!updatedCollab.user1 && !updatedCollab.user2) await deleteCollab(); // if both users have left, delete collab
+  };
+
   const fetchRoomDetails = async () => {
-    const res = await axios.get(`${URL_COLLAB}/${state.roomId}`).catch((err) => {
+    const res = await axios.get(`${URL_COLLAB}/${roomId}`).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         console.log("ERROR: " + err.response.data.message);
       } else {
@@ -165,7 +193,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
       }
     });
     if (res.status != 200) return;
-    const { user1, user2, roomId, difficulty } = res.data.data;
+    const { user1, user2, difficulty } = res.data.data;
     setIds({
       user1: {
         userId: user1,
@@ -175,7 +203,7 @@ function RoomPage({ matchSocket, voiceSocket }) {
         userId: user2,
       },
     });
-    setRoomId(roomId);
+    setDifficultyLevel(difficulty);
   };
 
   const deleteCollab = async () => {
@@ -188,32 +216,53 @@ function RoomPage({ matchSocket, voiceSocket }) {
     });
   };
 
-  const updateCollab = async () => {
-    const res = await axios.put(`${URL_COLLAB}`, { roomId: roomId, text: value }).catch((err) => {
+  const updateCollab = async (data) => {
+    const res = await axios.put(`${URL_COLLAB}`, { ...data, roomId: roomId }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
         console.log("ERROR: " + err.response.data.message);
       } else {
         console.log("Please try again later");
       }
     });
+    return res;
   };
 
-  const handleLeaveRoom = () => {
-    matchSocket.emit("leave_room", ids.user2.userId);
-    updateCollab();
-    // TODO: add data to history-service
-    deleteCollab();
-    navigate(`/`);
+  const updateCollabToRemoveUser = async (removeCurrentUser = true) => {
+    let isCurrentUser1;
+    if (userId == ids.user1.userId) {
+      isCurrentUser1 = true;
+    } else if (userId == ids.user2.userId) {
+      isCurrentUser1 = false;
+    } else {
+      console.log("something went wrong in updateCollabToRemoveUser");
+      return;
+    }
+    const updatedUserId =
+      (isCurrentUser1 && removeCurrentUser) || (!isCurrentUser1 && !removeCurrentUser)
+        ? {
+            user1: null,
+          }
+        : {
+            user2: null,
+          };
+    const res = await updateCollab({ ...updatedUserId });
+    return res;
+  };
+
+  const handleLeaveRoom = async () => {
+    await socket.disconnect();
+    updateCollabInDb();
+    navigate(`/diff`);
   };
 
   const handleReset = () => {
-    matchSocket.emit("send-changes", { roomId: roomId, text: "" });
+    socket.emit("send-changes", { text: "" });
   };
 
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
     if (source !== "user") return; // tracking only user changes
     const text = editor.getText();
-    matchSocket.emit("send-changes", { roomId: roomId, text: text });
+    socket.emit("send-changes", { roomId: roomId, text: text });
   };
 
   return (

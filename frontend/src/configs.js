@@ -14,6 +14,7 @@ export const URL_USER_SVC_FORGET_PASSWORD = URL_USER_SVC + "/forget-password";
 export const URL_USER_SVC_RESET_PASSWORD = URL_USER_SVC + "/reset-password";
 export const URL_MATCH_SVC = URI_MATCH_SVC;
 export const URL_INSERT_DIFFICULTY = URL_MATCH_SVC + "/difficulties";
+export const URL_COLLAB_SVC = URI_COLLAB_SVC;
 export const URL_COLLAB = URI_COLLAB_SVC + "/collab";
 export const URL_COMM_SVC = URI_COMM_SVC;
 export const URL_INSERT_ONLINE = URL_COMM_SVC + "/online";

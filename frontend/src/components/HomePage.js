@@ -2,10 +2,12 @@ import { Grid, Box, Typography, Button } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { URL_INSERT_DIFFICULTY, URL_COLLAB } from "../configs";
-import { STATUS_CODE_CREATED } from "../constants";
+import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
 import { STATUS_CODE_BAD_REQUEST } from "../constants";
+import { URL_MATCH_SVC } from "../configs";
+import io from "socket.io-client";
 import decodedJwt from "../util/decodeJwt";
 
 export const MatchStatus = {
@@ -24,7 +26,8 @@ const difficultyStyle = {
   fontWeight: "bold",
 };
 
-function HomePage({ socket }) {
+function HomePage() {
+  const [socket, setSocket] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const decodedToken = decodedJwt();
   const username = decodedToken.username;
@@ -34,10 +37,15 @@ function HomePage({ socket }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const socket = io.connect(URL_MATCH_SVC, { path: "/diff" });
+    setSocket(socket);
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
     const matchSuccessEventHandler = (data) => {
       successFindingMatch();
-      const roomId = data.roomId;
-      socket.emit("join_room", roomId);
+      socket.emit("clean_up", userId);
       handleCollabRoom(data);
     };
     socket.on("match_success", matchSuccessEventHandler);
@@ -45,7 +53,8 @@ function HomePage({ socket }) {
   }, [socket]);
 
   const handleCollabRoom = async (data) => {
-    await createCollaboration(data);
+    const collabExist = await doesCollabExist(data.roomId);
+    if (!collabExist) await createCollaboration(data);
     const roomId = data.roomId;
     navigate(`/room/${roomId}`, {
       state: {
@@ -66,6 +75,16 @@ function HomePage({ socket }) {
           console.log("Please try again later");
         }
       });
+  };
+
+  const doesCollabExist = async (data) => {
+    let exists = true;
+    exists = await axios.get(`${URL_COLLAB}/${data}`).catch((err) => {
+      if (err.response.status === STATUS_CODE_NOT_FOUND) {
+        return false;
+      }
+    });
+    return exists;
   };
 
   const startFindingMatch = (diff) => {
