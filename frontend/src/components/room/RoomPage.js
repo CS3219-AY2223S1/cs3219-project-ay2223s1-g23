@@ -1,15 +1,27 @@
+import {
+  IconButton,
+  Paper,
+  Box,
+  Grid,
+  Button,
+  TextField,
+  Typography,
+  Divider,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { IconButton, Paper, Box, Grid, Button, TextField, Typography } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
+import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB } from "../../configs";
+import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
 import { URL_COLLAB_SVC } from "../../configs";
 import io from "socket.io-client";
+import decodedJwt from "../../util/decodeJwt";
 
 const modules = {
   toolbar: [
@@ -26,7 +38,7 @@ const modules = {
   ],
 };
 
-function RoomPage() {
+function RoomPage({ matchSocket, voiceSocket }) {
   const roomId = useLocation().state;
   const userId = useSelector((state) => state.user.username);
   const [socket, setSocket] = useState(null);
@@ -38,9 +50,63 @@ function RoomPage() {
       userId: "",
     },
   });
+  // const { state } = useLocation();
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
+  const [question, setQuestion] = useState({
+    id: "id",
+    title: "title",
+    body: "body",
+    difficulty: "difficulty",
+    url: "url",
+  });
   const navigate = useNavigate();
+  const decodedToken = decodedJwt();
+  const username = decodedToken.username;
+
+  const setUpVoiceChat = async (time) => {
+    console.log("Setting up voice recording");
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      var madiaRecorder = new MediaRecorder(stream);
+      madiaRecorder.start();
+
+      var audioChunks = [];
+
+      madiaRecorder.addEventListener("dataavailable", function (event) {
+        audioChunks.push(event.data);
+      });
+
+      madiaRecorder.addEventListener("stop", function () {
+        var audioBlob = new Blob(audioChunks);
+
+        audioChunks = [];
+
+        var fileReader = new FileReader();
+        fileReader.readAsDataURL(audioBlob);
+        fileReader.onloadend = function () {
+          console.log("sending sound " + username);
+          var base64String = fileReader.result;
+          voiceSocket.emit("voice", base64String);
+        };
+
+        madiaRecorder.start();
+
+        setTimeout(function () {
+          madiaRecorder.stop();
+        }, time);
+      });
+
+      setTimeout(function () {
+        madiaRecorder.stop();
+      }, time);
+    });
+
+    voiceSocket.on("send", function (data) {
+      var audio = new Audio(data);
+      audio.play();
+      console.log("playing sound " + username);
+    });
+  };
 
   useEffect(() => {
     const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
@@ -55,9 +121,52 @@ function RoomPage() {
     const receiveChangesEventHandler = ({ roomId, text }) => {
       setValue(text);
     };
-    socket.on("receive-changes", receiveChangesEventHandler);
-    return () => socket.off("receive-changes", receiveChangesEventHandler);
-  }, [socket]);
+    matchSocket.on("receive-changes", receiveChangesEventHandler);
+    return () => matchSocket.off("receive-changes", receiveChangesEventHandler);
+  }, [matchSocket]);
+
+  useEffect(() => {
+    setUpVoiceChat(1000);
+  }, []);
+
+  useEffect(() => {
+    fetchQuesDetails();
+  }, [state.quesId]);
+
+  const fetchQuesDetails = async () => {
+    const res = await axios
+      .get(`${URL_QUES}/id`, {
+        params: {
+          id: state.quesId,
+        },
+      })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+    if (res.status != 200) return;
+    const { _id, title, body, difficulty, url } = res.data.data;
+    setQuestion({
+      id: _id,
+      title: title,
+      body: body,
+      difficulty: difficulty,
+      url: url,
+    });
+  };
+
+  function joinCall(e) {
+    console.log("Setting online status to true");
+    voiceSocket.emit("userInfo", { roomId, online: true });
+  }
+
+  function leaveCall(e) {
+    console.log("Setting online status to false");
+    voiceSocket.emit("userInfo", { roomId, online: false });
+  }
 
   useEffect(() => {
     if (!socket) return;
@@ -99,6 +208,7 @@ function RoomPage() {
       },
     });
     setDifficultyLevel(difficulty);
+    setRoomId(roomId);
   };
 
   const deleteCollab = async () => {
@@ -157,31 +267,33 @@ function RoomPage() {
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
     if (source !== "user") return; // tracking only user changes
     const text = editor.getText();
-    socket.emit("send-changes", { roomId: roomId, text: text });
+    matchSocket.emit("send-changes", { roomId: roomId, text: text });
   };
 
   return (
     <Grid container>
       <Grid item xs={6}>
         <Box mr={"1rem"}>
-          <Box display={"flex"} flexDirection={"row"} mb={"1rem"}>
+          <Typography variant={"h4"}>
+            {ids.user1.userId} and {ids.user2.userId}&apos;s room
+          </Typography>
+          <Divider variant="middle" />
+          <Box display={"flex"} flexDirection={"row"} mt={"1rem"} mb={"1rem"}>
             <Grid container>
               <Grid item xs={10}>
-                <Typography variant={"h4"}>
-                  {ids.user1.userId} and {ids.user2.userId}&apos;s room
-                </Typography>
+                <Typography variant={"h5"}>{question.title}</Typography>
               </Grid>
               <Grid item xs={2} display="flex" justifyContent="flex-end">
                 <Paper varient={6}>
                   <Typography variant={"h5"} m={"5px"}>
-                    {difficultyLevel ?? "unknown diff"}
+                    {question.difficulty ?? "unknown diff"}
                   </Typography>
                 </Paper>
               </Grid>
             </Grid>
           </Box>
           <Paper variant="outlined" square>
-            <Typography sx={{ height: "40rem" }}>Question</Typography>
+            <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
           </Paper>
         </Box>
       </Grid>
@@ -208,12 +320,15 @@ function RoomPage() {
           />
           <Box display={"flex"} flexDirection={"row"}>
             <Grid container>
-              <Grid item xs={1}>
-                <IconButton>
+              <Grid item xs={2}>
+                <IconButton onClick={joinCall} color="secondary">
                   <CallIcon />
                 </IconButton>
+                <IconButton onClick={leaveCall} color="error">
+                  <PhoneDisabledIcon />
+                </IconButton>
               </Grid>
-              <Grid item xs={11} display={"flex"} justifyContent="flex-end">
+              <Grid item xs={10} display={"flex"} justifyContent="flex-end">
                 <Button
                   variant="outlined"
                   onClick={handleLeaveRoom}

@@ -2,11 +2,6 @@ import {
   Box,
   Typography,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   TextField,
   Grid,
   Paper,
@@ -14,12 +9,14 @@ import {
   Table,
   TableRow,
   TableCell,
+  TableBody,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
 import { Link } from "react-router-dom";
+import AlertAndDialog from "./AlertAndDialog";
 
 const col1Style = {
   pl: "8rem",
@@ -33,41 +30,48 @@ const textfieldStyle = {
 
 function SignupPage() {
   const [username, setUsername] = useState("");
+  const [isUserErr, setIsUserErr] = useState(false);
+  const [userErr, setUserErr] = useState("");
   const [email, setEmail] = useState("");
+  const [isEmailErr, setIsEmailErr] = useState(false);
+  const [emailErr, setEmailErr] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordErr, setIsPasswordErr] = useState(false);
+  const [passwordErr, setPasswordErr] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogMsg, setDialogMsg] = useState("");
-  const [isSignupSuccess, setIsSignupSuccess] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const handleSignup = async () => {
-    setIsSignupSuccess(false);
     const res = await axios.post(URL_USER_SVC, { username, email, password }).catch((err) => {
       if (err.response.status === STATUS_CODE_BAD_REQUEST) {
-        setErrorDialog("ERROR: " + err.response.data.message);
+        setIsUserErr(false);
+        setUserErr("");
+        setIsEmailErr(false);
+        setEmailErr("");
+        setIsPasswordErr(false);
+        setPasswordErr("");
+        if (err.response.data.err.username) {
+          setIsUserErr(true);
+          setUserErr(err.response.data.err.username);
+        }
+        if (err.response.data.err.email) {
+          setIsEmailErr(true);
+          setEmailErr(err.response.data.err.email);
+        }
+        if (err.response.data.err.password) {
+          setIsPasswordErr(true);
+          setPasswordErr(err.response.data.err.password);
+        }
       } else {
-        setErrorDialog("Please try again later");
+        setIsAlertOpen(true);
       }
     });
     if (res && res.status === STATUS_CODE_CREATED) {
-      setSuccessDialog("Account successfully created");
-      setIsSignupSuccess(true);
+      setIsDialogOpen(true);
     }
   };
 
-  const closeDialog = () => setIsDialogOpen(false);
-
-  const setSuccessDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Success");
-    setDialogMsg(msg);
-  };
-
-  const setErrorDialog = (msg) => {
-    setIsDialogOpen(true);
-    setDialogTitle("Error");
-    setDialogMsg(msg);
-  };
+  const closeAlert = () => setIsAlertOpen(false);
 
   return (
     <Grid container>
@@ -81,48 +85,56 @@ function SignupPage() {
           </Box>
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Username</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    sx={textfieldStyle}
-                    autoFocus
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Email</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    sx={textfieldStyle}
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={col1Style}>
-                  <Typography variant={"body1"}>Password</Typography>
-                </TableCell>
-                <TableCell sx={col2Style}>
-                  <TextField
-                    variant="filled"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    sx={textfieldStyle}
-                  />
-                </TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Username</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      error={isUserErr}
+                      helperText={userErr}
+                      sx={textfieldStyle}
+                      autoFocus
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Email</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      error={isEmailErr}
+                      helperText={emailErr}
+                      sx={textfieldStyle}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={col1Style}>
+                    <Typography variant={"body1"}>Password</Typography>
+                  </TableCell>
+                  <TableCell sx={col2Style}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      error={isPasswordErr}
+                      helperText={passwordErr}
+                      sx={textfieldStyle}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </Container>
           <Box
@@ -133,6 +145,17 @@ function SignupPage() {
             <Button variant={"contained"} onClick={handleSignup}>
               Sign up
             </Button>
+            <AlertAndDialog
+              alertMsg={"Please try again later"}
+              isAlertOpen={isAlertOpen}
+              alertDuration={4000}
+              closeAlert={closeAlert}
+              isDialogOpen={isDialogOpen}
+              dialogTitle={"Success"}
+              dialogText={"Account successfully created"}
+              buttonText={"Login"}
+              buttonLink={"/login"}
+            />
             <Box display={"flex"} alignItems={"center"} justifyContent={"center"} m={"1rem"}>
               <Typography variant={"body1"}>Already have an account?</Typography>
               <Typography component={Link} to="/login" variant={"body1"}>
@@ -140,21 +163,6 @@ function SignupPage() {
               </Typography>
             </Box>
           </Box>
-          <Dialog open={isDialogOpen} onClose={closeDialog}>
-            <DialogTitle>{dialogTitle}</DialogTitle>
-            <DialogContent>
-              <DialogContentText>{dialogMsg}</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              {isSignupSuccess ? (
-                <Button component={Link} to="/login">
-                  Log in
-                </Button>
-              ) : (
-                <Button onClick={closeDialog}>Done</Button>
-              )}
-            </DialogActions>
-          </Dialog>
         </Paper>
       </Grid>
       <Grid item xs={2} />

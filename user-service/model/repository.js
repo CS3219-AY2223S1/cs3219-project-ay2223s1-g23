@@ -19,6 +19,10 @@ export async function deleteUser(params) {
   return (await UserModel.deleteOne({username: params}))
 }
 
+export async function getUser(params) {
+  return (await UserModel.findOne({username: params}, 'username email'))
+}
+
 export async function existsUser(params) {
   return (await UserModel.findOne({username: params}, 'username')) !== null
 }

@@ -7,23 +7,36 @@ import { ormCreateUser as _createUser,
 export async function createUser(req, res) {
     try {
         const { username, email, password } = req.body;
-        if (username && email && password) {
-            const resp = await _createUser(username, email, password);
-            console.log(resp);
-            if (resp.err) {
-                return res.status(400).json({message: 'Could not create a new user!'});
-            } else {
-                if (resp) {
-                    console.log(`Created new user ${username} successfully!`)
-                    return res.status(201).json({message: `Created new user ${username} successfully!`});
-                } else {
-                    console.log(`${username} already exists!`)
-                    return res.status(400).json({message: `${username} already exists!`});
-                }
-            }
-        } else {
-            return res.status(400).json({message: 'Username, Email and/or Password are missing!'});
+        const emptyError = { err: {} }
+        if (!username) {
+            emptyError.err.username = 'Username is missing!' 
+        } 
+        if (!email) {
+            emptyError.err.email = 'Email is missing!' 
+        } 
+        if (!password) {
+            emptyError.err.password = 'Password is missing!' 
+        } 
+
+        if (emptyError.err.username || emptyError.err.email || emptyError.err.password) {
+            return res.status(400).json(emptyError);
         }
+        
+        
+        const resp = await _createUser(username, email, password);
+        console.log(resp);
+        if (resp.err) {
+            return res.status(400).json(resp);
+        } else {
+            if (resp) {
+                console.log(`Created new user ${username} successfully!`)
+                return res.status(201).json({message: `Created new user ${username} successfully!`});
+            } else {
+                console.log(`${username} already exists!`)
+                return res.status(400).json(resp);
+            }
+        }
+        
     } catch (err) {
         return res.status(500).json({message: 'Database failure when creating new user!'})
     }
@@ -48,18 +61,26 @@ export async function deleteUser(req, res) {
 export async function loginUser(req, res) {
     try {
         const { username, password } = req.body;
-        if (username && password) {
-            const resp = await _loginUser(username, password);
-            console.log(resp);
-            if (resp.err) {
-                return res.status(400).json({ message: resp.err });
-            } else {
-                const jwt = resp.jwt;
-                console.log(`Login in as user ${username} successfully!`)
-                return res.status(200).json({ jwt });
-            }
+        const emptyError = { err: {} }
+        if (!username) {
+            emptyError.err.username = 'Username is missing!' 
+        }  
+        if (!password) {
+            emptyError.err.password = 'Password is missing!' 
+        }
+
+        if (emptyError.err.username || emptyError.err.password) {
+            return res.status(400).json(emptyError);
+        }
+        
+        const resp = await _loginUser(username, password);
+        console.log(resp);
+        if (resp.err) {
+            return res.status(400).json(resp);
         } else {
-            return res.status(400).json({ message: 'Username and/or Password are missing!' });
+            const jwt = resp.jwt;
+            console.log(`Login in as user ${username} successfully!`)
+            return res.status(200).json({ jwt });
         }
     } catch (err) {
         return res.status(500).json({ message: `Database failure when logging in as ${username}!` })
@@ -89,12 +110,12 @@ export async function forgetPassword(req, res) {
 export async function resetPassword(req, res) {
     try {
         const { token } = req.params;
-        const { username, password, confirmPassword } = req.body;
-        if (!password || !confirmPassword) {
+        const { username, newPassword, confirmNewPassword } = req.body;
+        if (!newPassword || !confirmNewPassword) {
             return res.status(400).json({ message: 'Password and/or Confirm Password is missing!' }); 
         }
 
-        const resp = await _resetPassword(username, token, password, confirmPassword);
+        const resp = await _resetPassword(username, token, newPassword, confirmNewPassword);
 
         if (resp.err) {
             return res.status(400).json({message: 'Fail to reset password!'});

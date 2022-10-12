@@ -5,10 +5,10 @@ import { URL_INSERT_DIFFICULTY, URL_COLLAB } from "../configs";
 import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
-import { useSelector } from "react-redux";
 import { STATUS_CODE_BAD_REQUEST } from "../constants";
 import { URL_MATCH_SVC } from "../configs";
 import io from "socket.io-client";
+import decodedJwt from "../util/decodeJwt";
 
 export const MatchStatus = {
   NOT_MATCHING: "NOT_MATCHING",
@@ -18,14 +18,19 @@ export const MatchStatus = {
 };
 
 const difficultyStyle = {
-  padding: "1rem 8rem 1rem 8rem",
   margin: "1rem",
+  height: 65,
+  width: 300,
+  border: 3,
+  borderColor: "secondary.main",
+  fontWeight: "bold",
 };
 
 function HomePage() {
   const [socket, setSocket] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
-  const username = useSelector((state) => state.user.username);
+  const decodedToken = decodedJwt();
+  const username = decodedToken.username;
   const [userId, setUserId] = useState(username);
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
@@ -51,7 +56,12 @@ function HomePage() {
     const collabExist = await doesCollabExist(data.roomId);
     if (!collabExist) await createCollaboration(data);
     const roomId = data.roomId;
-    navigate(`/room/${roomId}`, { state: roomId });
+    navigate(`/room/${roomId}`, {
+      state: {
+        roomId: roomId,
+        quesId: data.quesId,
+      },
+    });
   };
 
   const createCollaboration = async (data) => {

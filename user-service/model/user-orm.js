@@ -1,4 +1,5 @@
-import { createUser, existsUser, getPassword, updateUser, getEmail, deleteUser } from './repository.js';
+import { createUser, existsUser, getPassword, updateUser, getEmail, deleteUser, getUser } from './repository.js';
+import * as EmailValidator from 'node-email-validation';
 import jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
 import "dotenv/config";
@@ -7,8 +8,17 @@ import nodemailer from "nodemailer";
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function ormCreateUser(username, email, password) {
     try {
+        const error = { err: {} };
         if (await existsUser(username)) {
-            return false;
+            error.err.username = `${username} already exists!`;
+        }
+        
+        if (!EmailValidator.is_email_valid(email)) {
+            error.err.email = "Please provide a valid email address.";
+        } 
+        
+        if (error.err.username || error.err.email) {
+            return error;
         } else {
             const encryptedPassword = await bcrypt.hash(password, 10);
             const newUser = await createUser({
@@ -40,17 +50,21 @@ export async function ormDeleteUser(username) {
 
 export async function ormLoginUser(username, password) {
     try {
-        if (await existsUser(username)) {
-            const encryptedPassword = await getPassword(username);
-            if (await bcrypt.compare(password, encryptedPassword)) {
-                const token = generateAccessToken({ username });
-                return { jwt: token };
-            } else {
-                return { err: "The password provided is inaccurate!" };
-            }
-        } else {
-            return { err: "User does not exist!" };
+        const error = { err: {} };
+        if (!await existsUser(username)) {
+            error.err.username = "User does not exist!";
+            return error;
         }
+
+        const encryptedPassword = await getPassword(username);
+        if (!await bcrypt.compare(password, encryptedPassword)) {
+            error.err.password = "The password provided is inaccurate!";
+            return error;
+        } 
+        
+        const userDetail = await getUser(username);
+        const token = generateAccessToken(userDetail.toJSON());
+        return { jwt: token };
     } catch (err) {
         console.log("ERROR: Could not login user");
         return { err };
@@ -71,7 +85,7 @@ export async function ormForgetPassword(username) {
 
     const token = jwt.sign(payload, secret, {expiresIn: '15m'});
     try {
-        const link = `http://localhost:8000/api/user/reset-password/${token}`;
+        const link = `http://localhost:3000/reset-password/${token}`;
         console.log(link);
         const userEmail = await getEmail(username);
         // sendLink(userEmail,link);

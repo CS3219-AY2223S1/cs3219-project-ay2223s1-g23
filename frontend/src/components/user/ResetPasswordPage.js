@@ -13,33 +13,42 @@ import {
   Table,
   TableRow,
   TableCell,
+  TableBody,
   Container,
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { URL_USER_SVC } from "../../configs";
-import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_CREATED } from "../../constants";
-import { Link } from "react-router-dom";
+import { URL_USER_SVC_RESET_PASSWORD } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
+import { Link, useParams } from "react-router-dom";
 
 function ResetPasswordPage() {
+  const { resetToken } = useParams();
   const [username, setUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogMsg, setDialogMsg] = useState("");
+  const [isSuccessDialog, setIsSuccessDialog] = useState(false);
 
   const handleResetPassword = async () => {
     const res = await axios
-      .post(URL_USER_SVC, { username, newPassword, confirmNewPassword })
+      .post(URL_USER_SVC_RESET_PASSWORD + "/" + resetToken, {
+        username,
+        newPassword,
+        confirmNewPassword,
+      })
       .catch((err) => {
+        setIsSuccessDialog(false);
         if (err.response.status === STATUS_CODE_BAD_REQUEST) {
           setErrorDialog("ERROR: " + err.response.data.message);
         } else {
           setErrorDialog("Please try again later");
         }
       });
-    if (res && res.status === STATUS_CODE_CREATED) {
+    if (res && res.status === STATUS_CODE_OK) {
+      setIsSuccessDialog(true);
       setSuccessDialog("Password Reset successfully");
     }
   };
@@ -58,6 +67,27 @@ function ResetPasswordPage() {
     setDialogMsg(msg);
   };
 
+  const renderDialogButton = () => {
+    if (isSuccessDialog) {
+      return (
+        <Button
+          component={Link}
+          to="/login"
+          variant={"contained"}
+          onClick={closeDialog}
+          color={"secondary"}>
+          Done
+        </Button>
+      );
+    }
+
+    return (
+      <Button variant={"contained"} onClick={closeDialog} color={"secondary"}>
+        Done
+      </Button>
+    );
+  };
+
   return (
     <Grid container>
       <Grid item xs={2} />
@@ -70,48 +100,50 @@ function ResetPasswordPage() {
           </Box>
           <Container fixed>
             <Table aria-label="simple table" sx={{ "& td": { border: 0 } }}>
-              <TableRow>
-                <TableCell sx={{ pl: "6rem" }}>
-                  <Typography variant={"body1"}>Username</Typography>
-                </TableCell>
-                <TableCell sx={{ width: "50%" }}>
-                  <TextField
-                    variant="filled"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    sx={{ marginBottom: "1rem" }}
-                    autoFocus
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ pl: "6rem" }}>
-                  <Typography variant={"body1"}>New Password</Typography>
-                </TableCell>
-                <TableCell sx={{ width: "50%" }}>
-                  <TextField
-                    variant="filled"
-                    type="email"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    sx={{ marginBottom: "2rem" }}
-                  />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell sx={{ pl: "6rem" }}>
-                  <Typography variant={"body1"}>Confirm New Password</Typography>
-                </TableCell>
-                <TableCell sx={{ width: "50%" }}>
-                  <TextField
-                    variant="filled"
-                    type="confirm password"
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    sx={{ marginBottom: "2rem" }}
-                  />
-                </TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ pl: "6rem" }}>
+                    <Typography variant={"body1"}>Username</Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: "50%" }}>
+                    <TextField
+                      variant="filled"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      sx={{ marginBottom: "1rem" }}
+                      autoFocus
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ pl: "6rem" }}>
+                    <Typography variant={"body1"}>New Password</Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: "50%" }}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      sx={{ marginBottom: "2rem" }}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell sx={{ pl: "6rem" }}>
+                    <Typography variant={"body1"}>Confirm New Password</Typography>
+                  </TableCell>
+                  <TableCell sx={{ width: "50%" }}>
+                    <TextField
+                      variant="filled"
+                      type="password"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      sx={{ marginBottom: "2rem" }}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </Container>
           <Box
@@ -131,11 +163,7 @@ function ResetPasswordPage() {
             <DialogContent>
               <DialogContentText>{dialogMsg}</DialogContentText>
             </DialogContent>
-            <DialogActions>
-              <Button component={Link} to="/login">
-                Done
-              </Button>
-            </DialogActions>
+            <DialogActions>{renderDialogButton()}</DialogActions>
           </Dialog>
         </Paper>
       </Grid>
