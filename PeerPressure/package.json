@@ -9,7 +9,8 @@
     "front": "cd ../frontend && npm i && npm start",
     "match": "cd ../matching-service && npm i && npm run dev",
     "user": "cd ../user-service && npm i && npm run dev",
-    "dev": "concurrently \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" \"npm run comm\" "
+    "qn": "cd ../question-service && npm i && npm run dev",
+    "dev": "concurrently \"npm run qn\" \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" \"npm run comm\" "
   },
   "repository": {
     "type": "git",
