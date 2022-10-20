@@ -16,7 +16,6 @@ router.get('/', (_, res) => res.send('Hello World from user-service'))
 router.post('/', createUser)
 router.post('/login', loginUser)
 router.delete('/:username', verifyJWT, deleteUser)
-router.get('/userInfo', verifyJWT, (_, res) => res.send('User is authenticated'))
 router.post('/forget-password', forgetPassword)
 router.post('/reset-password/:token', resetPassword)
 

@@ -4,12 +4,13 @@
   "description": "This is a template repository for CS3219 project.",
   "main": "index.js",
   "scripts": {
-    "collab": "cd ../collaboration-service && npm run dev",
-    "comm": "cd ../communication-service && npm run dev",
-    "front": "cd ../frontend && npm start",
-    "match": "cd ../matching-service && npm run dev",
-    "user": "cd ../user-service && npm run dev",
-    "dev": "concurrently \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" "
+    "collab": "cd ../collaboration-service && npm i && npm run dev",
+    "comm": "cd ../communication-service && npm i && npm run dev",
+    "front": "cd ../frontend && npm i && npm start",
+    "match": "cd ../matching-service && npm i && npm run dev",
+    "user": "cd ../user-service && npm i && npm run dev",
+    "qn": "cd ../question-service && npm i && npm run dev",
+    "dev": "concurrently \"npm run qn\" \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" \"npm run comm\" "
   },
   "repository": {
     "type": "git",
