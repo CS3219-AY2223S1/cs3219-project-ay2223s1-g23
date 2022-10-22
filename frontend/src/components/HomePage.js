@@ -1,4 +1,4 @@
-import { Grid, Box, Typography, Button } from "@mui/material";
+import { Grid, Box, Typography, Button, List, ListItem, Paper, Divider } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { URL_INSERT_DIFFICULTY, URL_COLLAB } from "../configs";
@@ -20,7 +20,7 @@ export const MatchStatus = {
 const difficultyStyle = {
   margin: "1rem",
   height: 65,
-  width: 300,
+  width: 200,
   border: 3,
   borderColor: "secondary.main",
   fontWeight: "bold",
@@ -150,10 +150,30 @@ function HomePage() {
 
   return (
     <Grid container>
-      <Grid item xs={1} />
-      <Grid item xs={10}>
+      <Grid item xs>
+        <Box display={"flex"} alignItems={"left"} justifyContent={"left"}>
+          <Typography variant={"h4"} mb={"1rem"}>
+            History
+          </Typography>
+        </Box>
+        <Paper elevation={0} sx={{ height: "45rem", overflow: "auto", marginRight: 3 }}>
+          <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+            {/* {contacts.map((contact, index) => {
+              return (
+                <Box key={contact._id} >
+                  <ListItem display="block" sx={{ width: "100%"}}></ListItem>
+                  <Divider variant="middle"/>
+                </Box>
+              );
+            })} */}
+          </List>
+        </Paper>
+        Scroll for more history record....
+      </Grid>
+      <Divider flexItem flexDirection={"row"} orientation="vertical" sx={{ borderRightWidth: 6 }} />
+      <Grid item xs>
         <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
-          <Typography variant={"h3"} ma={"2rem"}>
+          <Typography variant={"h4"} ma={"2rem"}>
             Random Matching
           </Typography>
         </Box>
@@ -192,7 +212,6 @@ function HomePage() {
           />
         </Box>
       </Grid>
-      <Grid item xs={1} />
     </Grid>
   );
 }
