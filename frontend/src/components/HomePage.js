@@ -37,7 +37,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io.connect(URL_MATCH_SVC, { path: "/diff" });
+    const socket = io.connect(URL_MATCH_SVC, { path: "/" });
     setSocket(socket);
   }, []);
 
@@ -170,7 +170,7 @@ function HomePage() {
         </Paper>
         Scroll for more history record....
       </Grid>
-      <Divider flexItem flexDirection={"row"} orientation="vertical" sx={{ borderRightWidth: 6 }} />
+      <Divider flexItem orientation="vertical" sx={{ borderRightWidth: 6 }} />
       <Grid item xs>
         <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
           <Typography variant={"h4"} ma={"2rem"}>

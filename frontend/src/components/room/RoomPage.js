@@ -8,18 +8,19 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { URL_COLLAB, URL_QUES } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
 import { URL_COLLAB_SVC } from "../../configs";
+import "react-quill/dist/quill.snow.css";
+import axios from "axios";
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
+import QuestionView from "./QuestionView";
 
 const modules = {
   toolbar: [
@@ -252,7 +253,7 @@ function RoomPage({ voiceSocket }) {
   const handleLeaveRoom = async () => {
     await socket.disconnect();
     updateCollabInDb();
-    navigate(`/diff`);
+    navigate(`/`);
   };
 
   const handleReset = () => {
@@ -268,29 +269,17 @@ function RoomPage({ voiceSocket }) {
   return (
     <Grid container>
       <Grid item xs={6}>
-        <Box mr={"1rem"}>
+        {/* <Box mr={"1rem"}>
           <Typography variant={"h4"}>
             {ids.user1.userId} and {ids.user2.userId}&apos;s room
           </Typography>
           <Divider variant="middle" />
-          <Box display={"flex"} flexDirection={"row"} mt={"1rem"} mb={"1rem"}>
-            <Grid container>
-              <Grid item xs={10}>
-                <Typography variant={"h5"}>{question.title}</Typography>
-              </Grid>
-              <Grid item xs={2} display="flex" justifyContent="flex-end">
-                <Paper varient={6}>
-                  <Typography variant={"h5"} m={"5px"}>
-                    {question.difficulty ?? "unknown diff"}
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Box>
-          <Paper variant="outlined" square>
-            <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
-          </Paper>
-        </Box>
+          <QuestionView
+            title={question.title}
+            questionBody={question.body}
+            difficulty={question.difficulty}
+          />
+        </Box> */}
       </Grid>
       <Grid item xs={6}>
         <Box display={"flex"} flexDirection={"column"}>
