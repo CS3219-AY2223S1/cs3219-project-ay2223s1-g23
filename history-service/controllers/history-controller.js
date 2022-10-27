@@ -1,7 +1,8 @@
 import {
     createOneHistoryModel as _createOneHistoryModel,
     getOneHistoryById as _getOneHistoryById,
-    getHistoryByUserId as _getHistoryByUserId
+    getHistoryByUserId as _getHistoryByUserId,
+    updateOneHistory as _updateOneHistory
 } from '../model/history-orm.js'
 
 export async function createHistory(req, res) {
@@ -63,5 +64,40 @@ export async function getHistoryByUserId(req, res) {
         }
     } catch (err) {
         return res.status(500).json({ message: 'Database failure when getting hist by userId!' })
+    }
+}
+
+export async function updateHistory(req, res) {
+    try {
+        const data = req.body;
+        const { id } = data;
+        // only update answer
+        if (id && data.answer) {
+            const resp = await _updateOneHistory(id, {
+                answer: data.answer
+            });
+            if (resp.err) {
+                return res.status(400).json({
+                    message: "Could not update history!",
+                    err: resp.err
+                });
+            } else if (!resp) {
+                return res.status(404).json({
+                    message: "History not found",
+                    err: "History not found"
+                });
+            } else {
+                return res.status(201).json({
+                    message: `Updated history ${id} successfully!`,
+                    data: resp,
+                });
+            }
+        } else {
+            return res.status(400).json({ message: "History ID or answer is missing!" });
+        }
+    } catch (err) {
+        return res
+            .status(500)
+            .json({ message: "Database failure when updating history!" });
     }
 }

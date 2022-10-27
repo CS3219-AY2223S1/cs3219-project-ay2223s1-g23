@@ -28,3 +28,10 @@ export async function getHistoryModelByUserId(userId) {
         ]
     });
 }
+
+export async function updateHistoryModel(id, params) {
+    return await HistoryModel.findOneAndUpdate({ _id: id }, params, {
+        new: true
+    });
+}
+

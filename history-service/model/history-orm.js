@@ -1,4 +1,9 @@
-import { createHistoryModel, getHistoryModelById, getHistoryModelByUserId } from './repository.js';
+import {
+    createHistoryModel,
+    getHistoryModelById,
+    getHistoryModelByUserId,
+    updateHistoryModel
+} from './repository.js';
 import "dotenv/config";
 
 //need to separate orm functions from repository to decouple business logic from persistence
@@ -47,6 +52,22 @@ export async function getHistoryByUserId(userId) {
         }
     } catch (err) {
         console.log('ERROR: Could not get hists by userId');
+        return { err };
+    }
+}
+
+export async function updateOneHistory(id, data) {
+    try {
+        const updatedHistory = await updateHistoryModel(id, data);
+        if (updatedHistory != null) {
+            return updatedHistory;
+        } else {
+            return {
+                err: "hist not found when trying to update hist"
+            }
+        }
+    } catch (err) {
+        console.log("ERROR: Could not update hist. Err " + err);
         return { err };
     }
 }
