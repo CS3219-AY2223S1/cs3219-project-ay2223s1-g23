@@ -22,7 +22,7 @@ export async function getHistoryModelById(id) {
 
 export async function getHistoryModelByUserId(userId) {
     return await HistoryModel.find({
-        _or: [
+        $or: [
             { userId1: userId },
             { userId2: userId }
         ]
