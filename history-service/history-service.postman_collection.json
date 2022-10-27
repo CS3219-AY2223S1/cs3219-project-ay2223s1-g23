@@ -1,0 +1,117 @@
+{
+	"info": {
+		"_postman_id": "7fc39b0a-0216-4a83-826e-5ac627d6e8f6",
+		"name": "history-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create a history",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"quesId\": \"12345\",\r\n    \"userId1\": \"12345\",\r\n    \"userId2\": \"12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8008/h",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8008",
+					"path": [
+						"h"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a history by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8008/h/id?id=635a25ae2ddb71d4c364e10a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8008",
+					"path": [
+						"h",
+						"id"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "635a25ae2ddb71d4c364e10a"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get history by userId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8008/h/userId?userId=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8008",
+					"path": [
+						"h",
+						"userId"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a history",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"635a2929c478a0bfa0318802\",\r\n    \"answer\": \"answer2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8008/h",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8008",
+					"path": [
+						"h"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
