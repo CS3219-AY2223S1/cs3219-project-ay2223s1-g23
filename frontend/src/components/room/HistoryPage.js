@@ -12,14 +12,15 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { STATUS_CODE_OK } from "../../constants";
+import { URL_HIST_SVC, URL_QUES } from "../configs";
+import { STATUS_CODE_OK, STATUS_CODE_BAD_REQUEST } from "../../constants";
 import axios from "axios";
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
 import QuestionView from "./QuestionView";
 
 function HistoryPage() {
-  const { quesId } = useParams();
+  const { histId } = useParams();
   const navigate = useNavigate();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -33,19 +34,48 @@ function HistoryPage() {
   });
 
   useEffect(() => {
-    const getHistory = async () => {
-      const res = await axios.get().catch((err) => {
-        setAlertMsg(err.response.data.message);
-        setIsAlertOpen(true);
-      });
-      if (res && res.status === STATUS_CODE_OK) {
-        setQuestion(res.data.question);
-        setAnsweRecord(res.data.answer);
-      }
-    };
-
-    getHistory();
+    getHistory(histId);
   }, []);
+
+  const getHistory = async (histId) => {
+    const res = await axios.get(`${URL_HIST_SVC}/id`, {
+      params: {
+        id: histId,
+      },
+    }).catch((err) => {
+      setAlertMsg(err.response.data.message);
+      setIsAlertOpen(true);
+    });
+    if (res && res.status === STATUS_CODE_OK) {
+      setAnsweRecord(res.data.answer);
+      getQuestion(res.data.quesId)
+    }
+  };
+
+  const getQuestion = async (quesId) => {
+    const res = await axios
+      .get(`${URL_QUES}/id`, {
+        params: {
+          id: quesId,
+        },
+      })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+    if (res.status != STATUS_CODE_OK) return;
+    const { _id, title, body, difficulty, url } = res.data.data;
+    setQuestion({
+      id: _id,
+      title: title,
+      body: body,
+      difficulty: difficulty,
+      url: url,
+    });
+  }
 
   const closeAlert = () => setIsAlertOpen(false);
 

@@ -1,8 +1,8 @@
 import { Grid, Box, Typography, Button, List, ListItem, Paper, Divider } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { URL_INSERT_DIFFICULTY, URL_COLLAB } from "../configs";
-import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND } from "../constants";
+import { URL_INSERT_DIFFICULTY, URL_COLLAB, URL_HIST_SVC } from "../configs";
+import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND, STATUS_CODE_OK } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
 import { STATUS_CODE_BAD_REQUEST } from "../constants";
@@ -34,6 +34,7 @@ function HomePage() {
   const [userId, setUserId] = useState(username);
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
+  const [histories, setHistories] = useEffect([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +52,27 @@ function HomePage() {
     socket.on("match_success", matchSuccessEventHandler);
     return () => socket.off("match_success", matchSuccessEventHandler);
   }, [socket]);
+
+  useEffect(() => {
+    getHistory(userId);
+  }, [])
+
+  const getHistory = async (userId) => {
+    const res = await axios
+      .get(`${URL_HIST_SVC}/userId`, {
+        params: {
+          userId: userId,
+        },
+      }).catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+    if (!res || res.status != STATUS_CODE_OK) return;
+    setHistories(res.data.data);
+  }
 
   const handleCollabRoom = async (data) => {
     const collabExist = await doesCollabExist(data.roomId);
@@ -158,14 +180,16 @@ function HomePage() {
         </Box>
         <Paper elevation={0} sx={{ height: "45rem", overflow: "auto", marginRight: 3 }}>
           <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-            {/* {contacts.map((contact, index) => {
+            {histories.map((history, index) => {
               return (
-                <Box key={contact._id} >
-                  <ListItem display="block" sx={{ width: "100%"}}></ListItem>
+                <Box key={history._id} >
+                  <ListItem display="block" sx={{ width: "100%"}}>
+                    <HistoryCard histId={history._id} quesId={history.quesId} />
+                  </ListItem>
                   <Divider variant="middle"/>
                 </Box>
               );
-            })} */}
+            })}
           </List>
         </Paper>
         Scroll for more history record....

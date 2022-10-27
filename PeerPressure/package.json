@@ -10,7 +10,8 @@
     "match": "cd ../matching-service && npm i && npm run dev",
     "user": "cd ../user-service && npm i && npm run dev",
     "qn": "cd ../question-service && npm i && npm run dev",
-    "dev": "concurrently \"npm run qn\" \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" \"npm run comm\" "
+    "hist": "cd ../history-service && npm i && npm run dev",
+    "dev": "concurrently \"npm run hist\" \"npm run qn\" \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" \"npm run comm\" "
   },
   "repository": {
     "type": "git",

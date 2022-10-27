@@ -14,7 +14,7 @@ import ReactQuill from "react-quill";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { URL_COLLAB, URL_QUES } from "../../configs";
-import { STATUS_CODE_BAD_REQUEST } from "../../constants";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { URL_COLLAB_SVC } from "../../configs";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
@@ -144,7 +144,7 @@ function RoomPage({ voiceSocket }) {
           console.log("Please try again later");
         }
       });
-    if (res.status != 200) return;
+    if (res.status != STATUS_CODE_OK) return;
     const { _id, title, body, difficulty, url } = res.data.data;
     setQuestion({
       id: _id,
