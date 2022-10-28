@@ -15,9 +15,9 @@ app.options("*", cors());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  path: "/diff",
+  path: "/",
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.URI_FRONTEND || "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -36,6 +36,7 @@ app.get("/", (req, res) => {
 });
 app.post("/difficulties", createMatch);
 
-httpServer.listen(8001, () => {
-  console.log("server listening on port 8001");
+const PORT = process.env.PORT || 8001;
+httpServer.listen(PORT, () => {
+  console.log(`matching server listening on port ${PORT}`);
 });

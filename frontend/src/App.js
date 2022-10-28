@@ -31,7 +31,7 @@ function App() {
             </Route>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
-            <Route path="/diff" element={<HomePage />} />
+
             <Route path="/room/:id" element={<RoomPage />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
