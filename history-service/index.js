@@ -26,8 +26,10 @@ app.put("/h", updateHistory)
 
 
 const httpServer = createServer(app);
-httpServer.listen(8008, () => {
-    console.log("server listening on port 8008");
+
+const PORT = process.env.PORT || 8008;
+httpServer.listen(PORT, () => {
+    console.log(`history server listening on port ${PORT}`);
 });
 
 

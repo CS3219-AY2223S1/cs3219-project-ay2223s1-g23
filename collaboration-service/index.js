@@ -21,7 +21,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   path: "/room",
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.URI_FRONTEND || "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -42,6 +42,7 @@ app.put("/collab", updateCollab);
 //     res.setHeader('Access-Control-Allow-Origin', '*')
 // })
 
-httpServer.listen(8002, () =>
-  console.log("collaboration-service listening on port 8002"),
+const PORT = process.env.PORT || 8002;
+httpServer.listen(PORT, () =>
+  console.log(`collaboration-service listening on port ${PORT}`),
 );

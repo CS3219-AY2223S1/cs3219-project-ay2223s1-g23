@@ -1,0 +1,8 @@
+runtime: nodejs16
+
+env_variables:
+  DB_CLOUD_URI: 
+  ENV: PROD
+  URI_FRONTEND: https://peerpressure-366414.et.r.appspot.com
+
+service: question-service
