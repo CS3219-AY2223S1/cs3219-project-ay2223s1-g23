@@ -3,7 +3,7 @@ const URI_MATCH_SVC = process.env.URI_MATCH_SVC || "http://localhost:8001";
 const URI_COLLAB_SVC = process.env.URI_COLLAB_SVC || "http://localhost:8002";
 const URI_COMM_SVC = process.env.URI_COMM_SVC || "http://localhost:8003";
 const URI_QUES_SVC = process.env.URI_QUES_SVC || "http://localhost:8009";
-const URI_HIST_SVC = process.env.URI_HIST_SVC || "http://localhost:8009";
+const URI_HIST_SVC = process.env.URI_HIST_SVC || "http://localhost:8008";
 
 const PREFIX_USER_SVC = "/api/user";
 

@@ -62,8 +62,12 @@ function HistoryPage() {
       .catch((err) => {
         if (err.response.status === STATUS_CODE_BAD_REQUEST) {
           console.log("ERROR: " + err.response.data.message);
+          setAlertMsg(err.response.data.message);
+          setIsAlertOpen(true);
         } else {
           console.log("Please try again later");
+          setAlertMsg("Please try again later");
+          setIsAlertOpen(true);
         }
       });
     if (res.status != STATUS_CODE_OK) return;
