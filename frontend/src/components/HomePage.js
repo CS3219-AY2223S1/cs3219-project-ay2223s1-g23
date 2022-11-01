@@ -174,18 +174,18 @@ function HomePage() {
 
   return (
     <Grid container>
-      <Grid item xs>
+      <Grid item xs={6}>
         <Box display={"flex"} alignItems={"left"} justifyContent={"left"}>
           <Typography variant={"h4"} mb={"1rem"}>
             History
           </Typography>
         </Box>
-        <Paper elevation={0} sx={{ height: "45rem", overflow: "auto", marginRight: 3 }}>
-          <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+        <Paper elevation={1} sx={{ height: "45rem", overflow: "auto", marginRight: 3 }}>
+          <List sx={{ bgcolor: "background.paper" }}>
             {histories.map((history, index) => {
               return (
                 <Box key={history._id}>
-                  <ListItem display="block" sx={{ width: "100%" }}>
+                  <ListItem display="block">
                     <HistoryCard histId={history._id} questionId={history.quesId} />
                   </ListItem>
                   <Divider variant="middle" />

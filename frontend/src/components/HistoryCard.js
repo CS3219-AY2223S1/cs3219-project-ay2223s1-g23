@@ -6,8 +6,11 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 
 const bodyStyle = {
-  width: "50%",
-  height: "5rem",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  display: "-webkit-box",
+  WebkitLineClamp: "3",
+  WebkitBoxOrient: "vertical",
 };
 
 function HistoryCard({ histId, questionId }) {
@@ -52,16 +55,16 @@ function HistoryCard({ histId, questionId }) {
   return (
     <Box sx={{ width: "100%" }}>
       <Grid container>
-        <Grid item xs={10}>
-          <Typography component={Link} to={`diff/history/${histId}`} variant={"h5"}>
+        <Grid item xs={9}>
+          <Typography component={Link} to={`history/${histId}`} variant={"h5"}>
             {question.title}
           </Typography>
-          <Typography noWrap sx={bodyStyle}>
-            {question.body}
-          </Typography>
+          <Box textOverflow="ellipsis">
+            <Typography sx={bodyStyle}>{question.body}</Typography>
+          </Box>
         </Grid>
-        <Grid item xs={2} display="flex" justifyContent="flex-end">
-          <Paper varient={6}>
+        <Grid item xs display="flex" justifyContent="flex-end">
+          <Paper varient={6} sx={{ height: "3rem" }}>
             <Typography variant={"h5"} m={"5px"}>
               {question.difficulty ?? "unknown diff"}
             </Typography>
