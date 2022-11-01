@@ -1,5 +1,7 @@
-import { Typography, Box, Grid } from "@mui/material";
+import { Typography, Box, Grid, Paper } from "@mui/material";
 import { useEffect, useState } from "react";
+import { URL_QUES } from "../configs";
+import { STATUS_CODE_OK, STATUS_CODE_BAD_REQUEST } from "../constants";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
@@ -8,8 +10,7 @@ const bodyStyle = {
   height: "5rem",
 };
 
-function HistoryCard({histId, questionId}) {
-
+function HistoryCard({ histId, questionId }) {
   const [question, setQuestion] = useState({
     id: "id",
     title: "title",
@@ -36,7 +37,8 @@ function HistoryCard({histId, questionId}) {
           console.log("Please try again later");
         }
       });
-    if (res.status != STATUS_CODE_OK) return;
+
+    if (!res || res.status != STATUS_CODE_OK) return;
     const { _id, title, body, difficulty, url } = res.data.data;
     setQuestion({
       id: _id,
@@ -48,11 +50,15 @@ function HistoryCard({histId, questionId}) {
   };
 
   return (
-    <Box sx={{width: "100%"}}>
+    <Box sx={{ width: "100%" }}>
       <Grid container>
         <Grid item xs={10}>
-          <Typography component={Link} to={`history/${histId}`} variant={"h5"}>{question.title}</Typography>
-          <Typography noWrap sx={bodyStyle}>{question.body}</Typography>
+          <Typography component={Link} to={`diff/history/${histId}`} variant={"h5"}>
+            {question.title}
+          </Typography>
+          <Typography noWrap sx={bodyStyle}>
+            {question.body}
+          </Typography>
         </Grid>
         <Grid item xs={2} display="flex" justifyContent="flex-end">
           <Paper varient={6}>
@@ -64,7 +70,6 @@ function HistoryCard({histId, questionId}) {
       </Grid>
     </Box>
   );
-};
+}
 
 export default HistoryCard;
-  

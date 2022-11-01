@@ -193,7 +193,7 @@ function RoomPage({ voiceSocket }) {
         console.log("Please try again later");
       }
     });
-    if (res.status != 200) return;
+    if (!res || res.status != STATUS_CODE_OK) return;
     const { user1, user2, difficulty } = res.data.data;
     setIds({
       user1: {
@@ -253,7 +253,7 @@ function RoomPage({ voiceSocket }) {
   const handleLeaveRoom = async () => {
     await socket.disconnect();
     updateCollabInDb();
-    navigate(`/`);
+    navigate(`/diff`);
   };
 
   const handleReset = () => {
@@ -269,7 +269,7 @@ function RoomPage({ voiceSocket }) {
   return (
     <Grid container>
       <Grid item xs={6}>
-        {/* <Box mr={"1rem"}>
+        <Box mr={"1rem"}>
           <Typography variant={"h4"}>
             {ids.user1.userId} and {ids.user2.userId}&apos;s room
           </Typography>
@@ -279,16 +279,13 @@ function RoomPage({ voiceSocket }) {
             questionBody={question.body}
             difficulty={question.difficulty}
           />
-        </Box> */}
+        </Box>
       </Grid>
       <Grid item xs={6}>
         <Box display={"flex"} flexDirection={"column"}>
           <Grid container>
             <Grid item xs={1} />
             <Grid item xs={11} display={"flex"} justifyContent="flex-end">
-              <Button variant="contained" color="secondary" sx={{ margin: 1 }}>
-                Change Question
-              </Button>
               <Button variant="contained" onClick={handleReset} color="error" sx={{ margin: 1 }}>
                 Reset
               </Button>

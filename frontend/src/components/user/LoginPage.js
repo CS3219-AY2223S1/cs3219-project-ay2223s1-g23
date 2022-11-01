@@ -70,7 +70,7 @@ function LoginPage() {
       console.log(document.cookie);
       auth.login();
       console.log(auth.isLogin);
-      navigate(`/`);
+      navigate(`/diff`);
     }
   };
 

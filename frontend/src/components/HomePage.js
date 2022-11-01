@@ -5,6 +5,7 @@ import { URL_INSERT_DIFFICULTY, URL_COLLAB, URL_HIST_SVC } from "../configs";
 import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND, STATUS_CODE_OK } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
+import HistoryCard from "./HistoryCard";
 import { STATUS_CODE_BAD_REQUEST } from "../constants";
 import { URL_MATCH_SVC } from "../configs";
 import io from "socket.io-client";
@@ -34,11 +35,11 @@ function HomePage() {
   const [userId, setUserId] = useState(username);
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
-  const [histories, setHistories] = useEffect([]);
+  const [histories, setHistories] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io.connect(URL_MATCH_SVC, { path: "/" });
+    const socket = io.connect(URL_MATCH_SVC, { path: "/diff" });
     setSocket(socket);
   }, []);
 
@@ -55,7 +56,7 @@ function HomePage() {
 
   useEffect(() => {
     getHistory(userId);
-  }, [])
+  }, []);
 
   const getHistory = async (userId) => {
     const res = await axios
@@ -63,8 +64,9 @@ function HomePage() {
         params: {
           userId: userId,
         },
-      }).catch((err) => {
-        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+      })
+      .catch((err) => {
+        if (err.status === STATUS_CODE_BAD_REQUEST) {
           console.log("ERROR: " + err.response.data.message);
         } else {
           console.log("Please try again later");
@@ -72,7 +74,7 @@ function HomePage() {
       });
     if (!res || res.status != STATUS_CODE_OK) return;
     setHistories(res.data.data);
-  }
+  };
 
   const handleCollabRoom = async (data) => {
     const collabExist = await doesCollabExist(data.roomId);
@@ -182,11 +184,11 @@ function HomePage() {
           <List sx={{ width: "100%", bgcolor: "background.paper" }}>
             {histories.map((history, index) => {
               return (
-                <Box key={history._id} >
-                  <ListItem display="block" sx={{ width: "100%"}}>
-                    <HistoryCard histId={history._id} quesId={history.quesId} />
+                <Box key={history._id}>
+                  <ListItem display="block" sx={{ width: "100%" }}>
+                    <HistoryCard histId={history._id} questionId={history.quesId} />
                   </ListItem>
-                  <Divider variant="middle"/>
+                  <Divider variant="middle" />
                 </Box>
               );
             })}

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { URL_HIST_SVC, URL_QUES } from "../configs";
+import { URL_HIST_SVC, URL_QUES } from "../../configs";
 import { STATUS_CODE_OK, STATUS_CODE_BAD_REQUEST } from "../../constants";
 import axios from "axios";
 import io from "socket.io-client";
@@ -38,17 +38,19 @@ function HistoryPage() {
   }, []);
 
   const getHistory = async (histId) => {
-    const res = await axios.get(`${URL_HIST_SVC}/id`, {
-      params: {
-        id: histId,
-      },
-    }).catch((err) => {
-      setAlertMsg(err.response.data.message);
-      setIsAlertOpen(true);
-    });
+    const res = await axios
+      .get(`${URL_HIST_SVC}/id`, {
+        params: {
+          id: histId,
+        },
+      })
+      .catch((err) => {
+        setAlertMsg(err.response.data.message);
+        setIsAlertOpen(true);
+      });
     if (res && res.status === STATUS_CODE_OK) {
-      setAnsweRecord(res.data.answer);
-      getQuestion(res.data.quesId)
+      setAnsweRecord(res.data.data.answer);
+      getQuestion(res.data.data.quesId);
     }
   };
 
@@ -79,7 +81,7 @@ function HistoryPage() {
       difficulty: difficulty,
       url: url,
     });
-  }
+  };
 
   const closeAlert = () => setIsAlertOpen(false);
 
@@ -98,7 +100,7 @@ function HistoryPage() {
   };
 
   const handleLeaveRoom = async () => {
-    navigate(`/`);
+    navigate(`/diff`);
   };
 
   return (
