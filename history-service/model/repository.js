@@ -25,8 +25,8 @@ export async function getHistoryModelByUserId(userId) {
         $or: [
             { userId1: userId },
             { userId2: userId }
-        ]
-    });
+        ],
+    }).sort({ "updatedAt": "desc" });
 }
 
 export async function updateHistoryModel(id, params) {
