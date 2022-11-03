@@ -11,7 +11,7 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
             difficulty: difficulty,
             url: url,
         });
-        newQues.save();
+        await newQues.save();
         return true;
 
     } catch (err) {

@@ -13,7 +13,6 @@ export async function createQuestion(req, res) {
             if (resp.err) {
                 return res.status(400).json({ message: 'Could not create a question!' });
             } else {
-                console.log(`Created new question successfully!`)
                 return res.status(201).json({ message: `Created new question successfully!` });
             }
         } else {
