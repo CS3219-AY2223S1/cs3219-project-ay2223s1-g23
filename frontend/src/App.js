@@ -27,9 +27,9 @@ function App() {
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
             <Route element={<AuthRoute />}>
-              <Route path="/diff" element={<HomePage />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/room/:id" element={<RoomPage voiceSocket={voiceSocket} />} />
-              <Route path="/diff/history/:histId" element={<HistoryPage />} />
+              <Route path="/history/:histId" element={<HistoryPage />} />
             </Route>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
