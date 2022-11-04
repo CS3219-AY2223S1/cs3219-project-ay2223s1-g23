@@ -24,4 +24,6 @@ httpServer.listen(PORT, () => {
     console.log(`question server listening on port ${PORT}`);
 });
 
+module.exports = app;
+
 
