@@ -100,7 +100,7 @@ function HistoryPage() {
   };
 
   const handleLeaveRoom = async () => {
-    navigate(`/`);
+    navigate(`/diff`);
   };
 
   return (

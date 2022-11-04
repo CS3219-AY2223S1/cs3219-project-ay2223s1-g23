@@ -27,13 +27,12 @@ function App() {
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
             <Route element={<AuthRoute />}>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/diff" element={<HomePage />} />
               <Route path="/room/:id" element={<RoomPage voiceSocket={voiceSocket} />} />
               <Route path="/history/:histId" element={<HistoryPage />} />
             </Route>
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
-            <Route path="/room/:id" element={<RoomPage />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>
