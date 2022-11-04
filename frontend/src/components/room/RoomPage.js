@@ -15,7 +15,7 @@ import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB, URL_QUES, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
+import { URL_COLLAB, URL_QUES, URL_HISTORY, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
@@ -36,7 +36,7 @@ const modules = {
 };
 
 function RoomPage() {
-  const { roomId, quesId } = useLocation().state;
+  const { roomId, quesId, histId } = useLocation().state;
   const navigate = useNavigate();
   const decodedToken = decodedJwt();
   const userId = decodedToken.username;
@@ -52,6 +52,7 @@ function RoomPage() {
   });
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
+  const [delta, setDelta] = useState("");
   const [question, setQuestion] = useState({
     id: "id",
     title: "title",
@@ -117,8 +118,9 @@ function RoomPage() {
 
   useEffect(() => {
     if (!socket) return;
-    const receiveChangesEventHandler = ({ roomId, text }) => {
+    const receiveChangesEventHandler = ({ roomId, text, delta }) => {
       setValue(text);
+      setDelta(delta);
     };
     socket.on("receive-changes", receiveChangesEventHandler);
     return () => socket.off("receive-changes", receiveChangesEventHandler);
@@ -223,6 +225,9 @@ function RoomPage() {
         console.log("Please try again later");
       }
     });
+
+    await updateHistory(data.text);
+
     return res;
   };
 
@@ -248,6 +253,22 @@ function RoomPage() {
     return res;
   };
 
+  const updateHistory = async (text) => {
+    if (!histId) return;
+    await axios
+      .put(`${URL_HISTORY}`, {
+        id: histId,
+        answer: text,
+      })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+  };
+
   const handleLeaveRoom = async () => {
     await socket.disconnect();
     await voiceSocket.disconnect();
@@ -266,7 +287,8 @@ function RoomPage() {
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
     if (source !== "user") return; // tracking only user changes
     const text = editor.getText();
-    socket.emit("send-changes", { roomId: roomId, text: text });
+    const fullDelta = editor.getContents();
+    socket.emit("send-changes", { roomId: roomId, text: text, delta: fullDelta });
   };
 
   return (
@@ -311,7 +333,7 @@ function RoomPage() {
           </Grid>
           <ReactQuill
             preserveWhitespace
-            value={value}
+            value={delta}
             modules={modules}
             theme="snow"
             onChange={quillEditorOnChangeHandler}

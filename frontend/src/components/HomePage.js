@@ -60,6 +60,7 @@ function HomePage() {
       state: {
         roomId: roomId,
         quesId: data.quesId,
+        histId: data.histId,
       },
     });
   };
