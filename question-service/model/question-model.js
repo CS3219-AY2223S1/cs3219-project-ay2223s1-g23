@@ -11,6 +11,7 @@ let QuestionModelSchema = new Schema({
     },
     difficulty: {
         type: String,
+        enum: ['easy', 'medium', 'hard']
     },
     url: {
         type: String,
