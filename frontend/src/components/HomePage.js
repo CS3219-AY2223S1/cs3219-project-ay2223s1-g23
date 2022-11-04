@@ -1,7 +1,7 @@
 import { Grid, Box, Typography, Button, List, ListItem, Paper, Divider } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { URL_INSERT_DIFFICULTY, URL_COLLAB, URL_HIST_SVC } from "../configs";
+import { URL_INSERT_DIFFICULTY, URL_COLLAB, URL_HIST } from "../configs";
 import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND, STATUS_CODE_OK } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
@@ -30,7 +30,7 @@ const difficultyStyle = {
 function HomePage() {
   const [socket, setSocket] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
-  const decodedToken = decodedJwt();
+  const [decodedToken, setDecodedToken] = useState(decodedJwt());
   const username = decodedToken.username;
   const [userId, setUserId] = useState(username);
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
@@ -60,7 +60,7 @@ function HomePage() {
 
   const getHistory = async (userId) => {
     const res = await axios
-      .get(`${URL_HIST_SVC}/userId`, {
+      .get(`${URL_HIST}/userId`, {
         params: {
           userId: userId,
         },
@@ -84,6 +84,7 @@ function HomePage() {
       state: {
         roomId: roomId,
         quesId: data.quesId,
+        histId: data.histId,
       },
     });
   };
@@ -144,7 +145,15 @@ function HomePage() {
     setIsMatchingDialogOpen(false);
   };
 
+  const tokenExpirationCheck = () => {
+    setDecodedToken(decodedJwt());
+    if (Object.keys(decodedToken).length === 0 || decodedToken.exp * 1000 < Date.now()) {
+      navigate("/login");
+    }
+  };
+
   const handleDifficulty = (diff) => async (event) => {
+    tokenExpirationCheck();
     event.preventDefault();
     setSelectedDifficulty(diff);
     if (!diff) {

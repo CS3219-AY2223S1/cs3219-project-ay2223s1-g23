@@ -85,7 +85,8 @@ export async function ormForgetPassword(username) {
 
     const token = jwt.sign(payload, secret, {expiresIn: '15m'});
     try {
-        const link = `http://localhost:3000/reset-password/${token}`;
+        const URI_FRONTEND = process.env.URI_FRONTEND || "http://localhost:3000";
+        const link = URI_FRONTEND + `/reset-password/${token}`;
         console.log(link);
         const userEmail = await getEmail(username);
         // sendLink(userEmail,link);

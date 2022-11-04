@@ -26,11 +26,17 @@ function App() {
         <Navbar />
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
-            <Route element={<AuthRoute />}>
+            {/*Protected route */}
+            <Route path="/" element={<AuthRoute />}>
               <Route path="/" element={<HomePage />} />
+            </Route>
+            <Route path="/" element={<AuthRoute />}>
               <Route path="/room/:id" element={<RoomPage voiceSocket={voiceSocket} />} />
+            </Route>
+            <Route path="/" element={<AuthRoute />}>
               <Route path="/history/:histId" element={<HistoryPage />} />
             </Route>
+            {/*Protected route */}
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
             <Route path="/forget-password" element={<ForgetPassword />} />

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { URL_HIST_SVC, URL_QUES } from "../../configs";
+import { URL_HIST, URL_QUES } from "../../configs";
 import { STATUS_CODE_OK, STATUS_CODE_BAD_REQUEST } from "../../constants";
 import axios from "axios";
 import io from "socket.io-client";
@@ -39,7 +39,7 @@ function HistoryPage() {
 
   const getHistory = async (histId) => {
     const res = await axios
-      .get(`${URL_HIST_SVC}/id`, {
+      .get(`${URL_HIST}/id`, {
         params: {
           id: histId,
         },

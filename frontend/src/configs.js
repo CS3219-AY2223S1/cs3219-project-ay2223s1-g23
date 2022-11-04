@@ -1,9 +1,9 @@
-const URI_USER_SVC = process.env.URI_USER_SVC || "http://localhost:8000";
-const URI_MATCH_SVC = process.env.URI_MATCH_SVC || "http://localhost:8001";
-const URI_COLLAB_SVC = process.env.URI_COLLAB_SVC || "http://localhost:8002";
-const URI_COMM_SVC = process.env.URI_COMM_SVC || "http://localhost:8003";
-const URI_QUES_SVC = process.env.URI_QUES_SVC || "http://localhost:8009";
-const URI_HIST_SVC = process.env.URI_HIST_SVC || "http://localhost:8008";
+const URI_USER_SVC = process.env.REACT_APP_URI_USER_SVC || "http://localhost:8000";
+const URI_MATCH_SVC = process.env.REACT_APP_URI_MATCH_SVC || "http://localhost:8001";
+const URI_COLLAB_SVC = process.env.REACT_APP_URI_COLLAB_SVC || "http://localhost:8002";
+const URI_COMM_SVC = process.env.REACT_APP_URI_COMM_SVC || "http://localhost:8003";
+const URI_QUES_SVC = process.env.REACT_APP_URI_QUES_SVC || "http://localhost:8009";
+const URI_HIST_SVC = process.env.REACT_APP_URI_HIST_SVC || "http://localhost:8008";
 
 const PREFIX_USER_SVC = "/api/user";
 
@@ -25,4 +25,4 @@ export const URL_INSERT_ONLINE = URL_COMM_SVC + "/online";
 
 export const URL_QUES = URI_QUES_SVC + "/ques";
 
-export const URL_HIST_SVC = URI_HIST_SVC + "/hist";
+export const URL_HIST = URI_HIST_SVC + "/hist";

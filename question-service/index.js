@@ -19,8 +19,9 @@ app.get("/ques/id", getQuestionById); // e.g. localhost:8009/ques/id?id=633edd6d
 
 
 const httpServer = createServer(app);
-httpServer.listen(8009, () => {
-    console.log("server listening on port 8009");
+const PORT = process.env.PORT || 8009;
+httpServer.listen(PORT, () => {
+    console.log(`question server listening on port ${PORT}`);
 });
 
 

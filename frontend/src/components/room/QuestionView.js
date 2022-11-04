@@ -2,7 +2,6 @@ import { Typography, Box, Grid, Paper } from "@mui/material";
 
 const bodyStyle = {
   overflow: "auto",
-  margin: 1,
 };
 
 function QuestionView({ title, questionBody, difficulty }) {

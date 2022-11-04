@@ -13,7 +13,7 @@ app.options("*", cors());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.URI_FRONTEND || "http://localhost:3000",
     methods: ["GET"],
   },
 });
@@ -26,6 +26,7 @@ io.on("connection", function (socket) {
   initSocketEventHandlers(socket, io);
 });
 
-httpServer.listen(8003, () => {
-  console.log("Communication service listening on port 8003");
+const PORT = process.env.PORT || 8003;
+httpServer.listen(PORT, () => {
+  console.log(`Communication service listening on port ${PORT}`);
 });

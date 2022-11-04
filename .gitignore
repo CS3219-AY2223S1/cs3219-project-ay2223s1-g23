@@ -7,3 +7,9 @@ node_modules
 # Sqlite dev instance
 dev.sqlite
 
+collaboration-service/app.yaml
+communication-service/app.yaml
+frontend/app.yaml
+matching-service/app.yaml
+question-service/app.yaml
+user-service/app.yaml
