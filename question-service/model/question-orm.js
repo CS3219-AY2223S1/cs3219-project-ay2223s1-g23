@@ -98,7 +98,7 @@ async function checkAndGetFromRedis(key) {
     console.log("bye");
     return await redisClient.get(key)
         .then((data) => {
-            return data
+            return JSON.parse(data);
         })
         .catch((err) => {
             return {
