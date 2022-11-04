@@ -37,13 +37,10 @@ export async function getOneQuestionByDifficulty(difficulty) {
             }
         }
         const quesId = await randSelectQuestionId(difficulty);
-        console.log("hello");
         let ques = await checkAndGetFromRedis(`ques?quesId=${quesId}`);
         if (ques != null && !ques.err) {
-            console.log("hello2");
             return ques;
         }
-        console.log("hello1");
         ques = await getQuestionModelById(quesId);
         if (ques != null) {
             return ques;
@@ -95,7 +92,6 @@ export async function getOneQuestionById(id) {
 }
 
 async function checkAndGetFromRedis(key) {
-    console.log("bye");
     return await redisClient.get(key)
         .then((data) => {
             return JSON.parse(data);
