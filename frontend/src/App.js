@@ -20,14 +20,16 @@ function App() {
         <Navbar />
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
-            <Route element={<AuthRoute />}>
+            {/*Protected route */}
+            <Route path="/" element={<AuthRoute />}>
               <Route path="/" element={<HomePage />} />
-              <Route path="/room/:id" element={<RoomPage />} />
             </Route>
+            <Route path="/" element={<AuthRoute />}>
+              <Route path="room/:id" element={<RoomPage />} />
+            </Route>
+            {/*Protected route */}
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
-
-            <Route path="/room/:id" element={<RoomPage />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>
