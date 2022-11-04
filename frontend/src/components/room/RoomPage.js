@@ -15,9 +15,8 @@ import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB, URL_QUES } from "../../configs";
+import { URL_COLLAB, URL_QUES, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST } from "../../constants";
-import { URL_COLLAB_SVC } from "../../configs";
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
 
@@ -36,12 +35,13 @@ const modules = {
   ],
 };
 
-function RoomPage({ voiceSocket }) {
+function RoomPage() {
   const { roomId, quesId } = useLocation().state;
   const navigate = useNavigate();
   const decodedToken = decodedJwt();
   const userId = decodedToken.username;
   const [socket, setSocket] = useState(null);
+  const [voiceSocket, setVoiceSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
       userId: "",
@@ -60,7 +60,7 @@ function RoomPage({ voiceSocket }) {
     url: "url",
   });
 
-  const setUpVoiceChat = async (time) => {
+  const setUpVoiceChat = async (time, voiceSocketObj) => {
     console.log("Setting up voice recording");
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       var madiaRecorder = new MediaRecorder(stream);
@@ -80,9 +80,8 @@ function RoomPage({ voiceSocket }) {
         var fileReader = new FileReader();
         fileReader.readAsDataURL(audioBlob);
         fileReader.onloadend = function () {
-          console.log("sending sound " + userId);
           var base64String = fileReader.result;
-          voiceSocket.emit("voice", base64String);
+          voiceSocketObj.emit("voice", base64String);
         };
 
         madiaRecorder.start();
@@ -97,10 +96,9 @@ function RoomPage({ voiceSocket }) {
       }, time);
     });
 
-    voiceSocket.on("send", function (data) {
+    voiceSocketObj.on("send", function (data) {
       var audio = new Audio(data);
       audio.play();
-      console.log("playing sound " + userId);
     });
   };
 
@@ -108,8 +106,13 @@ function RoomPage({ voiceSocket }) {
     const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
     setSocket(socketObj);
 
+    const voiceSocketObj = io.connect(URL_COMM_SVC);
+    setVoiceSocket(voiceSocketObj);
+
     fetchRoomDetails();
     socketObj.emit("join_room", roomId);
+
+    setUpVoiceChat(200, voiceSocketObj);
   }, []);
 
   useEffect(() => {
@@ -120,10 +123,6 @@ function RoomPage({ voiceSocket }) {
     socket.on("receive-changes", receiveChangesEventHandler);
     return () => socket.off("receive-changes", receiveChangesEventHandler);
   }, [socket]);
-
-  useEffect(() => {
-    setUpVoiceChat(1000);
-  }, []);
 
   useEffect(() => {
     fetchQuesDetails();
@@ -251,6 +250,11 @@ function RoomPage({ voiceSocket }) {
 
   const handleLeaveRoom = async () => {
     await socket.disconnect();
+    await voiceSocket.disconnect();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach(function (track) {
+      track.stop();
+    });
     updateCollabInDb();
     navigate(`/`);
   };
