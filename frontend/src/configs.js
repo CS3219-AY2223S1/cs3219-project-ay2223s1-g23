@@ -13,11 +13,16 @@ export const URL_USER_SVC_LOGOUT = URL_USER_SVC + "/logout";
 export const URL_USER_SVC_USER_INFO = URL_USER_SVC + "/userInfo";
 export const URL_USER_SVC_FORGET_PASSWORD = URL_USER_SVC + "/forget-password";
 export const URL_USER_SVC_RESET_PASSWORD = URL_USER_SVC + "/reset-password";
+
 export const URL_MATCH_SVC = URI_MATCH_SVC;
 export const URL_INSERT_DIFFICULTY = URL_MATCH_SVC + "/difficulties";
+
 export const URL_COLLAB_SVC = URI_COLLAB_SVC;
 export const URL_COLLAB = URI_COLLAB_SVC + "/collab";
+
 export const URL_COMM_SVC = URI_COMM_SVC;
 export const URL_INSERT_ONLINE = URL_COMM_SVC + "/online";
-export const URL_QUES = URI_QUES_SVC + "/q";
-export const URL_HISTORY = URI_HIST_SVC + "/h";
+
+export const URL_QUES = URI_QUES_SVC + "/ques";
+
+export const URL_HIST = URI_HIST_SVC + "/hist";

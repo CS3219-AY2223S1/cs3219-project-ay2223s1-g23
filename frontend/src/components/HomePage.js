@@ -1,10 +1,11 @@
-import { Grid, Box, Typography, Button } from "@mui/material";
+import { Grid, Box, Typography, Button, List, ListItem, Paper, Divider } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { URL_INSERT_DIFFICULTY, URL_COLLAB } from "../configs";
-import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND } from "../constants";
+import { URL_INSERT_DIFFICULTY, URL_COLLAB, URL_HIST } from "../configs";
+import { STATUS_CODE_CREATED, STATUS_CODE_NOT_FOUND, STATUS_CODE_OK } from "../constants";
 import { useNavigate } from "react-router-dom";
 import MatchingDialog from "./room/MatchingDialog";
+import HistoryCard from "./HistoryCard";
 import { STATUS_CODE_BAD_REQUEST } from "../constants";
 import { URL_MATCH_SVC } from "../configs";
 import io from "socket.io-client";
@@ -20,7 +21,7 @@ export const MatchStatus = {
 const difficultyStyle = {
   margin: "1rem",
   height: 65,
-  width: 300,
+  width: 200,
   border: 3,
   borderColor: "secondary.main",
   fontWeight: "bold",
@@ -34,6 +35,7 @@ function HomePage() {
   const [userId, setUserId] = useState(username);
   const [matchStatus, setMatchStatus] = useState(MatchStatus.NOT_MATCHING);
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
+  const [histories, setHistories] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +53,28 @@ function HomePage() {
     socket.on("match_success", matchSuccessEventHandler);
     return () => socket.off("match_success", matchSuccessEventHandler);
   }, [socket]);
+
+  useEffect(() => {
+    getHistory(userId);
+  }, []);
+
+  const getHistory = async (userId) => {
+    const res = await axios
+      .get(`${URL_HIST}/userId`, {
+        params: {
+          userId: userId,
+        },
+      })
+      .catch((err) => {
+        if (err.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+    if (!res || res.status != STATUS_CODE_OK) return;
+    setHistories(res.data.data);
+  };
 
   const handleCollabRoom = async (data) => {
     const collabExist = await doesCollabExist(data.roomId);
@@ -159,10 +183,32 @@ function HomePage() {
 
   return (
     <Grid container>
-      <Grid item xs={1} />
-      <Grid item xs={10}>
+      <Grid item xs={6}>
+        <Box display={"flex"} alignItems={"left"} justifyContent={"left"}>
+          <Typography variant={"h4"} mb={"1rem"}>
+            History
+          </Typography>
+        </Box>
+        <Paper elevation={1} sx={{ height: "45rem", overflow: "auto", marginRight: 3 }}>
+          <List sx={{ bgcolor: "background.paper" }}>
+            {histories.map((history, index) => {
+              return (
+                <Box key={history._id}>
+                  <ListItem display="block">
+                    <HistoryCard histId={history._id} questionId={history.quesId} />
+                  </ListItem>
+                  <Divider variant="middle" />
+                </Box>
+              );
+            })}
+          </List>
+        </Paper>
+        Scroll for more history record....
+      </Grid>
+      <Divider flexItem orientation="vertical" sx={{ borderRightWidth: 6 }} />
+      <Grid item xs>
         <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
-          <Typography variant={"h3"} ma={"2rem"}>
+          <Typography variant={"h4"} ma={"2rem"}>
             Random Matching
           </Typography>
         </Box>
@@ -201,7 +247,6 @@ function HomePage() {
           />
         </Box>
       </Grid>
-      <Grid item xs={1} />
     </Grid>
   );
 }

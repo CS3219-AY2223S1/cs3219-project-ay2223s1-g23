@@ -8,17 +8,19 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { URL_COLLAB, URL_QUES, URL_HIST, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB, URL_QUES, URL_HISTORY, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
-import { STATUS_CODE_BAD_REQUEST } from "../../constants";
+
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
+import QuestionView from "./QuestionView";
 
 const modules = {
   toolbar: [
@@ -144,7 +146,7 @@ function RoomPage() {
           console.log("Please try again later");
         }
       });
-    if (res.status != 200) return;
+    if (res.status != STATUS_CODE_OK) return;
     const { _id, title, body, difficulty, url } = res.data.data;
     setQuestion({
       id: _id,
@@ -193,7 +195,7 @@ function RoomPage() {
         console.log("Please try again later");
       }
     });
-    if (res.status != 200) return;
+    if (!res || res.status != STATUS_CODE_OK) return;
     const { user1, user2, difficulty } = res.data.data;
     setIds({
       user1: {
@@ -256,7 +258,7 @@ function RoomPage() {
   const updateHistory = async (text) => {
     if (!histId) return;
     await axios
-      .put(`${URL_HISTORY}`, {
+      .put(`${URL_HIST}`, {
         id: histId,
         answer: text,
       })
@@ -299,23 +301,11 @@ function RoomPage() {
             {ids.user1.userId} and {ids.user2.userId}&apos;s room
           </Typography>
           <Divider variant="middle" />
-          <Box display={"flex"} flexDirection={"row"} mt={"1rem"} mb={"1rem"}>
-            <Grid container>
-              <Grid item xs={10}>
-                <Typography variant={"h5"}>{question.title}</Typography>
-              </Grid>
-              <Grid item xs={2} display="flex" justifyContent="flex-end">
-                <Paper varient={6}>
-                  <Typography variant={"h5"} m={"5px"}>
-                    {question.difficulty ?? "unknown diff"}
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Box>
-          <Paper variant="outlined" square>
-            <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
-          </Paper>
+          <QuestionView
+            title={question.title}
+            questionBody={question.body}
+            difficulty={question.difficulty}
+          />
         </Box>
       </Grid>
       <Grid item xs={6}>
@@ -323,9 +313,6 @@ function RoomPage() {
           <Grid container>
             <Grid item xs={1} />
             <Grid item xs={11} display={"flex"} justifyContent="flex-end">
-              <Button variant="contained" color="secondary" sx={{ margin: 1 }}>
-                Change Question
-              </Button>
               <Button variant="contained" onClick={handleReset} color="error" sx={{ margin: 1 }}>
                 Reset
               </Button>
