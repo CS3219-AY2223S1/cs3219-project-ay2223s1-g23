@@ -119,8 +119,8 @@ function HistoryPage() {
         </Grid>
         <Grid item xs={6}>
           <Box display={"flex"} flexDirection={"column"} pt={8}>
-            <Paper variant="outlined" sx={{ padding: 2, height: "42rem" }}>
-              {answerRecord}
+            <Paper variant="outlined" sx={{ padding: 1, height: "42rem", overflow: "auto" }}>
+              <Typography sx={{ whiteSpace: "pre-line" }}>{answerRecord}</Typography>
             </Paper>
             <Box display={"flex"} flexDirection={"row"} justifyContent="flex-end">
               <Button variant="outlined" onClick={handleLeaveRoom} color="error" sx={{ margin: 1 }}>

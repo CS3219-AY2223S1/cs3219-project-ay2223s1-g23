@@ -181,6 +181,43 @@ function HomePage() {
     startFindingMatch(diff);
   };
 
+  const historyListContent = (historiesLst) => {
+    const noHistory = {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      textAlign: "center",
+      verticalAlign: "middle",
+      height: "45rem",
+      marginRight: 3,
+    };
+
+    if (!histories || histories < 1) {
+      return (
+        <Paper elevation={1} sx={noHistory}>
+          <Typography variant="h6">Waiting for you to make histories with us!!</Typography>
+        </Paper>
+      );
+    }
+
+    return (
+      <Paper elevation={1} sx={{ height: "45rem", overflow: "auto", marginRight: 3 }}>
+        <List sx={{ bgcolor: "background.paper" }}>
+          {histories.map((history, index) => {
+            return (
+              <Box key={history._id}>
+                <ListItem display="block">
+                  <HistoryCard histId={history._id} questionId={history.quesId} />
+                </ListItem>
+                <Divider variant="middle" />
+              </Box>
+            );
+          })}
+        </List>
+      </Paper>
+    );
+  };
+
   return (
     <Grid container>
       <Grid item xs={6}>
@@ -189,21 +226,8 @@ function HomePage() {
             History
           </Typography>
         </Box>
-        <Paper elevation={1} sx={{ height: "45rem", overflow: "auto", marginRight: 3 }}>
-          <List sx={{ bgcolor: "background.paper" }}>
-            {histories.map((history, index) => {
-              return (
-                <Box key={history._id}>
-                  <ListItem display="block">
-                    <HistoryCard histId={history._id} questionId={history.quesId} />
-                  </ListItem>
-                  <Divider variant="middle" />
-                </Box>
-              );
-            })}
-          </List>
-        </Paper>
-        Scroll for more history record....
+        {historyListContent()}
+        {histories.length > 0 ? <Typography>Scroll for more history record....</Typography> : null}
       </Grid>
       <Divider flexItem orientation="vertical" sx={{ borderRightWidth: 6 }} />
       <Grid item xs>
