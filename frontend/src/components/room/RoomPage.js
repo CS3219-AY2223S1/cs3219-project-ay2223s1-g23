@@ -35,7 +35,7 @@ const modules = {
   ],
 };
 
-function RoomPage({ voiceSocket }) {
+function RoomPage() {
   const { roomId, quesId, histId } = useLocation().state;
   const navigate = useNavigate();
   const decodedToken = decodedJwt();
