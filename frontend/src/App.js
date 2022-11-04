@@ -27,7 +27,7 @@ function App() {
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
             <Route element={<AuthRoute />}>
-              <Route path="/diff" element={<HomePage />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/room/:id" element={<RoomPage voiceSocket={voiceSocket} />} />
               <Route path="/history/:histId" element={<HistoryPage />} />
             </Route>

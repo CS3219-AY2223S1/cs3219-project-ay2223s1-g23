@@ -15,7 +15,7 @@ app.options("*", cors());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  path: "/diff",
+  path: "/",
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],

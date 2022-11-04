@@ -253,7 +253,7 @@ function RoomPage({ voiceSocket }) {
   const handleLeaveRoom = async () => {
     await socket.disconnect();
     updateCollabInDb();
-    navigate(`/diff`);
+    navigate(`/`);
   };
 
   const handleReset = () => {
