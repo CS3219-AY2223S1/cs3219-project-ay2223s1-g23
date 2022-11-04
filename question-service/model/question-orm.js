@@ -12,7 +12,7 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
             url: url,
         });
         await newQues.save();
-        return true;
+        return newQues;
 
     } catch (err) {
         console.log('ERROR: Could not create ques model');
