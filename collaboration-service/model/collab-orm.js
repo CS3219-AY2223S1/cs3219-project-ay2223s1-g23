@@ -16,7 +16,7 @@ export async function createOneCollab({
   text,
 }) {
   try {
-    if (await existsCollab({ user1, user2 })) {
+    if (await existsCollab({ roomId })) {
       return false;
     } else {
       const newCollab = await createCollab({
