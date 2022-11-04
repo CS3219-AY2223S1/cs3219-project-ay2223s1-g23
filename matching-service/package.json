@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require babel-register tests/*.js --exit"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +15,13 @@
   "devDependencies": {
     "@types/express": "^4.17.14",
     "@types/uuid": "^8.3.4",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
+    "mocha": "^5.1.1"
   },
   "dependencies": {
     "axios": "^1.1.0",
