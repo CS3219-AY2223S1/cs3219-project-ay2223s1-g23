@@ -11,7 +11,7 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
             difficulty: difficulty,
             url: url,
         });
-        newQues.save();
+        await newQues.save();
         return true;
 
     } catch (err) {
@@ -22,6 +22,12 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
 
 export async function getOneQuestionByDifficulty(difficulty) {
     try {
+        let diffEnum = ["easy", "medium", "hard"];
+        if (!diffEnum.includes(difficulty)) {
+            return {
+                err: "difficulty must be one of easy, medium or hard"
+            }
+        }
         const quesId = await randSelectQuestionId(difficulty);
         const ques = await getQuestionModelById(quesId);
         if (ques != null) {
