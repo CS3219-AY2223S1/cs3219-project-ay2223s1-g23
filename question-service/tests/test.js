@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 chai.should();
 
 var expect = chai.expect;
-const ques_url = "/q";
+const ques_url = "/ques";
 const getQuestionByDiffRequest = (difficulty, done) => {
     chai.request(app)
         .get(`${ques_url}/diff?diff=${difficulty}`)

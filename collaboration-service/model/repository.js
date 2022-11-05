@@ -39,8 +39,7 @@ export async function updateCollab(params, updateParams) {
 export async function existsCollab(params) {
   return (
     (await CollabModel.findOne({
-      user1: params.user1,
-      user2: params.user2,
+      roomId: params.roomId,
     })) !== null
   );
 }

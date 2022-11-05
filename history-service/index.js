@@ -18,10 +18,10 @@ app.options("*", cors());
 app.get("/", (req, res) => {
     res.send("Hello World from history service");
 });
-app.post("/h", createHistory);
-app.get("/h/id", getHistoryById); // e.g. localhost:8008/h/id?id=1234
-app.get("/h/userId", getHistoryByUserId); // e.g. localhost:8008/h/userId?userId=1234
-app.put("/h", updateHistory)
+app.post("/hist", createHistory);
+app.get("/hist/id", getHistoryById); // e.g. localhost:8008/h/id?id=1234
+app.get("/hist/userId", getHistoryByUserId); // e.g. localhost:8008/h/userId?userId=1234
+app.put("/hist", updateHistory)
 
 
 

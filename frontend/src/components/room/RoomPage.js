@@ -8,18 +8,19 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { URL_COLLAB, URL_QUES, URL_HIST, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
+import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-import { URL_COLLAB, URL_QUES } from "../../configs";
-import { STATUS_CODE_BAD_REQUEST } from "../../constants";
-import { URL_COLLAB_SVC } from "../../configs";
+
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
+import QuestionView from "./QuestionView";
 
 const modules = {
   toolbar: [
@@ -36,12 +37,13 @@ const modules = {
   ],
 };
 
-function RoomPage({ voiceSocket }) {
-  const { roomId, quesId } = useLocation().state;
+function RoomPage() {
+  const { roomId, quesId, histId } = useLocation().state;
   const navigate = useNavigate();
   const decodedToken = decodedJwt();
   const userId = decodedToken.username;
   const [socket, setSocket] = useState(null);
+  const [voiceSocket, setVoiceSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
       userId: "",
@@ -52,6 +54,7 @@ function RoomPage({ voiceSocket }) {
   });
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
+  const [delta, setDelta] = useState("");
   const [question, setQuestion] = useState({
     id: "id",
     title: "title",
@@ -60,7 +63,7 @@ function RoomPage({ voiceSocket }) {
     url: "url",
   });
 
-  const setUpVoiceChat = async (time) => {
+  const setUpVoiceChat = async (time, voiceSocketObj) => {
     console.log("Setting up voice recording");
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       var madiaRecorder = new MediaRecorder(stream);
@@ -80,9 +83,8 @@ function RoomPage({ voiceSocket }) {
         var fileReader = new FileReader();
         fileReader.readAsDataURL(audioBlob);
         fileReader.onloadend = function () {
-          console.log("sending sound " + userId);
           var base64String = fileReader.result;
-          voiceSocket.emit("voice", base64String);
+          voiceSocketObj.emit("voice", base64String);
         };
 
         madiaRecorder.start();
@@ -97,10 +99,9 @@ function RoomPage({ voiceSocket }) {
       }, time);
     });
 
-    voiceSocket.on("send", function (data) {
+    voiceSocketObj.on("send", function (data) {
       var audio = new Audio(data);
       audio.play();
-      console.log("playing sound " + userId);
     });
   };
 
@@ -108,22 +109,24 @@ function RoomPage({ voiceSocket }) {
     const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
     setSocket(socketObj);
 
+    const voiceSocketObj = io.connect(URL_COMM_SVC);
+    setVoiceSocket(voiceSocketObj);
+
     fetchRoomDetails();
     socketObj.emit("join_room", roomId);
+
+    setUpVoiceChat(200, voiceSocketObj);
   }, []);
 
   useEffect(() => {
     if (!socket) return;
-    const receiveChangesEventHandler = ({ roomId, text }) => {
+    const receiveChangesEventHandler = ({ roomId, text, delta }) => {
       setValue(text);
+      setDelta(delta);
     };
     socket.on("receive-changes", receiveChangesEventHandler);
     return () => socket.off("receive-changes", receiveChangesEventHandler);
   }, [socket]);
-
-  useEffect(() => {
-    setUpVoiceChat(1000);
-  }, []);
 
   useEffect(() => {
     fetchQuesDetails();
@@ -143,7 +146,7 @@ function RoomPage({ voiceSocket }) {
           console.log("Please try again later");
         }
       });
-    if (res.status != 200) return;
+    if (res.status != STATUS_CODE_OK) return;
     const { _id, title, body, difficulty, url } = res.data.data;
     setQuestion({
       id: _id,
@@ -192,7 +195,7 @@ function RoomPage({ voiceSocket }) {
         console.log("Please try again later");
       }
     });
-    if (res.status != 200) return;
+    if (!res || res.status != STATUS_CODE_OK) return;
     const { user1, user2, difficulty } = res.data.data;
     setIds({
       user1: {
@@ -224,6 +227,9 @@ function RoomPage({ voiceSocket }) {
         console.log("Please try again later");
       }
     });
+
+    await updateHistory(data.text);
+
     return res;
   };
 
@@ -249,8 +255,29 @@ function RoomPage({ voiceSocket }) {
     return res;
   };
 
+  const updateHistory = async (text) => {
+    if (!histId) return;
+    await axios
+      .put(`${URL_HIST}`, {
+        id: histId,
+        answer: text,
+      })
+      .catch((err) => {
+        if (err.response.status === STATUS_CODE_BAD_REQUEST) {
+          console.log("ERROR: " + err.response.data.message);
+        } else {
+          console.log("Please try again later");
+        }
+      });
+  };
+
   const handleLeaveRoom = async () => {
     await socket.disconnect();
+    await voiceSocket.disconnect();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach(function (track) {
+      track.stop();
+    });
     updateCollabInDb();
     navigate(`/`);
   };
@@ -262,7 +289,8 @@ function RoomPage({ voiceSocket }) {
   const quillEditorOnChangeHandler = (content, delta, source, editor) => {
     if (source !== "user") return; // tracking only user changes
     const text = editor.getText();
-    socket.emit("send-changes", { roomId: roomId, text: text });
+    const fullDelta = editor.getContents();
+    socket.emit("send-changes", { roomId: roomId, text: text, delta: fullDelta });
   };
 
   return (
@@ -273,23 +301,11 @@ function RoomPage({ voiceSocket }) {
             {ids.user1.userId} and {ids.user2.userId}&apos;s room
           </Typography>
           <Divider variant="middle" />
-          <Box display={"flex"} flexDirection={"row"} mt={"1rem"} mb={"1rem"}>
-            <Grid container>
-              <Grid item xs={10}>
-                <Typography variant={"h5"}>{question.title}</Typography>
-              </Grid>
-              <Grid item xs={2} display="flex" justifyContent="flex-end">
-                <Paper varient={6}>
-                  <Typography variant={"h5"} m={"5px"}>
-                    {question.difficulty ?? "unknown diff"}
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Box>
-          <Paper variant="outlined" square>
-            <Typography sx={{ height: "30rem" }}>{question.body}</Typography>
-          </Paper>
+          <QuestionView
+            title={question.title}
+            questionBody={question.body}
+            difficulty={question.difficulty}
+          />
         </Box>
       </Grid>
       <Grid item xs={6}>
@@ -297,9 +313,6 @@ function RoomPage({ voiceSocket }) {
           <Grid container>
             <Grid item xs={1} />
             <Grid item xs={11} display={"flex"} justifyContent="flex-end">
-              <Button variant="contained" color="secondary" sx={{ margin: 1 }}>
-                Change Question
-              </Button>
               <Button variant="contained" onClick={handleReset} color="error" sx={{ margin: 1 }}>
                 Reset
               </Button>
@@ -307,7 +320,7 @@ function RoomPage({ voiceSocket }) {
           </Grid>
           <ReactQuill
             preserveWhitespace
-            value={value}
+            value={delta}
             modules={modules}
             theme="snow"
             onChange={quillEditorOnChangeHandler}

@@ -6,6 +6,7 @@ import SignupPage from "./components/user/SignupPage";
 import LoginPage from "./components/user/LoginPage";
 import HomePage from "./components/HomePage";
 import RoomPage from "./components/room/RoomPage";
+import HistoryPage from "./components/room/HistoryPage";
 import ForgetPassword from "./components/user/ForgetPasswordPage";
 import ResetPassword from "./components/user/ResetPasswordPage";
 import Navbar from "./components/layout/Navbar";
@@ -25,14 +26,19 @@ function App() {
         <Navbar />
         <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
           <Routes>
-            <Route element={<AuthRoute />}>
+            {/*Protected route */}
+            <Route path="/" element={<AuthRoute />}>
               <Route path="/" element={<HomePage />} />
+            </Route>
+            <Route path="/" element={<AuthRoute />}>
               <Route path="/room/:id" element={<RoomPage voiceSocket={voiceSocket} />} />
             </Route>
+            <Route path="/" element={<AuthRoute />}>
+              <Route path="/history/:histId" element={<HistoryPage />} />
+            </Route>
+            {/*Protected route */}
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={auth.isLogin ? <Navigate to="/" /> : <LoginPage />} />
-
-            <Route path="/room/:id" element={<RoomPage />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
             <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           </Routes>

@@ -8,6 +8,7 @@ env_variables:
   REACT_APP_URI_COLLAB_SVC:  https://collaboration-service-dot-peerpressure-366414.et.r.appspot.com
   REACT_APP_URI_COMM_SVC: https://communication-service-dot-peerpressure-366414.et.r.appspot.com
   REACT_APP_URI_QUES_SVC: https://question-service-dot-peerpressure-366414.et.r.appspot.com
+  REACT_APP_URI_HIST_SVC: https://history-service-dot-peerpressure-366414.et.r.appspot.com
 
 resources:
   memory_gb: 4

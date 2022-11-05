@@ -1,4 +1,4 @@
-import { URL_QUES } from "../../configs.js";
+import { URL_QUES, URL_HISTORY } from "../../configs.js";
 import { deleteOneMatchModel } from "../model/match-orm.js";
 import { updateMatchModel } from "../model/repository.js";
 import axios from "axios";
@@ -27,11 +27,27 @@ const updateMatchedUser = async (userIdFromQueue, matchedUserId) => {
 
 const fetchQuestion = async (_difficulty) => {
   try {
-    const res = await axios.get(`${URL_QUES}/diff`, { params: { diff: _difficulty } });
+    const res = await axios.get(`${URL_QUES}/diff`, {
+      params: { diff: _difficulty },
+    });
     //console.log(res.data);
     return res.data.data;
   } catch (err) {
     console.log("error in fetching question: " + err);
+    return null;
+  }
+};
+
+const createHistory = async (user1, user2, quesId) => {
+  try {
+    const hist = await axios.post(`${URL_HISTORY}`, {
+      quesId: quesId,
+      userId1: user1,
+      userId2: user2,
+    });
+    return hist.data.data;
+  } catch (err) {
+    console.log("error in creating hist: " + err);
     return null;
   }
 };
@@ -61,6 +77,10 @@ export const initSocketEventHandlers = (socket, io) => {
       const userFromQueue = findingMatchQueue[difficulty].shift();
       const { socketId: socketIdFromQueue, userId: userIdFromQueue } =
         userFromQueue;
+
+      // create 1 history model
+      const hist = await createHistory(userId, userIdFromQueue, ques._id);
+
       const roomId = `${socketId}_${socketIdFromQueue}`;
       const allData = {
         userId1: userId,
@@ -69,7 +89,8 @@ export const initSocketEventHandlers = (socket, io) => {
         socketId2: socketIdFromQueue,
         roomId: roomId,
         difficulty: difficulty,
-        quesId: ques._id
+        quesId: ques._id,
+        histId: hist._id,
       };
 
       // Emit successful match to both users.

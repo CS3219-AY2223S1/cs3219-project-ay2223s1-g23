@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 chai.should();
 
 var expect = chai.expect;
-const hist_url = "/h";
+const hist_url = "/hist";
 
 describe("Histories", () => {
     let historyModel;
