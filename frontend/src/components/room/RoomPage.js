@@ -10,33 +10,31 @@ import {
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
-import ReactQuill from "react-quill";
 import Quill from "quill";
+import QuillCursors from "quill-cursors";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { URL_COLLAB, URL_QUES, URL_HIST, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
-import "react-quill/dist/quill.snow.css";
+import "quill/dist/quill.snow.css";
 import axios from "axios";
 
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
 import QuestionView from "./QuestionView";
 
-const modules = {
-  toolbar: [
-    [{ font: [] }],
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    ["bold", "italic", "underline", "strike"],
-    [{ color: [] }, { background: [] }],
-    [{ script: "sub" }, { script: "super" }],
-    ["blockquote", "code-block"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
-    ["link", "image", "video"],
-    ["clean"],
-  ],
-};
+const TOOLBAR_OPTIONS = [
+  [{ font: [] }],
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  ["bold", "italic", "underline", "strike"],
+  [{ color: [] }, { background: [] }],
+  ["blockquote", "code-block"],
+  [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
+  ["clean"],
+];
+
+const CURSOR_1 = "cursor1";
+const CURSOR_2 = "cursor2";
 
 function RoomPage() {
   const { roomId, quesId, histId } = useLocation().state;
@@ -45,6 +43,7 @@ function RoomPage() {
   const userId = decodedToken.username;
   const [socket, setSocket] = useState(null);
   const [quill, setQuill] = useState();
+  const [cursors, setCursors] = useState(null);
   const [voiceSocket, setVoiceSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
@@ -56,7 +55,6 @@ function RoomPage() {
   });
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
-  const [delta, setDelta] = useState("");
   const [question, setQuestion] = useState({
     id: "id",
     title: "title",
@@ -125,16 +123,6 @@ function RoomPage() {
     quill.enable();
   });
 
-  // useEffect(() => {
-  //   if (!socket) return;
-  //   const receiveChangesEventHandler = ({ roomId, text, delta }) => {
-  //     setValue(text);
-  //     setDelta(delta);
-  //   };
-  //   socket.on("receive-changes", receiveChangesEventHandler);
-  //   return () => socket.off("receive-changes", receiveChangesEventHandler);
-  // }, [socket]);
-
   useEffect(() => {
     if (socket == null || quill == null) return;
 
@@ -163,20 +151,76 @@ function RoomPage() {
     };
   }, [socket, quill]);
 
+  useEffect(() => {
+    if (!socket || !ids.user1.userId || !ids.user2.userId) return;
+
+    const handler = ({ cursor, range }) => {
+      const isCurrUser = isCursorTheCurrentUser(cursor);
+      if (isCurrUser) return;
+      cursors.moveCursor(cursor, range);
+    };
+    socket.on("receive-cursor-change", handler);
+
+    return () => {
+      socket.off("receive-cursor-change", handler);
+    };
+  }, [socket, ids]);
+
+  useEffect(() => {
+    if (socket == null || quill == null || !ids.user1.userId || !ids.user2.userId) return;
+
+    const handler = (range, oldRange, source) => {
+      // if (source !== "user") return; // source is "user" if user manually move cursor, "api" if cursor move due to other reasons eg text change
+      if (range == oldRange) return;
+      const currentCursor = getThisCursor();
+      cursors.moveCursor(currentCursor, range);
+      socket.emit("cursor-change", { roomId: roomId, cursor: currentCursor, range: range }); // a little misleading because even if this user doesn't
+      // change cursor, will still fire because the other user's cursor change and sending a cursor-change event with this user's cursor
+    };
+    quill.on("selection-change", handler);
+
+    return () => {
+      quill.off("selection-change", handler);
+    };
+  }, [socket, quill, ids]);
+
+  const getThisCursor = () => {
+    return userId == ids.user1.userId ? CURSOR_1 : CURSOR_2;
+  };
+
+  const isCursorTheCurrentUser = (cursorId) => {
+    return cursorId == CURSOR_1 && userId == ids.user1.userId;
+  };
+
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
 
     wrapper.innerHTML = "";
     const editor = document.createElement("div");
     wrapper.append(editor);
+    Quill.register("modules/cursors", QuillCursors);
     const q = new Quill(editor, {
+      modules: {
+        toolbar: TOOLBAR_OPTIONS,
+        cursors: {
+          transformOnTextChange: true,
+        },
+      },
       theme: "snow",
-      modules: { toolbar: modules },
+      placeholder: "Start typing here...",
     });
     q.disable();
-    q.setText("Loading...");
     setQuill(q);
+
+    const cursors = q.getModule("cursors");
+    setCursors(cursors);
   }, []);
+
+  useEffect(() => {
+    if (!ids.user1.userId || !ids.user2.userId || !cursors) return;
+    cursors.createCursor(CURSOR_1, ids.user1.userId, "blue");
+    cursors.createCursor(CURSOR_2, ids.user2.userId, "red");
+  }, [ids, cursors]);
 
   useEffect(() => {
     fetchQuesDetails();
@@ -342,20 +386,9 @@ function RoomPage() {
   };
 
   const handleReset = () => {
-    // socket.emit("send-changes", {
-    //   roomId: roomId,
-    //   delta: {
-    //     ops: [{ insert: "\n" }],
-    //   },
-    // });
+    const delta = quill.setText("");
+    socket.emit("send-changes", { roomId: roomId, delta: delta });
   };
-
-  // const quillEditorOnChangeHandler = (content, delta, source, editor) => {
-  //   if (source !== "user") return; // tracking only user changes
-  //   const text = editor.getText();
-  //   const fullDelta = editor.getContents();
-  //   socket.emit("send-changes", { roomId: roomId, text: text, delta: fullDelta });
-  // };
 
   return (
     <Grid container>
@@ -383,14 +416,6 @@ function RoomPage() {
             </Grid>
           </Grid>
           <div className="container" ref={wrapperRef}></div>
-          {/* <ReactQuill
-            preserveWhitespace
-            value={delta}
-            modules={modules}
-            theme="snow"
-            onChange={quillEditorOnChangeHandler}
-            placeholder="Content goes here..."
-          /> */}
           <Box display={"flex"} flexDirection={"row"}>
             <Grid container>
               <Grid item xs={2}>
