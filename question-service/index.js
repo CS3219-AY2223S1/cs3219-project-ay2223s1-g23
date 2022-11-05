@@ -13,9 +13,9 @@ app.options("*", cors());
 app.get("/", (req, res) => {
     res.send("Hello World from question service");
 });
-app.post("/q", createQuestion);
-app.get("/q/diff", getQuestionByDiff); // e.g. localhost:8009/q/diff?diff=easy
-app.get("/q/id", getQuestionById); // e.g. localhost:8009/q/id?id=1234
+app.post("/ques", createQuestion);
+app.get("/ques/diff", getQuestionByDiff); // e.g. localhost:8009/ques/diff?diff=easy
+app.get("/ques/id", getQuestionById); // e.g. localhost:8009/ques/id?id=633edd6d0573c3b3504d1103
 
 
 const httpServer = createServer(app);

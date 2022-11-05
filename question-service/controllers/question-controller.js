@@ -13,7 +13,6 @@ export async function createQuestion(req, res) {
             if (resp.err) {
                 return res.status(400).json({ message: 'Could not create a question!' });
             } else {
-                console.log(`Created new question successfully!`)
                 return res.status(201).json({ message: `Created new question successfully!` });
             }
         } else {
@@ -30,7 +29,7 @@ export async function getQuestionByDiff(req, res) {
         const resp = await _getOneQuestionByDifficulty(diff);
         //console.log(resp);
         if (resp.err) {
-            return res.status(400).json({ message: 'Could not get question by diff' });
+            return res.status(400).json({ message: resp.err });
         } else if (resp) {
             return res.status(200).json({
                 message: "Success getting question!",
@@ -48,6 +47,7 @@ export async function getQuestionByDiff(req, res) {
 export async function getQuestionById(req, res) {
     try {
         const { id } = req.query;
+        console.log(id);
         const resp = await _getOneQuestionById(id);
         //console.log(resp);
         if (resp.err) {

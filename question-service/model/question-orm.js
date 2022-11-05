@@ -1,6 +1,14 @@
 import { createQuestionModel, getQuestionModelById } from './repository.js';
 import QuestionModel from "./question-model.js";
 import "dotenv/config";
+import redis from 'redis';
+
+const redisClient = redis.createClient({
+    url: process.env.REDIS_CLOUD_URI
+});
+redisClient.connect();
+
+const DEFAULT_EXPIRATION = 6 * 60 * 60; // 6 hours
 
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function createOneQuestionModel(title, body, difficulty, url) {
@@ -11,7 +19,7 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
             difficulty: difficulty,
             url: url,
         });
-        newQues.save();
+        await newQues.save();
         return true;
 
     } catch (err) {
@@ -22,8 +30,18 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
 
 export async function getOneQuestionByDifficulty(difficulty) {
     try {
+        let diffEnum = ["easy", "medium", "hard"];
+        if (!diffEnum.includes(difficulty)) {
+            return {
+                err: "difficulty must be one of easy, medium or hard"
+            }
+        }
         const quesId = await randSelectQuestionId(difficulty);
-        const ques = await getQuestionModelById(quesId);
+        let ques = await checkAndGetFromRedis(`ques?quesId=${quesId}`);
+        if (ques != null && !ques.err) {
+            return ques;
+        }
+        ques = await getQuestionModelById(quesId);
         if (ques != null) {
             return ques;
         } else {
@@ -53,8 +71,13 @@ async function randSelectQuestionId(difficulty) {
 
 export async function getOneQuestionById(id) {
     try {
-        const ques = await getQuestionModelById(id);
+        let ques = await checkAndGetFromRedis(`ques?quesId=${id}`);
+        if (ques != null && !ques.err) {
+            return ques;
+        }
+        ques = await getQuestionModelById(id);
         if (ques != null) {
+            redisClient.setEx(`ques?quesId=${id}`, DEFAULT_EXPIRATION, JSON.stringify(ques));
             return ques;
         } else {
             return {
@@ -63,6 +86,19 @@ export async function getOneQuestionById(id) {
         }
     } catch (err) {
         console.log('ERROR: Could not get one question by id');
+        console.log(err);
         return { err };
     }
+}
+
+async function checkAndGetFromRedis(key) {
+    return await redisClient.get(key)
+        .then((data) => {
+            return JSON.parse(data);
+        })
+        .catch((err) => {
+            return {
+                err: "Something wrong while getting data from redis"
+            }
+        });
 }
