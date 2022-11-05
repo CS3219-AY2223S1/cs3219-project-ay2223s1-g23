@@ -40,3 +40,5 @@ const PORT = process.env.PORT || 8001;
 httpServer.listen(PORT, () => {
   console.log(`matching server listening on port ${PORT}`);
 });
+
+export default app;

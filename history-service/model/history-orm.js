@@ -16,7 +16,7 @@ export async function createOneHistoryModel(quesId, userId1, userId2, answer) {
             answer: answer
         });
         newHist.save();
-        return true;
+        return newHist;
 
     } catch (err) {
         console.log('ERROR: Could not create hist model');

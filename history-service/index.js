@@ -32,4 +32,5 @@ httpServer.listen(PORT, () => {
     console.log(`history server listening on port ${PORT}`);
 });
 
+export default app;
 

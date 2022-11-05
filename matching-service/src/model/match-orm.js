@@ -10,7 +10,7 @@ export async function createOneMatchModel(userId, difficulty) {
             matchedUser: null,
         });
         newDiff.save();
-        return true;
+        return newDiff;
 
     } catch (err) {
         console.log('ERROR: Could not create match model');
