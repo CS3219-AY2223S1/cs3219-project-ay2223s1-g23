@@ -11,7 +11,8 @@ import {
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
 import ReactQuill from "react-quill";
-import { useState, useEffect } from "react";
+import Quill from "quill";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { URL_COLLAB, URL_QUES, URL_HIST, URL_COLLAB_SVC, URL_COMM_SVC } from "../../configs";
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
@@ -43,6 +44,7 @@ function RoomPage() {
   const decodedToken = decodedJwt();
   const userId = decodedToken.username;
   const [socket, setSocket] = useState(null);
+  const [quill, setQuill] = useState();
   const [voiceSocket, setVoiceSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
@@ -119,14 +121,63 @@ function RoomPage() {
   }, []);
 
   useEffect(() => {
-    if (!socket) return;
-    const receiveChangesEventHandler = ({ roomId, text, delta }) => {
-      setValue(text);
-      setDelta(delta);
+    if (quill == null) return;
+    quill.enable();
+  });
+
+  // useEffect(() => {
+  //   if (!socket) return;
+  //   const receiveChangesEventHandler = ({ roomId, text, delta }) => {
+  //     setValue(text);
+  //     setDelta(delta);
+  //   };
+  //   socket.on("receive-changes", receiveChangesEventHandler);
+  //   return () => socket.off("receive-changes", receiveChangesEventHandler);
+  // }, [socket]);
+
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+
+    const handler = (delta) => {
+      console.log("receive-changes event");
+      quill.updateContents(delta);
     };
-    socket.on("receive-changes", receiveChangesEventHandler);
-    return () => socket.off("receive-changes", receiveChangesEventHandler);
-  }, [socket]);
+    socket.on("receive-changes", handler);
+
+    return () => {
+      socket.off("receive-changes", handler);
+    };
+  }, [socket, quill]);
+
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+
+    const handler = (delta, oldDelta, source) => {
+      if (source !== "user") return;
+      console.log("text-change event");
+      socket.emit("send-changes", { roomId: roomId, delta: delta });
+    };
+    quill.on("text-change", handler);
+
+    return () => {
+      quill.off("text-change", handler);
+    };
+  }, [socket, quill]);
+
+  const wrapperRef = useCallback((wrapper) => {
+    if (wrapper == null) return;
+
+    wrapper.innerHTML = "";
+    const editor = document.createElement("div");
+    wrapper.append(editor);
+    const q = new Quill(editor, {
+      theme: "snow",
+      modules: { toolbar: modules },
+    });
+    q.disable();
+    q.setText("Loading...");
+    setQuill(q);
+  }, []);
 
   useEffect(() => {
     fetchQuesDetails();
@@ -283,15 +334,20 @@ function RoomPage() {
   };
 
   const handleReset = () => {
-    socket.emit("send-changes", { text: "" });
+    // socket.emit("send-changes", {
+    //   roomId: roomId,
+    //   delta: {
+    //     ops: [{ insert: "\n" }],
+    //   },
+    // });
   };
 
-  const quillEditorOnChangeHandler = (content, delta, source, editor) => {
-    if (source !== "user") return; // tracking only user changes
-    const text = editor.getText();
-    const fullDelta = editor.getContents();
-    socket.emit("send-changes", { roomId: roomId, text: text, delta: fullDelta });
-  };
+  // const quillEditorOnChangeHandler = (content, delta, source, editor) => {
+  //   if (source !== "user") return; // tracking only user changes
+  //   const text = editor.getText();
+  //   const fullDelta = editor.getContents();
+  //   socket.emit("send-changes", { roomId: roomId, text: text, delta: fullDelta });
+  // };
 
   return (
     <Grid container>
@@ -318,14 +374,15 @@ function RoomPage() {
               </Button>
             </Grid>
           </Grid>
-          <ReactQuill
+          <div className="container" ref={wrapperRef}></div>
+          {/* <ReactQuill
             preserveWhitespace
             value={delta}
             modules={modules}
             theme="snow"
             onChange={quillEditorOnChangeHandler}
             placeholder="Content goes here..."
-          />
+          /> */}
           <Box display={"flex"} flexDirection={"row"}>
             <Grid container>
               <Grid item xs={2}>

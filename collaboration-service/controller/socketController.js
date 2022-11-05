@@ -25,8 +25,13 @@ export const initSocketEventHandlers = (socket, io) => {
     socketIdToRoomId[socket.id] = data;
   });
 
+  // socket.on("send-changes", (data) => {
+  //   io.in(data.roomId).emit("receive-changes", data);
+  // });
+
   socket.on("send-changes", (data) => {
-    io.in(data.roomId).emit("receive-changes", data);
+    // io.in(data.roomId).emit("receive-changes", data.delta);
+    socket.broadcast.to(data.roomId).emit("receive-changes", data.delta);
   });
 
   socket.on("connect_error", function (err) {
