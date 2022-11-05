@@ -25,6 +25,8 @@ function HistoryPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
   const [answerRecord, setAnsweRecord] = useState("Content goes here...");
+  const [user1, setUser1] = useState("");
+  const [user2, setUser2] = useState("");
   const [question, setQuestion] = useState({
     id: "id",
     title: "title",
@@ -49,6 +51,8 @@ function HistoryPage() {
         setIsAlertOpen(true);
       });
     if (res && res.status === STATUS_CODE_OK) {
+      setUser1(res.data.data.userId1);
+      setUser2(res.data.data.userId2);
       setAnsweRecord(res.data.data.answer);
       getQuestion(res.data.data.quesId);
     }
@@ -108,7 +112,9 @@ function HistoryPage() {
       <Grid container>
         <Grid item xs={6}>
           <Box mr={"1rem"}>
-            <Typography variant={"h4"}>History</Typography>
+            <Typography variant={"h4"}>
+              {user1} and {user2}&apos;s History
+            </Typography>
             <Divider variant="middle" />
             <QuestionView
               title={question.title}
@@ -119,8 +125,8 @@ function HistoryPage() {
         </Grid>
         <Grid item xs={6}>
           <Box display={"flex"} flexDirection={"column"} pt={8}>
-            <Paper variant="outlined" sx={{ padding: 1, height: "42rem", overflow: "auto" }}>
-              <Typography component="pre">{answerRecord}</Typography>
+            <Paper variant="outlined" sx={{ padding: 2, height: "42rem" }}>
+              {answerRecord}
             </Paper>
             <Box display={"flex"} flexDirection={"row"} justifyContent="flex-end">
               <Button variant="outlined" onClick={handleLeaveRoom} color="error" sx={{ margin: 1 }}>
