@@ -29,6 +29,10 @@ export const initSocketEventHandlers = (socket, io) => {
     io.in(data.roomId).emit("receive-changes", data);
   });
 
+  socket.on("update-cursor", (data) => {
+    io.in(data.roomId).emit("receive-cursor-update", data);
+  });
+
   socket.on("connect_error", function (err) {
     console.log("client connect_error: ", err);
   });

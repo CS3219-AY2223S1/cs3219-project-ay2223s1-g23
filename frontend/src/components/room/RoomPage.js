@@ -8,11 +8,11 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import CallIcon from "@mui/icons-material/Call";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { URL_COLLAB, URL_QUES } from "../../configs";
@@ -20,8 +20,19 @@ import { STATUS_CODE_BAD_REQUEST } from "../../constants";
 import { URL_COLLAB_SVC } from "../../configs";
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
+import hljs from "highlight.js";
+import "highlight.js/styles/monokai-sublime.css";
+import QuillCursors from "quill-cursors";
+
+Quill.register("modules/cursors", QuillCursors);
 
 const modules = {
+  cursors: {
+    transformOnTextChange: true,
+  },
+  syntax: {
+    highlight: (text) => hljs.highlightAuto(text).value,
+  },
   toolbar: [
     [{ font: [] }],
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -34,6 +45,19 @@ const modules = {
     ["link", "image", "video"],
     ["clean"],
   ],
+};
+
+const debounce = (func, wait) => {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    const later = function () {
+      timeout = null;
+      func.apply(context, args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 };
 
 function RoomPage({ voiceSocket }) {
@@ -50,6 +74,7 @@ function RoomPage({ voiceSocket }) {
       userId: "",
     },
   });
+  const [isUser1, setIsUser1] = useState(null);
   const [difficultyLevel, setDifficultyLevel] = useState("");
   const [value, setValue] = useState("");
   const [question, setQuestion] = useState({
@@ -59,6 +84,8 @@ function RoomPage({ voiceSocket }) {
     difficulty: "difficulty",
     url: "url",
   });
+  const quillEditor = useRef(null);
+  const [cursor1, setCursor1] = useState(null);
 
   const setUpVoiceChat = async (time) => {
     console.log("Setting up voice recording");
@@ -110,6 +137,10 @@ function RoomPage({ voiceSocket }) {
 
     fetchRoomDetails();
     socketObj.emit("join_room", roomId);
+
+    const myCursor = quillEditor.current.getEditor().getModule("cursors");
+    myCursor.createCursor("cursor", "apple", "blue");
+    setCursor1(myCursor);
   }, []);
 
   useEffect(() => {
@@ -119,6 +150,20 @@ function RoomPage({ voiceSocket }) {
     };
     socket.on("receive-changes", receiveChangesEventHandler);
     return () => socket.off("receive-changes", receiveChangesEventHandler);
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const receiveCursorUpdateHandler = ({ from, range }) => {
+      if (isUser1 && from != ids.user1.userId) {
+        cursor1.moveCursor("cursor", range);
+      } else {
+        cursor2.moveCursor("cursor", range);
+      }
+    };
+    socket.on("receive-cursor-update", receiveCursorUpdateHandler);
+    return () => socket.off("receive-cursor-update", receiveCursorUpdateHandler);
   }, [socket]);
 
   useEffect(() => {
@@ -204,6 +249,35 @@ function RoomPage({ voiceSocket }) {
       },
     });
     setDifficultyLevel(difficulty);
+    setIsUser1(user1 == userId);
+  };
+
+  // src: https://github.com/reedsy/quill-cursors/blob/main/example/main.js
+  const selectionChangeHandler = (cursors) => {
+    console.log("in selectionChangeHandler");
+    const debouncedUpdate = debounce(updateCursor, 500);
+
+    return function (range, oldRange, source) {
+      console.log(range);
+      cursors.moveCursor("cursor", range);
+      socket.emit("update-cursor", {
+        from: userId,
+        range: range,
+      });
+      console.log(source);
+      // console.log(source);
+      // if (source === "user") {
+      //   console.log(range);
+      //   console.log(cursors);
+      //   updateCursor(range);
+      // } else {
+      //   debouncedUpdate(range);
+      // }
+    };
+
+    function updateCursor(range) {
+      setTimeout(() => cursors.moveCursor("cursor", range), 1000);
+    }
   };
 
   const deleteCollab = async () => {
@@ -306,11 +380,13 @@ function RoomPage({ voiceSocket }) {
             </Grid>
           </Grid>
           <ReactQuill
+            ref={quillEditor}
             preserveWhitespace
             value={value}
             modules={modules}
             theme="snow"
             onChange={quillEditorOnChangeHandler}
+            onChangeSelection={selectionChangeHandler(cursor1)}
             placeholder="Content goes here..."
           />
           <Box display={"flex"} flexDirection={"row"}>
