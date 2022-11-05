@@ -139,7 +139,6 @@ function RoomPage() {
     if (socket == null || quill == null) return;
 
     const handler = (delta) => {
-      console.log("receive-changes event");
       quill.updateContents(delta);
     };
     socket.on("receive-changes", handler);
@@ -153,8 +152,8 @@ function RoomPage() {
     if (socket == null || quill == null) return;
 
     const handler = (delta, oldDelta, source) => {
+      updateAnswer();
       if (source !== "user") return;
-      console.log("text-change event");
       socket.emit("send-changes", { roomId: roomId, delta: delta });
     };
     quill.on("text-change", handler);
@@ -182,6 +181,11 @@ function RoomPage() {
   useEffect(() => {
     fetchQuesDetails();
   }, [quesId]);
+
+  const updateAnswer = () => {
+    const ans = quill.getText();
+    setValue(ans);
+  };
 
   const fetchQuesDetails = async () => {
     const res = await axios
@@ -325,10 +329,14 @@ function RoomPage() {
   const handleLeaveRoom = async () => {
     await socket.disconnect();
     await voiceSocket.disconnect();
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    stream.getTracks().forEach(function (track) {
-      track.stop();
-    });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(function (track) {
+        track.stop();
+      });
+    } catch (err) {
+      console.log("Something went wrong with stopping audio track: " + err);
+    }
     updateCollabInDb();
     navigate(`/`);
   };
