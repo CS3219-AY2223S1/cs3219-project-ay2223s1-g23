@@ -39,7 +39,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io.connect(URL_MATCH_SVC, { path: "/" });
+    const socket = io.connect(URL_MATCH_SVC);
     setSocket(socket);
   }, []);
 
