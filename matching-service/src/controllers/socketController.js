@@ -63,17 +63,17 @@ const deleteMatchModel = async (userId) => {
 export const initSocketEventHandlers = (socket, io) => {
   socket.on("find_match", async (data) => {
     const { userId, difficulty } = data;
+    if (!userId || !difficulty) return;
     const socketId = socket.id;
     socketIdToUserId[socketId] = userId;
 
-    if (!findingMatchQueue[difficulty]) {
-      findingMatchQueue[difficulty] = [];
-    }
+    // if (!findingMatchQueue[difficulty]) {
+    //   findingMatchQueue[difficulty] = [];
+    // }
 
     if (findingMatchQueue[difficulty].length > 0) {
       // find a ques
       const ques = await fetchQuestion(difficulty);
-
       const userFromQueue = findingMatchQueue[difficulty].shift();
       const { socketId: socketIdFromQueue, userId: userIdFromQueue } =
         userFromQueue;
