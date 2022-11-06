@@ -22,6 +22,7 @@ import axios from "axios";
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
 import QuestionView from "./QuestionView";
+import "./Quill.css";
 
 const TOOLBAR_OPTIONS = [
   [{ font: [] }],
