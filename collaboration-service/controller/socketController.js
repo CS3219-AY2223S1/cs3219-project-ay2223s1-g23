@@ -26,7 +26,15 @@ export const initSocketEventHandlers = (socket, io) => {
   });
 
   socket.on("send-changes", (data) => {
-    io.in(data.roomId).emit("receive-changes", data);
+    socket.broadcast.to(data.roomId).emit("receive-changes", data.delta);
+  });
+
+  socket.on("cursor-change", (data) => {
+    const { roomId, cursor, range } = data;
+    socket.broadcast.to(roomId).emit("receive-cursor-change", {
+      cursor,
+      range,
+    });
   });
 
   socket.on("connect_error", function (err) {

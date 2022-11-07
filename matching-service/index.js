@@ -15,7 +15,6 @@ app.options("*", cors());
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  path: "/",
   cors: {
     origin: process.env.URI_FRONTEND || "http://localhost:3000",
     methods: ["GET", "POST"],
