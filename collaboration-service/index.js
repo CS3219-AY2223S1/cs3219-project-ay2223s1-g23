@@ -9,6 +9,7 @@ import {
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { initSocketEventHandlers } from "./controller/socketController.js";
+import { CREATE_PATH, DELETE_PATH, GET_PATH, UPDATE_PATH } from "./config.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -32,10 +33,10 @@ io.on("connection", (socket) => {
 
 // Controller will contain all the User-defined Routes
 app.get("/", (_, res) => res.send("Hello World from collab-service"));
-app.post("/collab", createCollab);
-app.delete("/collab/:roomId", deleteCollab);
-app.get("/collab/:roomId", getCollab);
-app.put("/collab", updateCollab);
+app.post(CREATE_PATH, createCollab);
+app.delete(DELETE_PATH, deleteCollab);
+app.get(GET_PATH, getCollab);
+app.put(UPDATE_PATH, updateCollab);
 
 // app.use('/api/user', router).all((_, res) => {
 //     res.setHeader('content-type', 'application/json')
@@ -46,3 +47,5 @@ const PORT = process.env.PORT || 8002;
 httpServer.listen(PORT, () =>
   console.log(`collaboration-service listening on port ${PORT}`),
 );
+
+export default app;

@@ -1,7 +1,7 @@
 const socketToRoom = {};
 const socketOnlineStatus = {};
 
-export const initSocketEventHandlers = (socket, io) => {
+export const initSocketEventHandlers = (socket) => {
   const socketId = socket.id;
   socketToRoom[socketId] = "";
   socketOnlineStatus[socketId] = false;
