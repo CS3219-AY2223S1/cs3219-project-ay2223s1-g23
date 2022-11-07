@@ -33,7 +33,7 @@ export async function createCollab(req, res) {
     } else {
       return res
         .status(400)
-        .json({ message: "User IDs and/or room ID are missing!" });
+        .json({ message: "User IDs and/or room ID and/or difficulty are missing!" });
     }
   } catch (err) {
     console.log("ERROR " + err);
@@ -49,7 +49,7 @@ export async function deleteCollab(req, res) {
     const existingCollab = await getOneCollab(roomId);
     if (!existingCollab) {
       return res.status(200).json({
-        message: `Collab ${roomId} already deleted!`,
+        message: `Collab ${roomId} does not exist!`,
         data: existingCollab,
       });
     }
