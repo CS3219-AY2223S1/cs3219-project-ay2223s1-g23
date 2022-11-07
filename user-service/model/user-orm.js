@@ -117,7 +117,7 @@ export async function ormResetPassword(username, token, password, confirmPasswor
         return true;
     } catch (error) {
         console.log(error.message);
-        return {err};
+        return {err: error.message};
     }
 }
 
