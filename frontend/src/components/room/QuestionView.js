@@ -21,7 +21,7 @@ function QuestionView({ title, questionBody, difficulty }) {
           </Grid>
         </Grid>
       </Box>
-      <Paper variant="outlined" square>
+      <Paper variant="outlined" square sx={{ overflow: "auto" }}>
         <Typography m={"1rem"} sx={{ height: "40rem" }}>
           {questionBody}
         </Typography>
