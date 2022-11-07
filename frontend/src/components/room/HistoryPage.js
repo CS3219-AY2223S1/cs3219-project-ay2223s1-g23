@@ -19,6 +19,14 @@ import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
 import QuestionView from "./QuestionView";
 
+const answerStyle = {
+  whiteSpace: "pre-wrap",
+  wordWrap: "break-word",
+  padding: 2,
+  height: "42rem",
+  overflow: "auto",
+};
+
 function HistoryPage() {
   const { histId } = useParams();
   const navigate = useNavigate();
@@ -125,7 +133,7 @@ function HistoryPage() {
         </Grid>
         <Grid item xs={6}>
           <Box display={"flex"} flexDirection={"column"} pt={8}>
-            <Paper variant="outlined" sx={{ padding: 2, height: "42rem" }}>
+            <Paper variant="outlined" sx={answerStyle}>
               {answerRecord}
             </Paper>
             <Box display={"flex"} flexDirection={"row"} justifyContent="flex-end">
