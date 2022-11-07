@@ -20,7 +20,11 @@
     "react-scripts": "5.0.1",
     "socket.io-client": "^4.5.1",
     "uuid": "^8.3.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "y-quill": "^0.1.5",
+    "y-socket.io": "^1.1.0",
+    "y-websocket": "^1.4.5",
+    "yjs": "^13.5.42"
   },
   "scripts": {
     "start": "react-scripts --max_old_space_size=4096 start",
