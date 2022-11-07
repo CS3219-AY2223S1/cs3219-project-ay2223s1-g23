@@ -42,7 +42,6 @@ function RoomPage() {
   const navigate = useNavigate();
   const decodedToken = decodedJwt();
   const userId = decodedToken.username;
-  const [socket, setSocket] = useState(null);
   const [quill, setQuill] = useState();
   const [voiceSocket, setVoiceSocket] = useState(null);
   const [ids, setIds] = useState({
@@ -116,14 +115,10 @@ function RoomPage() {
   };
 
   useEffect(() => {
-    // const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
-    // setSocket(socketObj);
-
     const voiceSocketObj = io.connect(URL_COMM_SVC);
     setVoiceSocket(voiceSocketObj);
 
     fetchRoomDetails();
-    // socketObj.emit("join_room", roomId);
 
     setUpVoiceChat(200, voiceSocketObj);
   }, []);
@@ -132,75 +127,6 @@ function RoomPage() {
     if (quill == null) return;
     quill.enable();
   });
-
-  // useEffect(() => {
-  //   if (socket == null || quill == null) return;
-
-  //   const handler = (delta) => {
-  //     quill.updateContents(delta);
-  //   };
-  //   socket.on("receive-changes", handler);
-
-  //   return () => {
-  //     socket.off("receive-changes", handler);
-  //   };
-  // }, [socket, quill]);
-
-  // useEffect(() => {
-  //   if (socket == null || quill == null) return;
-
-  //   const handler = (delta, oldDelta, source) => {
-  //     updateAnswer();
-  //     if (source !== "user") return;
-  //     socket.emit("send-changes", { roomId: roomId, delta: delta });
-  //   };
-  //   quill.on("text-change", handler);
-
-  //   return () => {
-  //     quill.off("text-change", handler);
-  //   };
-  // }, [socket, quill]);
-
-  // useEffect(() => {
-  //   if (!socket || !ids.user1.userId || !ids.user2.userId) return;
-
-  //   const handler = ({ cursor, range }) => {
-  //     const isCurrUser = isCursorTheCurrentUser(cursor);
-  //     if (isCurrUser) return;
-  //     cursors.moveCursor(cursor, range);
-  //   };
-  //   socket.on("receive-cursor-change", handler);
-
-  //   return () => {
-  //     socket.off("receive-cursor-change", handler);
-  //   };
-  // }, [socket, ids]);
-
-  // useEffect(() => {
-  //   if (socket == null || quill == null || !ids.user1.userId || !ids.user2.userId) return;
-
-  //   const handler = (range, oldRange, source) => {
-  //     // if (source !== "user") return; // source is "user" if user manually move cursor, "api" if cursor move due to other reasons eg text change
-  //     if (range == oldRange) return;
-  //     // const currentCursor = getThisCursor();
-  //     // cursors.moveCursor(currentCursor, range);
-  //     // socket.emit("cursor-change", { roomId: roomId, cursor: currentCursor, range: range }); // a little misleading because even if this user doesn't
-  //     // change cursor, will still fire because the other user's cursor change and sending a cursor-change event with this user's cursor
-  //   };
-  //   quill.on("selection-change", handler);
-
-  //   return () => {
-  //     quill.off("selection-change", handler);
-  //   };
-  // }, [socket, quill, ids]);
-
-  // const getThisCursor = () => {
-  //   return userId == ids.user1.userId ? CURSOR_1 : CURSOR_2;
-  // };
-
-  // const isCursorTheCurrentUser = (cursorId) => {
-  //   return cursorId == CURSOR_1 && userId == ids.user1.userId;
-  // };
 
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
@@ -222,15 +148,7 @@ function RoomPage() {
 
     // Create an editor-binding which "binds" the quill editor to a Y.Text type.
     binding = new QuillBinding(ytext, q, awareness);
-    // const cursors = q.getModule("cursors");
-    // setCursors(cursors);
   }, []);
-
-  // useEffect(() => {
-  //   if (!ids.user1.userId || !ids.user2.userId || !cursors) return;
-  //   cursors.createCursor(CURSOR_1, ids.user1.userId, "blue");
-  //   cursors.createCursor(CURSOR_2, ids.user2.userId, "red");
-  // }, [ids, cursors]);
 
   useEffect(() => {
     fetchQuesDetails();
@@ -271,24 +189,10 @@ function RoomPage() {
     voiceSocket.emit("userInfo", { roomId, online: false });
   }
 
-  useEffect(() => {
-    if (!socket) return;
-    // this event is only handled if the first user and not the second user disconnects
-    const tryUpdateCollabDbHandler = async () => {
-      console.log("[try_update_collab_db] from the user still in the room (second user)");
-      await updateCollab({ roomId: roomId, text: ytext.toString() }); // update text/code from shared editor
-      // TODO: add data to history-service
-      await updateCollabToRemoveUser(false); // remove userId of the (other) user that left
-    };
-    socket.on("try_update_collab_db", tryUpdateCollabDbHandler);
-    return () => socket.off("try_update_collab_db", tryUpdateCollabDbHandler);
-  }, [socket, ids]);
-
   const updateCollabInDb = async () => {
     await updateCollab({ roomId: roomId, text: ytext.toString() }); // update text/code from shared editor
-    // TODO: add data to history-service
     const updatedCollab = (await updateCollabToRemoveUser()).data.data; // remove userId of the (current) user that left
-    if (!updatedCollab.user1 && !updatedCollab.user2) await cleanUpCollab(); // if both users have left, delete collab
+    if (!updatedCollab.user1 && !updatedCollab.user2) await cleanUpCollab(); // if both users have left properly, delete collab
   };
 
   const cleanUpCollab = async () => {

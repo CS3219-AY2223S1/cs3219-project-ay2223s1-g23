@@ -8,7 +8,6 @@ import {
 } from "./controller/collab-controller.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { initSocketEventHandlers } from "./controller/socketController.js";
 import { CREATE_PATH, DELETE_PATH, GET_PATH, UPDATE_PATH } from "./config.js";
 import { YSocketIO } from "y-socket.io/dist/server";
 
@@ -20,30 +19,12 @@ app.options("*", cors());
 
 // Initialize new instance of socket
 const httpServer = createServer(app);
-const io = new Server(
-  httpServer,
-  //   , {
-  //   path: "/room",
-  //   cors: {
-  //     origin: process.env.URI_FRONTEND || "http://localhost:3000",
-  //     methods: ["GET", "POST"],
-  //   },
-  // }
-);
+const io = new Server(httpServer);
 const ysocketio = new YSocketIO(io);
 ysocketio.initialize();
 
-ysocketio.on("connection", () => {
-  console.log(`User connected collab-service`);
-});
-
 ysocketio.on("all-document-connections-closed", (doc) => {
   console.log("all clients dced");
-});
-
-io.on("connection", (socket) => {
-  console.log(`User connected collab-service with socket ID: ${socket.id}`);
-  initSocketEventHandlers(socket, io, ysocketio);
 });
 
 // Controller will contain all the User-defined Routes
@@ -52,11 +33,6 @@ app.post(CREATE_PATH, createCollab);
 app.delete(DELETE_PATH, deleteCollab);
 app.get(GET_PATH, getCollab);
 app.put(UPDATE_PATH, updateCollab);
-
-// app.use('/api/user', router).all((_, res) => {
-//     res.setHeader('content-type', 'application/json')
-//     res.setHeader('Access-Control-Allow-Origin', '*')
-// })
 
 const PORT = process.env.PORT || 8002;
 httpServer.listen(PORT, () =>

@@ -8,8 +8,8 @@ export const initSocketEventHandlers = (socket) => {
 
   socket.on("voice", function (data) {
     if (!socketOnlineStatus[socketId]) {
-      // console.log(socketOnlineStatus[socketId]);
-      // console.log(socketId + " is not online");
+      console.log(socketOnlineStatus[socketId]);
+      console.log(socketId + " is not online");
       return;
     }
 
