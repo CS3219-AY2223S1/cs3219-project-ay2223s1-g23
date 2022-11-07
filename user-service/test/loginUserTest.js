@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { clearAllUser, createUser, getUser } from "../model/repository.js";
+import { clearAllUser, createUser } from "../model/repository.js";
 import app from "../index.js";
 import userModel from "../model/user-model.js";
 import request from "supertest";
@@ -23,7 +23,6 @@ describe("User Login Test",  function () {
         const newUser = await createUser({username: fix_username, email: fix_email, password: fix_encrypted_password});
         await newUser.save();
         newUser.save();
-        const user = await getUser(fix_username);
     });
 
     afterEach(async () => {

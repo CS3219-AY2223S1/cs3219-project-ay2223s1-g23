@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { clearAllUser, getUser } from "../model/repository.js";
+import { clearAllUser, getUser, createUser } from "../model/repository.js";
 import app from "../index.js";
 import request from "supertest";
 import jwt from "jsonwebtoken";
@@ -19,7 +19,7 @@ describe("Delete User API Test", function() {
 
     beforeEach(async () => {
         await clearAllUser();
-        const newUser = new userModel({username: fix_username, email: fix_email, password: fix_password});
+        const newUser = await createUser({username: fix_username, email: fix_email, password: fix_password});
         await newUser.save();
         const user = await getUser(fix_username);
         token = await generateAccessToken(user.toJSON());
