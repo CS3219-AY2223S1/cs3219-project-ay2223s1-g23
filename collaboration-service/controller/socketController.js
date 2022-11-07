@@ -19,23 +19,27 @@ const getCollabModel = async (roomId) => {
   }
 };
 
-export const initSocketEventHandlers = (socket, io) => {
-  socket.on("join_room", async (data) => {
-    await socket.join(data);
-    socketIdToRoomId[socket.id] = data;
+export const initSocketEventHandlers = (socket, io, ysocketio) => {
+  ysocketio.on("all-document-connections-closed", (doc) => {
+    console.log("all clients dced");
   });
 
-  socket.on("send-changes", (data) => {
-    socket.broadcast.to(data.roomId).emit("receive-changes", data.delta);
-  });
+  // socket.on("join_room", async (data) => {
+  //   await socket.join(data);
+  //   socketIdToRoomId[socket.id] = data;
+  // });
 
-  socket.on("cursor-change", (data) => {
-    const { roomId, cursor, range } = data;
-    socket.broadcast.to(roomId).emit("receive-cursor-change", {
-      cursor,
-      range,
-    });
-  });
+  // socket.on("send-changes", (data) => {
+  //   socket.broadcast.to(data.roomId).emit("receive-changes", data.delta);
+  // });
+
+  // socket.on("cursor-change", (data) => {
+  //   const { roomId, cursor, range } = data;
+  //   socket.broadcast.to(roomId).emit("receive-cursor-change", {
+  //     cursor,
+  //     range,
+  //   });
+  // });
 
   socket.on("connect_error", function (err) {
     console.log("client connect_error: ", err);

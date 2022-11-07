@@ -18,6 +18,9 @@ import { URL_COLLAB, URL_QUES, URL_HIST, URL_COLLAB_SVC, URL_COMM_SVC } from "..
 import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import "quill/dist/quill.snow.css";
 import axios from "axios";
+import * as Y from "yjs";
+import { SocketIOProvider } from "y-socket.io";
+import { QuillBinding } from "y-quill";
 
 import io from "socket.io-client";
 import decodedJwt from "../../util/decodeJwt";
@@ -34,9 +37,6 @@ const TOOLBAR_OPTIONS = [
   ["clean"],
 ];
 
-const CURSOR_1 = "cursor1";
-const CURSOR_2 = "cursor2";
-
 function RoomPage() {
   const { roomId, quesId, histId } = useLocation().state;
   const navigate = useNavigate();
@@ -44,7 +44,6 @@ function RoomPage() {
   const userId = decodedToken.username;
   const [socket, setSocket] = useState(null);
   const [quill, setQuill] = useState();
-  const [cursors, setCursors] = useState(null);
   const [voiceSocket, setVoiceSocket] = useState(null);
   const [ids, setIds] = useState({
     user1: {
@@ -55,7 +54,6 @@ function RoomPage() {
     },
   });
   const [difficultyLevel, setDifficultyLevel] = useState("");
-  const [value, setValue] = useState("");
   const [question, setQuestion] = useState({
     id: "id",
     title: "title",
@@ -63,6 +61,17 @@ function RoomPage() {
     difficulty: "difficulty",
     url: "url",
   });
+
+  // A Yjs document holds the shared data
+  const ydoc = new Y.Doc();
+  // Define a shared text type on the document
+  const ytext = ydoc.getText("quill");
+  const provider = new SocketIOProvider(URL_COLLAB_SVC, roomId, ydoc, {
+    autoConnect: true,
+  });
+  let binding;
+
+  const awareness = provider.awareness;
 
   const setUpVoiceChat = async (time, voiceSocketObj) => {
     console.log("Setting up voice recording");
@@ -107,14 +116,14 @@ function RoomPage() {
   };
 
   useEffect(() => {
-    const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
-    setSocket(socketObj);
+    // const socketObj = io.connect(URL_COLLAB_SVC, { path: `/room` });
+    // setSocket(socketObj);
 
     const voiceSocketObj = io.connect(URL_COMM_SVC);
     setVoiceSocket(voiceSocketObj);
 
     fetchRoomDetails();
-    socketObj.emit("join_room", roomId);
+    // socketObj.emit("join_room", roomId);
 
     setUpVoiceChat(200, voiceSocketObj);
   }, []);
@@ -124,74 +133,74 @@ function RoomPage() {
     quill.enable();
   });
 
-  useEffect(() => {
-    if (socket == null || quill == null) return;
+  // useEffect(() => {
+  //   if (socket == null || quill == null) return;
 
-    const handler = (delta) => {
-      quill.updateContents(delta);
-    };
-    socket.on("receive-changes", handler);
+  //   const handler = (delta) => {
+  //     quill.updateContents(delta);
+  //   };
+  //   socket.on("receive-changes", handler);
 
-    return () => {
-      socket.off("receive-changes", handler);
-    };
-  }, [socket, quill]);
+  //   return () => {
+  //     socket.off("receive-changes", handler);
+  //   };
+  // }, [socket, quill]);
 
-  useEffect(() => {
-    if (socket == null || quill == null) return;
+  // useEffect(() => {
+  //   if (socket == null || quill == null) return;
 
-    const handler = (delta, oldDelta, source) => {
-      updateAnswer();
-      if (source !== "user") return;
-      socket.emit("send-changes", { roomId: roomId, delta: delta });
-    };
-    quill.on("text-change", handler);
+  //   const handler = (delta, oldDelta, source) => {
+  //     updateAnswer();
+  //     if (source !== "user") return;
+  //     socket.emit("send-changes", { roomId: roomId, delta: delta });
+  //   };
+  //   quill.on("text-change", handler);
 
-    return () => {
-      quill.off("text-change", handler);
-    };
-  }, [socket, quill]);
+  //   return () => {
+  //     quill.off("text-change", handler);
+  //   };
+  // }, [socket, quill]);
 
-  useEffect(() => {
-    if (!socket || !ids.user1.userId || !ids.user2.userId) return;
+  // useEffect(() => {
+  //   if (!socket || !ids.user1.userId || !ids.user2.userId) return;
 
-    const handler = ({ cursor, range }) => {
-      const isCurrUser = isCursorTheCurrentUser(cursor);
-      if (isCurrUser) return;
-      cursors.moveCursor(cursor, range);
-    };
-    socket.on("receive-cursor-change", handler);
+  //   const handler = ({ cursor, range }) => {
+  //     const isCurrUser = isCursorTheCurrentUser(cursor);
+  //     if (isCurrUser) return;
+  //     cursors.moveCursor(cursor, range);
+  //   };
+  //   socket.on("receive-cursor-change", handler);
 
-    return () => {
-      socket.off("receive-cursor-change", handler);
-    };
-  }, [socket, ids]);
+  //   return () => {
+  //     socket.off("receive-cursor-change", handler);
+  //   };
+  // }, [socket, ids]);
 
-  useEffect(() => {
-    if (socket == null || quill == null || !ids.user1.userId || !ids.user2.userId) return;
+  // useEffect(() => {
+  //   if (socket == null || quill == null || !ids.user1.userId || !ids.user2.userId) return;
 
-    const handler = (range, oldRange, source) => {
-      // if (source !== "user") return; // source is "user" if user manually move cursor, "api" if cursor move due to other reasons eg text change
-      if (range == oldRange) return;
-      const currentCursor = getThisCursor();
-      cursors.moveCursor(currentCursor, range);
-      socket.emit("cursor-change", { roomId: roomId, cursor: currentCursor, range: range }); // a little misleading because even if this user doesn't
-      // change cursor, will still fire because the other user's cursor change and sending a cursor-change event with this user's cursor
-    };
-    quill.on("selection-change", handler);
+  //   const handler = (range, oldRange, source) => {
+  //     // if (source !== "user") return; // source is "user" if user manually move cursor, "api" if cursor move due to other reasons eg text change
+  //     if (range == oldRange) return;
+  //     // const currentCursor = getThisCursor();
+  //     // cursors.moveCursor(currentCursor, range);
+  //     // socket.emit("cursor-change", { roomId: roomId, cursor: currentCursor, range: range }); // a little misleading because even if this user doesn't
+  //     // change cursor, will still fire because the other user's cursor change and sending a cursor-change event with this user's cursor
+  //   };
+  //   quill.on("selection-change", handler);
 
-    return () => {
-      quill.off("selection-change", handler);
-    };
-  }, [socket, quill, ids]);
+  //   return () => {
+  //     quill.off("selection-change", handler);
+  //   };
+  // }, [socket, quill, ids]);
 
-  const getThisCursor = () => {
-    return userId == ids.user1.userId ? CURSOR_1 : CURSOR_2;
-  };
+  // const getThisCursor = () => {
+  //   return userId == ids.user1.userId ? CURSOR_1 : CURSOR_2;
+  // };
 
-  const isCursorTheCurrentUser = (cursorId) => {
-    return cursorId == CURSOR_1 && userId == ids.user1.userId;
-  };
+  // const isCursorTheCurrentUser = (cursorId) => {
+  //   return cursorId == CURSOR_1 && userId == ids.user1.userId;
+  // };
 
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
@@ -203,9 +212,7 @@ function RoomPage() {
     const q = new Quill(editor, {
       modules: {
         toolbar: TOOLBAR_OPTIONS,
-        cursors: {
-          transformOnTextChange: true,
-        },
+        cursors: true,
       },
       theme: "snow",
       placeholder: "Start typing here...",
@@ -213,24 +220,21 @@ function RoomPage() {
     q.disable();
     setQuill(q);
 
-    const cursors = q.getModule("cursors");
-    setCursors(cursors);
+    // Create an editor-binding which "binds" the quill editor to a Y.Text type.
+    binding = new QuillBinding(ytext, q, awareness);
+    // const cursors = q.getModule("cursors");
+    // setCursors(cursors);
   }, []);
 
-  useEffect(() => {
-    if (!ids.user1.userId || !ids.user2.userId || !cursors) return;
-    cursors.createCursor(CURSOR_1, ids.user1.userId, "blue");
-    cursors.createCursor(CURSOR_2, ids.user2.userId, "red");
-  }, [ids, cursors]);
+  // useEffect(() => {
+  //   if (!ids.user1.userId || !ids.user2.userId || !cursors) return;
+  //   cursors.createCursor(CURSOR_1, ids.user1.userId, "blue");
+  //   cursors.createCursor(CURSOR_2, ids.user2.userId, "red");
+  // }, [ids, cursors]);
 
   useEffect(() => {
     fetchQuesDetails();
   }, [quesId]);
-
-  const updateAnswer = () => {
-    const ans = quill.getText();
-    setValue(ans);
-  };
 
   const fetchQuesDetails = async () => {
     const res = await axios
@@ -272,19 +276,24 @@ function RoomPage() {
     // this event is only handled if the first user and not the second user disconnects
     const tryUpdateCollabDbHandler = async () => {
       console.log("[try_update_collab_db] from the user still in the room (second user)");
-      await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
+      await updateCollab({ roomId: roomId, text: ytext.toString() }); // update text/code from shared editor
       // TODO: add data to history-service
       await updateCollabToRemoveUser(false); // remove userId of the (other) user that left
     };
     socket.on("try_update_collab_db", tryUpdateCollabDbHandler);
     return () => socket.off("try_update_collab_db", tryUpdateCollabDbHandler);
-  }, [socket, value, ids]);
+  }, [socket, ids]);
 
   const updateCollabInDb = async () => {
-    await updateCollab({ roomId: roomId, text: value }); // update text/code from shared editor
+    await updateCollab({ roomId: roomId, text: ytext.toString() }); // update text/code from shared editor
     // TODO: add data to history-service
     const updatedCollab = (await updateCollabToRemoveUser()).data.data; // remove userId of the (current) user that left
-    if (!updatedCollab.user1 && !updatedCollab.user2) await deleteCollab(); // if both users have left, delete collab
+    if (!updatedCollab.user1 && !updatedCollab.user2) await cleanUpCollab(); // if both users have left, delete collab
+  };
+
+  const cleanUpCollab = async () => {
+    await deleteCollab();
+    binding.destroy();
   };
 
   const fetchRoomDetails = async () => {
@@ -307,6 +316,11 @@ function RoomPage() {
       },
     });
     setDifficultyLevel(difficulty);
+
+    awareness.setLocalStateField("user", {
+      name: userId,
+      color: userId == user1 ? "#30bced" : "#9ac2c9", // should be a hex color
+    });
   };
 
   const deleteCollab = async () => {
@@ -372,7 +386,7 @@ function RoomPage() {
   };
 
   const handleLeaveRoom = async () => {
-    await socket.disconnect();
+    await provider.disconnect();
     await voiceSocket.disconnect();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -387,8 +401,10 @@ function RoomPage() {
   };
 
   const handleReset = () => {
-    const delta = quill.setText("");
-    socket.emit("send-changes", { roomId: roomId, delta: delta });
+    ydoc.transact(() => {
+      // perform all changes in a single transaction
+      ytext.delete(0, ytext.length);
+    });
   };
 
   return (

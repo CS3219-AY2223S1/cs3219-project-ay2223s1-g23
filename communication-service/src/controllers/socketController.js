@@ -5,11 +5,11 @@ export const initSocketEventHandlers = (socket) => {
   const socketId = socket.id;
   socketToRoom[socketId] = "";
   socketOnlineStatus[socketId] = false;
-  
+
   socket.on("voice", function (data) {
     if (!socketOnlineStatus[socketId]) {
-      console.log(socketOnlineStatus[socketId]);
-      console.log(socketId + " is not online");
+      // console.log(socketOnlineStatus[socketId]);
+      // console.log(socketId + " is not online");
       return;
     }
 
