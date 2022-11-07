@@ -23,7 +23,7 @@ app.get("/", (_req, res) => {
 });
 
 io.on("connection", function (socket) {
-  initSocketEventHandlers(socket, io);
+  initSocketEventHandlers(socket);
 });
 
 const PORT = process.env.PORT || 8003;
