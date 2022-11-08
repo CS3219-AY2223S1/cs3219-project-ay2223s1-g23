@@ -45,7 +45,7 @@ export async function createUser(req, res) {
 export async function deleteUser(req, res) {
     try {
         const { username } = req.params;
-        const resp = _deleteUser(username);
+        const resp = await _deleteUser(username);
         if (resp.err) {
             return res.status(400).json({message: 'Could not delete the user'});
         } else if (resp) {

@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { CREATE_PATH, DELETE_PATH, LOGIN_PATH, FORGET_PASSWORD_PATH, RESET_PASSWORD_PATH } from "./config.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }))
@@ -13,11 +14,11 @@ const router = express.Router()
 
 // Controller will contain all the User-defined Routes
 router.get('/', (_, res) => res.send('Hello World from user-service'))
-router.post('/', createUser)
-router.post('/login', loginUser)
-router.delete('/:username', verifyJWT, deleteUser)
-router.post('/forget-password', forgetPassword)
-router.post('/reset-password/:token', resetPassword)
+router.post(CREATE_PATH, createUser)
+router.post(LOGIN_PATH, loginUser)
+router.delete(DELETE_PATH, verifyJWT, deleteUser)
+router.post(FORGET_PASSWORD_PATH, forgetPassword)
+router.post(RESET_PASSWORD_PATH, resetPassword)
 
 app.use('/api/user', router).all((_, res) => {
     res.setHeader('content-type', 'application/json')
@@ -29,3 +30,5 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () =>
   console.log(`user-service listening on port ${PORT}`)
 );
+
+export default app;
