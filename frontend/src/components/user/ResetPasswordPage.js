@@ -34,7 +34,7 @@ function ResetPasswordPage() {
 
   const handleResetPassword = async () => {
     const res = await axios
-      .post(URL_USER_SVC_RESET_PASSWORD + "/" + resetToken, {
+      .put(URL_USER_SVC_RESET_PASSWORD + "/" + resetToken, {
         username,
         newPassword,
         confirmNewPassword,
