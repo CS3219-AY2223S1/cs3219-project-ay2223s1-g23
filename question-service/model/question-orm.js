@@ -1,7 +1,7 @@
 import { createQuestionModel, getQuestionModelById } from './repository.js';
 import QuestionModel from "./question-model.js";
 import "dotenv/config";
-import redis from 'redis';
+import * as redis from 'redis';
 
 const redisClient = redis.createClient({
     url: process.env.REDIS_CLOUD_URI
@@ -20,7 +20,7 @@ export async function createOneQuestionModel(title, body, difficulty, url) {
             url: url,
         });
         await newQues.save();
-        return true;
+        return newQues;
 
     } catch (err) {
         console.log('ERROR: Could not create ques model');

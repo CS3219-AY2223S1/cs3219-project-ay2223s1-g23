@@ -15,7 +15,6 @@ export async function createHistory(req, res) {
       if (resp.err) {
         return res.status(400).json({ message: "Could not create a history!" });
       } else {
-        console.log(`Created new history successfully!`);
         return res
           .status(201)
           .json({ message: `Created new history successfully!`, data: resp });
