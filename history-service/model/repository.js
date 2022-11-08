@@ -4,7 +4,17 @@ import 'dotenv/config'
 import mongoose from 'mongoose';
 import HistoryModel from './history-model.js';
 
-let mongoDB = process.env.ENV == "PROD" ? process.env.DB_CLOUD_URI : process.env.DB_LOCAL_URI;
+var mongoDB;
+switch (process.env.ENV) {
+    case "PROD":
+        mongoDB = process.env.DB_CLOUD_URI;
+        break;
+    case "TEST":
+        mongoDB = process.env.DB_TEST_URI;
+        break;
+    default:
+        mongoDB = process.env.DB_LOCAL_URI;
+}
 
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
