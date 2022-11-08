@@ -23,6 +23,33 @@ const getQuestionByDiffRequest = (difficulty, done) => {
 
 describe("Questions", () => {
     describe("GET: randomly select question", () => {
+        beforeEach(async () => {
+            await new QuestionModel({
+                "title": "test1",
+                "body": "test1",
+                "difficulty": "easy",
+                "url": "url.com/test1",
+            }).save();;
+
+            await new QuestionModel({
+                "title": "test2",
+                "body": "test2",
+                "difficulty": "medium",
+                "url": "url.com/test2",
+            }).save();;
+
+            await new QuestionModel({
+                "title": "test3",
+                "body": "test3",
+                "difficulty": "hard",
+                "url": "url.com/test3",
+            }).save();;
+        });
+
+        afterEach(async () => {
+            await QuestionModel.deleteMany({});
+        });
+
         let difficulty = "easy";
         it("get question from easy", (done) => {
             difficulty = "easy";
