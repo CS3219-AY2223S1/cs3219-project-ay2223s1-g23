@@ -5,7 +5,6 @@ export const initSocketEventHandlers = (socket) => {
   const socketId = socket.id;
   socketToRoom[socketId] = "";
   socketOnlineStatus[socketId] = false;
-  
   socket.on("voice", function (data) {
     if (!socketOnlineStatus[socketId]) {
       console.log(socketOnlineStatus[socketId]);
