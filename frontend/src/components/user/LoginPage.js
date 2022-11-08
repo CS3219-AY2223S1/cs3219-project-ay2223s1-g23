@@ -20,6 +20,7 @@ import { STATUS_CODE_BAD_REQUEST, STATUS_CODE_OK } from "../../constants";
 import { Link, useNavigate } from "react-router-dom";
 import { setCookie } from "../../util/cookies";
 import useAuth from "../../util/auth/useAuth";
+import fireFine from "../../static/fire-fine.mp4";
 
 const col1Style = {
   width: "50%",
@@ -79,14 +80,7 @@ function LoginPage() {
   return (
     <Grid container>
       <Grid item xs={7}>
-        <Box flexDirection={"column"}>
-          <Typography variant={"h4"} m={"2rem"}>
-            About PeerPressure
-          </Typography>
-          <Typography variant={"body1"} m={"2rem"}>
-            a web application
-          </Typography>
-        </Box>
+        <video width="100%" height="100%" src={fireFine} autoPlay loop muted />
       </Grid>
       <Grid item xs={5}>
         <Paper elevation={3} sx={{ width: "80%", margin: "auto" }}>
