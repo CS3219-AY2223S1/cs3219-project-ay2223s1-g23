@@ -89,7 +89,7 @@ export async function ormForgetPassword(username) {
         const link = URI_FRONTEND + `/reset-password/${token}`;
         console.log(link);
         const userEmail = await getEmail(username);
-        // sendLink(userEmail,link);
+        sendLink(userEmail,link);
         return { message: 'Reset link has been sent to your email.'};
     } catch (err) {
         return { message: 'Fail to send the reset link. Please try again later.'};
