@@ -50,7 +50,6 @@ export async function getQuestionByDiff(req, res) {
 export async function getQuestionById(req, res) {
     try {
         const { id } = req.query;
-        console.log(id);
         const resp = await _getOneQuestionById(id);
         //console.log(resp);
         if (resp.err) {
