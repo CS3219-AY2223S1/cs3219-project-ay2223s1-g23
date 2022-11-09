@@ -1,0 +1,26 @@
+runtime: nodejs
+env: flex
+
+env_variables:
+  ENV: PROD
+  REACT_APP_URI_USER_SVC: https://user-service-dot-peerpressure-366414.et.r.appspot.com
+  REACT_APP_URI_MATCH_SVC: https://matching-service-dot-peerpressure-366414.et.r.appspot.com
+  REACT_APP_URI_COLLAB_SVC:  https://collaboration-service-dot-peerpressure-366414.et.r.appspot.com
+  REACT_APP_URI_COMM_SVC: https://communication-service-dot-peerpressure-366414.et.r.appspot.com
+  REACT_APP_URI_QUES_SVC: https://question-service-dot-peerpressure-366414.et.r.appspot.com
+  REACT_APP_URI_HIST_SVC: https://history-service-dot-peerpressure-366414.et.r.appspot.com
+
+resources:
+  memory_gb: 4
+
+entrypoint: npm start
+
+instance_class: B4
+
+manual_scaling:
+  instances: 1
+
+network:
+  session_affinity: true
+
+service: default

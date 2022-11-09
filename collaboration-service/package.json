@@ -1,0 +1,34 @@
+{
+  "name": "collaboration-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "cross-env ENV=TEST mocha --exit"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "mongoose": "^6.6.2",
+    "nodemon": "^2.0.20",
+    "socket.io": "^4.5.1",
+    "y-socket.io": "^1.1.0",
+    "yjs": "^13.5.42"
+  },
+  "engines": {
+    "node": "16.17.1"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "cross-env": "^7.0.3",
+    "mocha": "^10.1.0",
+    "socket.io-client": "^4.5.3",
+    "supertest": "^6.3.1"
+  }
+}

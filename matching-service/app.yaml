@@ -1,0 +1,17 @@
+runtime: nodejs
+env: flex
+
+env_variables:
+  DB_CLOUD_URI: 
+  ENV: PROD
+  URI_QUES_SVC: https://question-service-dot-peerpressure-366414.et.r.appspot.com
+  URI_HIST_SVC: https://history-service-dot-peerpressure-366414.et.r.appspot.com
+  URI_FRONTEND: https://peerpressure-366414.et.r.appspot.com
+
+manual_scaling:
+  instances: 1
+
+network:
+  session_affinity: true
+
+service: matching-service

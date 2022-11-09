@@ -1,0 +1,11 @@
+runtime: nodejs16
+
+env_variables:
+  DB_CLOUD_URI: 
+  ENV: PROD
+  URI_FRONTEND: https://peerpressure-366414.et.r.appspot.com
+  JWT_SECRET: 36f01da9cd03c041dbeceb9b8b1cccdae70a36b9573bfdfe59d4eba7f3176932e602a28fe85fd28688a2318a63493a81541ab16d11a395e65bc5a2da35336518
+  EMAIL: 
+  EMAIL_PASSWORD: 
+
+service: user-service

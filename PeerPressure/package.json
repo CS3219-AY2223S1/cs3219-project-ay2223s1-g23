@@ -1,0 +1,30 @@
+{
+  "name": "peerpressure",
+  "version": "1.0.0",
+  "description": "This is a template repository for CS3219 project.",
+  "main": "index.js",
+  "scripts": {
+    "collab": "cd ../collaboration-service && npm i && npm run dev",
+    "comm": "cd ../communication-service && npm i && npm run dev",
+    "front": "cd ../frontend && npm i && npm start",
+    "match": "cd ../matching-service && npm i && npm run dev",
+    "user": "cd ../user-service && npm i && npm run dev",
+    "qn": "cd ../question-service && npm i && npm run dev",
+    "hist": "cd ../history-service && npm i && npm run dev",
+    "dev": "concurrently \"npm run hist\" \"npm run qn\" \"npm run collab\" \"npm run front\" \"npm run match\" \"npm run user\" \"npm run comm\" ",
+    "deploy": "gcloud app deploy ../history-service/app.yaml ../user-service/app.yaml ../matching-service/app.yaml ../question-service/app.yaml ../communication-service/app.yaml ../collaboration-service/app.yaml ../frontend/app.yaml"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g23.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g23/issues"
+  },
+  "homepage": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g23#readme",
+  "devDependencies": {
+    "concurrently": "^1.0.0"
+  }
+}
