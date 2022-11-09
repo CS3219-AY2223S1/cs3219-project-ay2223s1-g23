@@ -7,7 +7,7 @@ export const initSocketEventHandlers = (socket) => {
   socketOnlineStatus[socketId] = false;
   socket.on("voice", function (data) {
     if (!socketOnlineStatus[socketId]) {
-      console.log(socketOnlineStatus[socketId]);
+      //console.log(socketOnlineStatus[socketId]);
       console.log(socketId + " is not online");
       return;
     }

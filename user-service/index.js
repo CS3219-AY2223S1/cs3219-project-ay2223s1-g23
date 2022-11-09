@@ -18,7 +18,7 @@ router.post(CREATE_PATH, createUser)
 router.post(LOGIN_PATH, loginUser)
 router.delete(DELETE_PATH, verifyJWT, deleteUser)
 router.post(FORGET_PASSWORD_PATH, forgetPassword)
-router.post(RESET_PASSWORD_PATH, resetPassword)
+router.put(RESET_PASSWORD_PATH, resetPassword)
 
 app.use('/api/user', router).all((_, res) => {
     res.setHeader('content-type', 'application/json')

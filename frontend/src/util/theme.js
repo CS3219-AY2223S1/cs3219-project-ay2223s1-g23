@@ -1,21 +1,21 @@
 export default {
   palette: {
     primary: {
-      light: "#f6ffff",
-      main: "#c2f8ff",
-      dark: "#90c5cc",
-      contrastText: "#006064",
+      light: "#ffdd4b",
+      main: "#ffab00", // orange colour Navbar
+      dark: "#c67c00",
+      contrastText: "#3e2723", // black colour font
     },
     secondary: {
-      light: "#48a999",
-      main: "#00796b",
-      dark: "#004c40",
-      contrastText: "#ffffff",
+      light: "#fff350",
+      main: "#ffc107",
+      dark: "#c79100",
+      contrastText: "#fff", // white colour font
     },
   },
   typography: {
     allVariants: {
-      color: "#006064",
+      color: "#212121",
     },
   },
   spreadThis: {

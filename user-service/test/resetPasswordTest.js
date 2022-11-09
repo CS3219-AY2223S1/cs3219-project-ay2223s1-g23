@@ -117,6 +117,6 @@ describe("User resetPassword Test", function () {
 
 async function resetPasswordUser(username, password, confirmPassword, token) {
     return await request(app)
-        .post("/api/user/" + RESET_PASSWORD_PATH.replace(":token", token))
+        .put("/api/user/" + RESET_PASSWORD_PATH.replace(":token", token))
         .send({username: username, newPassword: password, confirmNewPassword: confirmPassword});
 };
